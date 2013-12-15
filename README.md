@@ -57,7 +57,3 @@ Tested with RoundCube 0.9.5 and Google app
 Author
 ------
 Alexandre Espinosa Menor <aemenor@gmail.com>
-=======
-twofactor_gauthenticator
-
-This RoundCube plugin adds the Google 2-step verification to the login proccess.
