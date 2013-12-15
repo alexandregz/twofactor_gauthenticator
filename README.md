@@ -12,6 +12,10 @@ form js from [dynalogin plugin](https://github.com/amaramrahul/dynalogin/)
 Also thx to [Victor R. Rodriguez Dominguez](https://github.com/vrdominguez) for some ideas and support  
 
 
+![Login](https://raw.github.com/AlexandreGZ/twofactor_gauthenticator/master/screenshots/001-login.png)
+
+![2Steps](https://raw.github.com/AlexandreGZ/twofactor_gauthenticator/master/screenshots/002-2steps.png)
+
 
 Installation
 ------------
@@ -29,6 +33,12 @@ Go to Settings task and activate (and save) into "2steps Google verification" me
 The plugin creates automatically the secret if you doesn't this.
 	
 To add accounts to the app, you can use the QR-Code (easy-way) or type the secret.
+
+![Settings by default](https://raw.github.com/AlexandreGZ/twofactor_gauthenticator/master/screenshots/003-settings_default.png)
+
+![Settings OK](https://raw.github.com/AlexandreGZ/twofactor_gauthenticator/master/screenshots/004-settings_ok.png)
+
+![QR-Code example](https://raw.github.com/AlexandreGZ/twofactor_gauthenticator/master/screenshots/005-settings_qr_code.png)
 
 
 Codes
