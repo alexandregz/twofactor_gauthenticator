@@ -43,7 +43,7 @@ To add accounts to the app, you can use the QR-Code (easy-way) or type the secre
 
 Codes
 -----
-Codes have a 2*30 seconds clock tolerance, like by default (Maybe editable in future versions)
+Codes have a 2*30 seconds clock tolerance, like by default with Google app (Maybe editable in future versions)
 
 
 License
