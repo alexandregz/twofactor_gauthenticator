@@ -36,13 +36,12 @@ class twofactor_gauthenticator extends rcube_plugin
     // Use the form login, but removing inputs with jquery and action (see twofactor_gauthenticator_form.js)
     function login_after($args)
     {
-    	$config_2FA = self::__get2FAconfig();
+		$_SESSION['twofactor_gauthenticator_login'] = time;
+		$config_2FA = self::__get2FAconfig();
 		if(!$config_2FA['activate'])
 		{
 			return;
 		}
-		
-		$this->__addConfig2FAlogin();
     	
     	$rcmail = rcmail::get_instance();
     	$rcmail->output->set_pagetitle($this->gettext('twofactor_gauthenticator'));
@@ -74,7 +73,7 @@ class twofactor_gauthenticator extends rcube_plugin
 				}
 			}
 			// we're into some task but marked with login...
-			elseif($rcmail->task !== 'login' && $config_2FA['2FA_login'])
+			elseif($rcmail->task !== 'login' && ! $_SESSION['twofactor_gauthenticator_2FA_login'] >= $_SESSION['twofactor_gauthenticator_2FA_login'])
 			{
 				$this->__exitSession();
 			}
@@ -205,30 +204,18 @@ class twofactor_gauthenticator extends rcube_plugin
     
 	
 	//------------- private methods
-	private function __addConfig2FAlogin() {
-		$config_2FA = self::__get2FAconfig();
-		
-		$config_2FA['2FA_login'] = true;
-		self::__set2FAconfig($config_2FA);		
-	}
-    
-	private function __removeConfig2FAlogin() {
-		$config_2FA = self::__get2FAconfig();
-		
-		$config_2FA['2FA_login'] = false;
-		self::__set2FAconfig($config_2FA);		
-	}
 	
 	// redirect to some RC task and remove 'login' user pref
     private function __goingRoundcubeTask($task='mail') {
-		$this->__removeConfig2FAlogin();
     		
+        $_SESSION['twofactor_gauthenticator_2FA_login'] = time;
     	header('Location: ?_task='.$task);
     	exit;
     }
 
     private function __exitSession() {
-    	$this->__removeConfig2FAlogin();
+        unset($_SESSION['twofactor_gauthenticator_login']);
+        unset($_SESSION['twofactor_gauthenticator_2FA_login']);
     
     	header('Location: ?_task=logout');
     	exit;
