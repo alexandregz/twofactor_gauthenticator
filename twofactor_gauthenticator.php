@@ -9,7 +9,7 @@
  *
  * @version 1.0
  *
- * Author(s): Alexandre Espinosa <aemenor@gmail.com>
+ * Author(s): Alexandre Espinosa <aemenor@gmail.com>, Ricardo Signes <rjbs@cpan.org>
  * Date: 2013-11-30
  */
 require_once 'PHPGangsta/GoogleAuthenticator.php';
