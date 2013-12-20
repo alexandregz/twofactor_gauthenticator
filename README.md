@@ -3,7 +3,7 @@
 
 This RoundCube plugin adds the Google 2-step verification to the login proccess.
 
-You can use [google-authenticator](https://code.google.com/p/google-authenticator/) and insert the secret generated into the config  if you want recovery codes.
+You can use [google-authenticator](https://code.google.com/p/google-authenticator/) and insert the secret generated into the config (without recovery codes at this moment)
 
 Uses Michael Kliewe's [GoogleAuthenticator class](https://github.com/PHPGangsta/GoogleAuthenticator/)
 
