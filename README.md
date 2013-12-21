@@ -43,7 +43,7 @@ To add accounts to the app, you can use the QR-Code (easy-way) or type the secre
 
 Also, you can add "Recovery codes" for use one time (they delete when are used))
 
-![Recovery codes](https://raw.github.com/AlexandreGZ/twofactor_gauthenticator/master/screenshots/006-recovery_codes.png) 
+![Recovery codes](https://raw.github.com/AlexandreGZ/twofactor_gauthenticator/recovery_codes/screenshots/006-recovery_codes.png) 
 
 
 
