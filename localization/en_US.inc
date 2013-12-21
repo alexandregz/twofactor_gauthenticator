@@ -17,6 +17,10 @@ $labels['create_secret'] = 'Create secret';
 $labels['show_qr_code'] = 'Show QR Code';
 $labels['hide_qr_code'] = 'Hide QR Code';
 
+$labels['recovery_codes'] = 'Recovery codes';
+$labels['show_recovery_codes'] = 'Show recovery codes';
+$labels['hide_recovery_codes'] = 'Hide recovery codes';
+		
 
 // Messages used for the different portions of the plugin
 $messages = array();

@@ -7,7 +7,7 @@
  * 
  * Also thx	 to Victor R. Rodriguez Dominguez for some ideas and support (https://github.com/vrdominguez) 
  *
- * @version 1.0
+ * @version 1.1
  *
  * Author(s): Alexandre Espinosa <aemenor@gmail.com>, Ricardo Signes <rjbs@cpan.org>
  * Date: 2013-11-30
@@ -16,6 +16,8 @@ require_once 'PHPGangsta/GoogleAuthenticator.php';
 
 class twofactor_gauthenticator extends rcube_plugin 
 {
+	private $_number_recovery_codes = 4;
+	
     function init() 
     {
 		$rcmail = rcmail::get_instance();
@@ -63,8 +65,12 @@ class twofactor_gauthenticator extends rcube_plugin
 			$code = get_input_value('_code_2FA', RCUBE_INPUT_POST);
 			if($code)
 			{
-				if(self::__checkCode($code))
+				if(self::__checkCode($code) || self::__isRecoveryCode($code))
 				{
+					if(self::__isRecoveryCode($code))
+					{
+						self::__consumeRecoveryCode($code);
+					}
 					$this->__goingRoundcubeTask('mail');
 				}
 				else
@@ -108,11 +114,15 @@ class twofactor_gauthenticator extends rcube_plugin
         // POST variables
         $activar = get_input_value('2FA_activate', RCUBE_INPUT_POST);
         $secret = get_input_value('2FA_secret', RCUBE_INPUT_POST);
+        $recovery_codes = get_input_value('2FA_recovery_codes', RCUBE_INPUT_POST);
         
+        // remove recovery codes without value
+        $recovery_codes = array_values(array_diff($recovery_codes, array('')));        
         
 		$data = self::__get2FAconfig();
        	$data['secret'] = $secret;
        	$data['activate'] = $activar ? true : false;
+       	$data['recovery_codes'] = $recovery_codes;
         self::__set2FAconfig($data);
 
         
@@ -158,6 +168,20 @@ class twofactor_gauthenticator extends rcube_plugin
         	$html_secret .= '<input type="button" class="button mainaction" id="2FA_create_secret" value="'.$this->gettext('create_secret').'">';
         }
         $table->add(null, $html_secret);
+        
+        
+        // recovery codes
+       	$table->add('title', $this->gettext('recovery_codes'));
+        	
+       	$html_recovery_codes = '';
+       	$i=0;
+       	for($i = 0; $i < $this->_number_recovery_codes; $i++)
+       	{
+       		$value = isset($data['recovery_codes'][$i]) ? $data['recovery_codes'][$i] : '';
+       		$html_recovery_codes .= ' <input type="password" name="2FA_recovery_codes[]" value="'.$value.'" maxlength="10"> &nbsp; ';
+       	}
+       	$html_recovery_codes .= '<input type="button" class="button mainaction" id="2FA_show_recovery_codes" value="'.$this->gettext('show_recovery_codes').'">';
+       	$table->add(null, $html_recovery_codes);
         
         
         // qr-code
@@ -240,7 +264,21 @@ class twofactor_gauthenticator extends rcube_plugin
 		$arr_prefs['twofactor_gauthenticator'] = $data;
 		
 		return $user->save_prefs($arr_prefs);
-	}	
+	}
+	
+	private function __isRecoveryCode($code)
+	{
+		$prefs = self::__get2FAconfig();
+		return in_array($code, $prefs['recovery_codes']);
+	}
+	
+	private function __consumeRecoveryCode($code)
+	{
+		$prefs = self::__get2FAconfig();
+		$prefs['recovery_codes'] = array_values(array_diff($prefs['recovery_codes'], array($code)));
+		
+		self::__set2FAconfig($prefs);
+	}
 	
 	
 	// GoogleAuthenticator class methods (see PHPGangsta/GoogleAuthenticator.php for more infor)

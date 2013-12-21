@@ -35,6 +35,24 @@ if (window.rcmail) {
 		  }
 	  });
 	  
+	  // to show/hide recovery_codes
+	  $('#2FA_show_recovery_codes').click(function(){
+
+		  if($("[name^='2FA_recovery_codes']")[0].type == 'text') {
+			  $("[name^='2FA_recovery_codes']").each(function() {
+				  $(this).get(0).type = 'password';
+			  });
+			  $('#2FA_show_recovery_codes').get(0).value = rcmail.gettext('show_recovery_codes', 'twofactor_gauthenticator');
+		  }
+		  else {
+			  $("[name^='2FA_recovery_codes']").each(function() {
+				  $(this).get(0).type = 'text';
+			  });
+			  $('#2FA_show_recovery_codes').get(0).value = rcmail.gettext('hide_recovery_codes', 'twofactor_gauthenticator');
+		  }
+	  });
+	  
+	  
 	  // to show/hide qr_code
 	  $('#2FA_change_qr_code').click(function(e){
 		  e.stopPropagation();
