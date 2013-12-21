@@ -3,7 +3,7 @@
 
 This RoundCube plugin adds the Google 2-step verification to the login proccess.
 
-You can use [google-authenticator](https://code.google.com/p/google-authenticator/) and insert the secret generated into the config (without recovery codes at this moment)
+You can use [google-authenticator](https://code.google.com/p/google-authenticator/) and insert the secret generated into the config, also recovery codes
 
 Uses Michael Kliewe's [GoogleAuthenticator class](https://github.com/PHPGangsta/GoogleAuthenticator/)
 
@@ -39,6 +39,12 @@ To add accounts to the app, you can use the QR-Code (easy-way) or type the secre
 ![Settings OK](https://raw.github.com/AlexandreGZ/twofactor_gauthenticator/master/screenshots/004-settings_ok.png)
 
 ![QR-Code example](https://raw.github.com/AlexandreGZ/twofactor_gauthenticator/master/screenshots/005-settings_qr_code.png)
+
+
+Also, you can add "Recovery codes" for use one time (they delete when are used))
+
+![Recovery codes](https://raw.github.com/AlexandreGZ/twofactor_gauthenticator/recovery_codes/screenshots/006-recovery_codes.png) 
+
 
 
 Codes
