@@ -125,6 +125,8 @@ class twofactor_gauthenticator extends rcube_plugin
        	$data['recovery_codes'] = $recovery_codes;
         self::__set2FAconfig($data);
 
+        // if we can't save time into SESSION, the plugin logouts
+        $_SESSION['twofactor_gauthenticator_2FA_login'] = time;        
         
 		$rcmail->output->show_message($this->gettext('successfully_saved'), 'confirmation');
          
