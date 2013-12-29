@@ -6,6 +6,8 @@ $labels['activate'] = 'Activate';
 $labels['twofactor_gauthenticator'] = '2steps Google verification';
 $labels['code'] = 'Google Authenticator Code';
 
+$labels['two_step_verification_form'] = '2-Step Verification';
+
 $labels['secret'] = 'Secret';
 $labels['qr_code'] = 'QR Code';
 $labels['msg_infor'] = 'You can add a <i>secret</i> generated with <a href="https://code.google.com/p/google-authenticator/" target="_blank">google-authenticator</a> and use that';

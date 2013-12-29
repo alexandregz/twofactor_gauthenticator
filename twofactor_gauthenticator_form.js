@@ -12,7 +12,7 @@ if (window.rcmail) {
 	  
     var text = '';
     text += '<tr>';
-    text += '<td class="title"><label for="2FA_code">'+rcmail.gettext('code', 'twofactor_gauthenticator')+'</label></td>';
+    text += '<td class="title"><label for="2FA_code">'+rcmail.gettext('two_step_verification_form', 'twofactor_gauthenticator')+'</label></td>';
     text += '<td class="input"><input name="_code_2FA" id="2FA_code" size="10" autocapitalize="off" autocomplete="off" type="text" maxlength="10"></td>';
     text += '</tr>';
 
