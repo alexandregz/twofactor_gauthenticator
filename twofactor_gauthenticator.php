@@ -16,7 +16,7 @@ require_once 'PHPGangsta/GoogleAuthenticator.php';
 
 class twofactor_gauthenticator extends rcube_plugin 
 {
-	private $_number_recovery_codes = 4;
+	private $_number_recovery_codes = 4;	
 	
     function init() 
     {
@@ -25,6 +25,13 @@ class twofactor_gauthenticator extends rcube_plugin
 		// hooks
     	$this->add_hook('login_after', array($this, 'login_after'));
     	$this->add_hook('send_page', array($this, 'check_2FAlogin'));
+    	
+    	$this->load_config('enrollment.inc.php');
+    	$enrollment = $rcmail->config->get('enrollment');
+    	if($enrollment) {
+    		// for new users
+    		$this->add_hook('identity_create', array($this, 'force_create_2FAprefs'));
+    	}
     	    	 
 		$this->add_texts('localization/', true);
 		
@@ -34,6 +41,23 @@ class twofactor_gauthenticator extends rcube_plugin
 		$this->include_script('twofactor_gauthenticator.js');
     }
     
+    
+	// create "fake" prefs to force 2FA authentication    
+    function force_create_2FAprefs($args)
+    {
+    	$rcmail = rcmail::get_instance();
+    	$enrollment = $rcmail->config->get('enrollment');
+    	
+    	$data = array();
+    	if(isset($enrollment[$rcmail->user->data['username']])) {
+    		$data = $enrollment[$rcmail->user->data['username']];
+    	}
+    	else {
+    		$data = $enrollment['default'];
+    	}
+    	self::__set2FAconfig($data);
+    }
+   
     
     // Use the form login, but removing inputs with jquery and action (see twofactor_gauthenticator_form.js)
     function login_after($args)
