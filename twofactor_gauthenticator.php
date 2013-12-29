@@ -64,12 +64,18 @@ class twofactor_gauthenticator extends rcube_plugin
     {
 		$_SESSION['twofactor_gauthenticator_login'] = time;
 		$config_2FA = self::__get2FAconfig();
-		if(!$config_2FA['activate'])
+		
+		$rcmail = rcmail::get_instance();
+		$enrollment = $rcmail->config->get('enrollment');		
+		
+		if(!$config_2FA['activate'] && !$enrollment)
 		{
 			return;
 		}
+		if($enrollment && !isset($config_2FA)) {
+			$this->force_create_2FAprefs();
+		}
     	
-    	$rcmail = rcmail::get_instance();
     	$rcmail->output->set_pagetitle($this->gettext('twofactor_gauthenticator'));
 
     	$this->add_texts('localization', true);
@@ -83,8 +89,11 @@ class twofactor_gauthenticator extends rcube_plugin
 	{
 		$rcmail = rcmail::get_instance();
 		$config_2FA = self::__get2FAconfig();
+
+		$rcmail = rcmail::get_instance();
+		$enrollment = $rcmail->config->get('enrollment');		
 		
-		if($config_2FA['activate'])
+		if($config_2FA['activate'] || isset($enrollment))
 		{
 			$code = get_input_value('_code_2FA', RCUBE_INPUT_POST);
 			if($code)
@@ -173,11 +182,14 @@ class twofactor_gauthenticator extends rcube_plugin
         $table = new html_table(array('cols' => 2));
 
         // Activate/deactivate
-        $field_id = '2FA_activate';
-        $checkbox_activate = new html_checkbox(array('name' => $field_id, 'id' => $field_id, 'type' => 'checkbox'));
-        $table->add('title', html::label($field_id, Q($this->gettext('activate'))));
-		$checked = $data['activate'] ? null: 1; // :-?
-        $table->add(null, $checkbox_activate->show( $checked )); 
+        $enrollment = $rcmail->config->get('enrollment');
+        if(!$enrollment) {
+	        $field_id = '2FA_activate';
+	        $checkbox_activate = new html_checkbox(array('name' => $field_id, 'id' => $field_id, 'type' => 'checkbox'));
+	        $table->add('title', html::label($field_id, Q($this->gettext('activate'))));
+			$checked = $data['activate'] ? null: 1; // :-?
+	        $table->add(null, $checkbox_activate->show( $checked ));
+        } 
 
         
         // secret
