@@ -22,7 +22,9 @@ $labels['hide_qr_code'] = 'Hide QR Code';
 $labels['recovery_codes'] = 'Recovery codes';
 $labels['show_recovery_codes'] = 'Show recovery codes';
 $labels['hide_recovery_codes'] = 'Hide recovery codes';
-		
+
+$labels['setup_all_fields'] = 'Setup all fields (needs Save)';
+
 
 // Messages used for the different portions of the plugin
 $messages = array();

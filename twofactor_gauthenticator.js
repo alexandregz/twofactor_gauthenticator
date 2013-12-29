@@ -19,8 +19,36 @@ if (window.rcmail) {
 		        secret += LookupTable[Math.floor(Math.random()*LookupTable.length)];
 		    }
 		    return secret;
-		}	    
+		}
+		
+		//createQRCode = function createQRCode
+		
+		// populate all fields
+		function setup2FAfields() {
+			$('#twofactor_gauthenticator-form :input').each(function(){
+				if($(this).get(0).type == 'password') $(this).get(0).type = 'text';
+			});
+			
+			$('#2FA_activate').prop('checked', true);
+			$('#2FA_show_recovery_codes').get(0).value = rcmail.gettext('hide_recovery_codes', 'twofactor_gauthenticator');
+			$('#2FA_qr_code').slideDown();
+			//$('#2FA_change_qr_code').get(0).value = rcmail.gettext('hide_qr_code', 'twofactor_gauthenticator');
+			
+			$('#2FA_secret').get(0).value = createSecret();
+			$("[name^='2FA_recovery_codes']").each(function() {
+				$(this).get(0).value = createSecret(10);
+			});
+			
+			// add qr-code before msg_infor
+			url_qr_code_values = encodeURIComponent('otpauth://totp/' +$('#prefs-title').html().split(/ - /)[1]+ '?secret=' +$('#2FA_secret').get(0).value);
+			url_qr_code = 'https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl='+url_qr_code_values;
+			$('table tr:last').before('<tr><td>' +rcmail.gettext('qr_code', 'twofactor_gauthenticator')+ '</td><td><input type="button" class="button mainaction" id="2FA_change_qr_code" value="' 
+					+rcmail.gettext('hide_qr_code', 'twofactor_gauthenticator')+ '"><div id="2FA_qr_code"><img src="' +url_qr_code+ '" /></div></td></tr>');
+		}
 	  
+	  $('#2FA_setup_fields').click(function(){
+		  setup2FAfields();
+	  });
 	  
 	  // to show/hide secret
 	  $('#2FA_change_secret').click(function(){

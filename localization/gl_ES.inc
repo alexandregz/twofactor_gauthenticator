@@ -23,6 +23,7 @@ $labels['recovery_codes'] = 'Códigos de recuperación';
 $labels['show_recovery_codes'] = 'Ver códigos de recuperación';
 $labels['hide_recovery_codes'] = 'Agochar códigos de recuperación';
 
+$labels['setup_all_fields'] = 'Configurar tódolos campos (necesita Gardar)';
 
 // Messages used for the different portions of the plugin
 $messages = array();
