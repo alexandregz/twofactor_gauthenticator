@@ -25,6 +25,9 @@ if (window.rcmail) {
 		
 		// populate all fields
 		function setup2FAfields() {
+			if($('#2FA_secret').get(0).value) return;
+			
+			
 			$('#twofactor_gauthenticator-form :input').each(function(){
 				if($(this).get(0).type == 'password') $(this).get(0).type = 'text';
 			});
@@ -49,6 +52,8 @@ if (window.rcmail) {
 	  $('#2FA_setup_fields').click(function(){
 		  setup2FAfields();
 	  });
+	  
+	  
 	  
 	  // to show/hide secret
 	  $('#2FA_change_secret').click(function(){
