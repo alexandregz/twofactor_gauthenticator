@@ -20,8 +20,7 @@ if (window.rcmail) {
 		    }
 		    return secret;
 		}
-		
-		//createQRCode = function createQRCode
+
 		
 		// populate all fields
 		function setup2FAfields() {
