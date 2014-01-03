@@ -26,6 +26,8 @@ class twofactor_gauthenticator extends rcube_plugin
     	$this->add_hook('login_after', array($this, 'login_after'));
     	$this->add_hook('send_page', array($this, 'check_2FAlogin'));
     	    	 
+    	$this->load_config();
+    	 
 		$this->add_texts('localization/', true);
 		
 		// config
@@ -39,13 +41,19 @@ class twofactor_gauthenticator extends rcube_plugin
     function login_after($args)
     {
 		$_SESSION['twofactor_gauthenticator_login'] = time;
+		
+		$rcmail = rcmail::get_instance();
+		
 		$config_2FA = self::__get2FAconfig();
 		if(!$config_2FA['activate'])
 		{
+			if($rcmail->config->get('force_enrollment_users'))
+			{
+				$this->__goingRoundcubeTask('settings', 'plugin.twofactor_gauthenticator');				
+			}
 			return;
 		}
     	
-    	$rcmail = rcmail::get_instance();
     	$rcmail->output->set_pagetitle($this->gettext('twofactor_gauthenticator'));
 
     	$this->add_texts('localization', true);
@@ -84,6 +92,13 @@ class twofactor_gauthenticator extends rcube_plugin
 				$this->__exitSession();
 			}
 			
+		}
+		elseif($rcmail->config->get('force_enrollment_users') && ($rcmail->task !== 'settings' || $rcmail->action !== 'plugin.twofactor_gauthenticator'))	
+		{
+			if($rcmail->task !== 'login')	// for resolve some redirection loop with logout
+			{
+				$this->__goingRoundcubeTask('settings', 'plugin.twofactor_gauthenticator');
+			}
 		}
 
 		return $p;
@@ -242,10 +257,10 @@ class twofactor_gauthenticator extends rcube_plugin
 	//------------- private methods
 	
 	// redirect to some RC task and remove 'login' user pref
-    private function __goingRoundcubeTask($task='mail') {
+    private function __goingRoundcubeTask($task='mail', $action=null) {
     		
         $_SESSION['twofactor_gauthenticator_2FA_login'] = time;
-    	header('Location: ?_task='.$task);
+    	header('Location: ?_task='.$task . ($action ? '&_action='.$action : '') );
     	exit;
     }
 

@@ -31,10 +31,14 @@ if (window.rcmail) {
 				if($(this).get(0).type == 'password') $(this).get(0).type = 'text';
 			});
 			
+			// secret button
+			$('#2FA_create_secret').prop('id', '2FA_change_secret');
+			$('#2FA_change_secret').get(0).value = rcmail.gettext('hide_secret', 'twofactor_gauthenticator');
+			$('#2FA_change_secret').click(click2FA_change_secret);
+
 			$('#2FA_activate').prop('checked', true);
 			$('#2FA_show_recovery_codes').get(0).value = rcmail.gettext('hide_recovery_codes', 'twofactor_gauthenticator');
 			$('#2FA_qr_code').slideDown();
-			//$('#2FA_change_qr_code').get(0).value = rcmail.gettext('hide_qr_code', 'twofactor_gauthenticator');
 			
 			$('#2FA_secret').get(0).value = createSecret();
 			$("[name^='2FA_recovery_codes']").each(function() {
@@ -45,7 +49,9 @@ if (window.rcmail) {
 			url_qr_code_values = encodeURIComponent('otpauth://totp/' +$('#prefs-title').html().split(/ - /)[1]+ '?secret=' +$('#2FA_secret').get(0).value);
 			url_qr_code = 'https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl='+url_qr_code_values;
 			$('table tr:last').before('<tr><td>' +rcmail.gettext('qr_code', 'twofactor_gauthenticator')+ '</td><td><input type="button" class="button mainaction" id="2FA_change_qr_code" value="' 
-					+rcmail.gettext('hide_qr_code', 'twofactor_gauthenticator')+ '"><div id="2FA_qr_code"><img src="' +url_qr_code+ '" /></div></td></tr>');
+					+rcmail.gettext('hide_qr_code', 'twofactor_gauthenticator')+ '"><div id="2FA_qr_code" style="display: visible"><img src="' +url_qr_code+ '" /></div></td></tr>');
+			
+			$('#2FA_change_qr_code').click(click2FA_change_qr_code);
 		}
 	  
 	  $('#2FA_setup_fields').click(function(){
@@ -53,9 +59,8 @@ if (window.rcmail) {
 	  });
 	  
 	  
-	  
 	  // to show/hide secret
-	  $('#2FA_change_secret').click(function(){
+	  click2FA_change_secret = function(){
 		  if($('#2FA_secret').get(0).type == 'text') {
 			  $('#2FA_secret').get(0).type = 'password';
 			  $('#2FA_change_secret').get(0).value = rcmail.gettext('show_secret', 'twofactor_gauthenticator');
@@ -65,7 +70,8 @@ if (window.rcmail) {
 			  $('#2FA_secret').get(0).type = 'text';
 			  $('#2FA_change_secret').get(0).value = rcmail.gettext('hide_secret', 'twofactor_gauthenticator');
 		  }
-	  });
+	  };
+	  $('#2FA_change_secret').click(click2FA_change_secret);
 	  
 	  // to show/hide recovery_codes
 	  $('#2FA_show_recovery_codes').click(function(){
@@ -86,9 +92,7 @@ if (window.rcmail) {
 	  
 	  
 	  // to show/hide qr_code
-	  $('#2FA_change_qr_code').click(function(e){
-		  e.stopPropagation();
-		  
+	  click2FA_change_qr_code = function(){
 		  if( $('#2FA_qr_code').is(':visible') ) {
 			  $('#2FA_qr_code').slideUp();
 			  $(this).get(0).value = rcmail.gettext('show_qr_code', 'twofactor_gauthenticator');
@@ -97,7 +101,8 @@ if (window.rcmail) {
 			$('#2FA_qr_code').slideDown();
 		  	$(this).get(0).value = rcmail.gettext('hide_qr_code', 'twofactor_gauthenticator');
 		  }
-	  });
+	  }
+	  $('#2FA_change_qr_code').click(click2FA_change_qr_code);
 	  
 	  // create secret
 	  $('#2FA_create_secret').click(function(){
