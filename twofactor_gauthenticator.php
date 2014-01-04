@@ -96,7 +96,7 @@ class twofactor_gauthenticator extends rcube_plugin
 		}
 		elseif($rcmail->config->get('force_enrollment_users') && ($rcmail->task !== 'settings' || $rcmail->action !== 'plugin.twofactor_gauthenticator'))	
 		{
-			if($rcmail->task !== 'login')	// for resolve some redirection loop with logout
+			if($rcmail->task !== 'login')	// resolve some redirection loop with logout
 			{
 				$this->__goingRoundcubeTask('settings', 'plugin.twofactor_gauthenticator');
 			}
