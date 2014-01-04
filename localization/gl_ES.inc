@@ -28,7 +28,9 @@ $labels['setup_all_fields'] = 'Configurar tódolos campos (necesita Gardar)';
 $labels['enrollment_dialog_title'] = '2steps Google verification';
 $labels['enrollment_dialog_msg'] = 'Está activada a <strong>Verificación en dous pasos</strong> por seguridade, debese empregar obrigatoriamente. Faga o favor de configurala';
 
-
+$labels['check_code'] = 'Comprobar código';
+$labels['code_ok'] = 'Codigo correcto';
+$labels['code_ko'] = 'Codigo erróneo';
 
 // Messages used for the different portions of the plugin
 $messages = array();

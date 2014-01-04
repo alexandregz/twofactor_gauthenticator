@@ -31,6 +31,9 @@ class twofactor_gauthenticator extends rcube_plugin
     	 
 		$this->add_texts('localization/', true);
 		
+		// check code with ajax
+		$this->register_action('plugin.twofactor_gauthenticator-checkcode', array($this, 'checkCode'));
+		
 		// config
 		$this->register_action('twofactor_gauthenticator', array($this, 'twofactor_gauthenticator_init'));
 		$this->register_action('plugin.twofactor_gauthenticator-save', array($this, 'twofactor_gauthenticator_save'));
@@ -240,7 +243,9 @@ class twofactor_gauthenticator extends rcube_plugin
         $html_setup_all_fields = '';
         if(!$data['secret']) {
         	$html_setup_all_fields = '<input type="button" class="button mainaction" id="2FA_setup_fields" value="'.$this->gettext('setup_all_fields').'">';
-        } 
+        }
+        
+        $html_check_code = '<br /><br /><input type="button" class="button mainaction" id="2FA_check_code" value="'.$this->gettext('check_code').'"> <input type="text" id="2FA_code_to_check" maxlength="10">';
         
         
         
@@ -261,6 +266,7 @@ class twofactor_gauthenticator extends rcube_plugin
             		
             		// button to setup all fields
             		.$html_setup_all_fields
+            		.$html_check_code
                 )
         	)
         );
@@ -277,6 +283,23 @@ class twofactor_gauthenticator extends rcube_plugin
         
         return $out;
     }
+    
+    
+    // used with ajax
+    function checkCode() {
+    	$code = get_input_value('code', RCUBE_INPUT_GET);
+    	$secret = get_input_value('secret', RCUBE_INPUT_GET);
+    	
+    	if(self::__checkCode($code, $secret))
+    	{
+    		echo $this->gettext('code_ok');
+    	}
+    	else
+    	{
+    		echo $this->gettext('code_ko');
+    	}
+    	exit;
+    }    
     
 	
 	//------------- private methods
@@ -358,9 +381,9 @@ class twofactor_gauthenticator extends rcube_plugin
 	}
 	
 	// returns boolean
-	private function __checkCode($code)
+	private function __checkCode($code, $secret=null)
 	{
 		$ga = new PHPGangsta_GoogleAuthenticator();
-		return $ga->verifyCode(self::__getSecret(), $code, 2);    // 2 = 2*30sec clock tolerance
+		return $ga->verifyCode( ($secret ? $secret : self::__getSecret()), $code, 2);    // 2 = 2*30sec clock tolerance
 	} 
 }

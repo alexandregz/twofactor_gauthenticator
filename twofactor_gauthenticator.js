@@ -108,6 +108,14 @@ if (window.rcmail) {
 	  $('#2FA_create_secret').click(function(){
 		  $('#2FA_secret').get(0).value = createSecret();
 	  });
+	
+	// ajax
+	$('#2FA_check_code').click(function(){
+		url = "./?_action=plugin.twofactor_gauthenticator-checkcode&code=" +$('#2FA_code_to_check').val() + '&secret='+$('#2FA_secret').val();
+		$.post(url, function(data){
+				alert(data);
+			});
+	});
 	  
     
     // Define Variables
