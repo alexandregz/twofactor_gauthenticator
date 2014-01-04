@@ -46,6 +46,14 @@ Also, you can add "Recovery codes" for use one time (they delete when are used))
 ![Recovery codes](https://raw.github.com/AlexandreGZ/twofactor_gauthenticator/master/screenshots/006-recovery_codes.png) 
 
 
+![Check codes](https://raw.github.com/AlexandreGZ/twofactor_gauthenticator/master/screenshots/007-check_code.png) 
+
+
+If config value *force_enrollment_users* is true, **ALL** users needs to login with 2-steps method. They receive alert message about that.
+
+![Recovery codes](https://raw.github.com/AlexandreGZ/twofactor_gauthenticator/master/screenshots/008-msg_infor_about_enrollment.png) 
+
+
 
 Codes
 -----
