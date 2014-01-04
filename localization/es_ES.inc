@@ -25,6 +25,10 @@ $labels['hide_recovery_codes'] = 'Esconder códigos de recuperación';
 
 $labels['setup_all_fields'] = 'Configurar todos los campos (necesita Guardar)';
 
+$labels['enrollment_dialog_title'] = '2steps Google verification';
+$labels['enrollment_dialog_msg'] = 'Está activada la <strong>Verificación en dos pasos</strong> por seguridad, es obligatorio emplearla para autenticarse';
+
+
 // Messages used for the different portions of the plugin
 $messages = array();
 $messages['successfully_saved'] = 'Los datos han sido guardados correctamente.';

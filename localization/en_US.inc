@@ -25,6 +25,9 @@ $labels['hide_recovery_codes'] = 'Hide recovery codes';
 
 $labels['setup_all_fields'] = 'Setup all fields (needs Save)';
 
+$labels['enrollment_dialog_title'] = '2steps Google verification';
+$labels['enrollment_dialog_msg'] = '<strong>2-steps verification codes</strong> are required for safety, please config';
+
 
 // Messages used for the different portions of the plugin
 $messages = array();

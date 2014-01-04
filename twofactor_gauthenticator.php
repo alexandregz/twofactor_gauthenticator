@@ -25,6 +25,7 @@ class twofactor_gauthenticator extends rcube_plugin
 		// hooks
     	$this->add_hook('login_after', array($this, 'login_after'));
     	$this->add_hook('send_page', array($this, 'check_2FAlogin'));
+    	$this->add_hook('render_page', array($this, 'popup_msg_enrollment'));
     	    	 
     	$this->load_config();
     	 
@@ -102,6 +103,30 @@ class twofactor_gauthenticator extends rcube_plugin
 		}
 
 		return $p;
+	}
+	
+	
+	// ripped from new_user_dialog plugin
+	function popup_msg_enrollment()
+	{
+		$rcmail = rcmail::get_instance();
+		$config_2FA = self::__get2FAconfig();
+		
+		if(!$config_2FA['activate'] 
+			&& $rcmail->config->get('force_enrollment_users') && $rcmail->task == 'settings' && $rcmail->action == 'plugin.twofactor_gauthenticator')
+		{
+			// add overlay input box to html page
+			$rcmail->output->add_footer(html::tag('form', array(
+					'id' => 'enrollment_dialog',
+					'method' => 'post'),
+					html::tag('h3', null, $this->gettext('enrollment_dialog_title')) .
+					$this->gettext('enrollment_dialog_msg')
+			));
+
+			$rcmail->output->add_script(
+					"$('#enrollment_dialog').show().dialog({ modal:true, resizable:false, closeOnEscape: true, width:420 });", 'docready'
+			);
+		}		
 	}
 	
 
