@@ -28,7 +28,9 @@ class twofactor_gauthenticator extends rcube_plugin
     	$this->add_hook('render_page', array($this, 'popup_msg_enrollment'));
     	    	 
     	$this->load_config();
-    	 
+
+    	write_log('trace', __METHOD__);
+    	
 		$this->add_texts('localization/', true);
 		
 		// check code with ajax
@@ -44,6 +46,7 @@ class twofactor_gauthenticator extends rcube_plugin
     // Use the form login, but removing inputs with jquery and action (see twofactor_gauthenticator_form.js)
     function login_after($args)
     {
+    	write_log('trace', __METHOD__);
 		$_SESSION['twofactor_gauthenticator_login'] = time;
 		
 		$rcmail = rcmail::get_instance();
@@ -69,6 +72,7 @@ class twofactor_gauthenticator extends rcube_plugin
 	// capture webpage if someone try to use ?_task=mail|addressbook|settings|... and check auth code
 	function check_2FAlogin($p)
 	{
+		write_log('trace', __METHOD__);
 		$rcmail = rcmail::get_instance();
 		$config_2FA = self::__get2FAconfig();
 		
@@ -112,6 +116,7 @@ class twofactor_gauthenticator extends rcube_plugin
 	// ripped from new_user_dialog plugin
 	function popup_msg_enrollment()
 	{
+		write_log('trace', __METHOD__);
 		$rcmail = rcmail::get_instance();
 		$config_2FA = self::__get2FAconfig();
 		
@@ -136,6 +141,7 @@ class twofactor_gauthenticator extends rcube_plugin
 	// show config
     function twofactor_gauthenticator_init() 
     {
+    	write_log('trace', __METHOD__);
         $rcmail = rcmail::get_instance();
        
         $this->add_texts('localization/', true);
@@ -148,6 +154,7 @@ class twofactor_gauthenticator extends rcube_plugin
     // save config
     function twofactor_gauthenticator_save() 
     {
+    	write_log('trace', __METHOD__);
         $rcmail = rcmail::get_instance();
         
         $this->add_texts('localization/', true);
@@ -181,6 +188,7 @@ class twofactor_gauthenticator extends rcube_plugin
     // form config
     public function twofactor_gauthenticator_form() 
     {
+    	write_log('trace', __METHOD__);
         $rcmail = rcmail::get_instance();
         
         $this->add_texts('localization/', true);
@@ -287,6 +295,7 @@ class twofactor_gauthenticator extends rcube_plugin
     
     // used with ajax
     function checkCode() {
+    	write_log('trace', __METHOD__);
     	$code = get_input_value('code', RCUBE_INPUT_GET);
     	$secret = get_input_value('secret', RCUBE_INPUT_GET);
     	
@@ -306,6 +315,7 @@ class twofactor_gauthenticator extends rcube_plugin
 	
 	// redirect to some RC task and remove 'login' user pref
     private function __goingRoundcubeTask($task='mail', $action=null) {
+    	write_log('trace', __METHOD__);
     		
         $_SESSION['twofactor_gauthenticator_2FA_login'] = time;
     	header('Location: ?_task='.$task . ($action ? '&_action='.$action : '') );
@@ -313,6 +323,7 @@ class twofactor_gauthenticator extends rcube_plugin
     }
 
     private function __exitSession() {
+    	write_log('trace', __METHOD__);
         unset($_SESSION['twofactor_gauthenticator_login']);
         unset($_SESSION['twofactor_gauthenticator_2FA_login']);
     
@@ -322,6 +333,7 @@ class twofactor_gauthenticator extends rcube_plugin
     
 	private function __get2FAconfig()
 	{
+		write_log('trace', __METHOD__);
 		$rcmail = rcmail::get_instance();
 		$user = $rcmail->user;
 
@@ -332,6 +344,7 @@ class twofactor_gauthenticator extends rcube_plugin
 	// we can set array to NULL to remove
 	private function __set2FAconfig($data)
 	{
+		write_log('trace', __METHOD__);
 		$rcmail = rcmail::get_instance();
 		$user = $rcmail->user;
 	
@@ -343,12 +356,14 @@ class twofactor_gauthenticator extends rcube_plugin
 	
 	private function __isRecoveryCode($code)
 	{
+		write_log('trace', __METHOD__);
 		$prefs = self::__get2FAconfig();
 		return in_array($code, $prefs['recovery_codes']);
 	}
 	
 	private function __consumeRecoveryCode($code)
 	{
+		write_log('trace', __METHOD__);
 		$prefs = self::__get2FAconfig();
 		$prefs['recovery_codes'] = array_values(array_diff($prefs['recovery_codes'], array($code)));
 		
@@ -360,6 +375,7 @@ class twofactor_gauthenticator extends rcube_plugin
 	// returns string
 	private function __createSecret()
 	{
+		write_log('trace', __METHOD__);
 		$ga = new PHPGangsta_GoogleAuthenticator();
 		return $ga->createSecret();
 	} 
@@ -367,6 +383,7 @@ class twofactor_gauthenticator extends rcube_plugin
 	// returns string
 	private function __getSecret()
 	{
+		write_log('trace', __METHOD__);
 		$prefs = self::__get2FAconfig();
 		return $prefs['secret'];
 	}	
@@ -374,6 +391,7 @@ class twofactor_gauthenticator extends rcube_plugin
 	// returns string (url to img)
 	private function __getQRCodeGoogle()
 	{
+		write_log('trace', __METHOD__);
 		$rcmail = rcmail::get_instance(); 
 		
 		$ga = new PHPGangsta_GoogleAuthenticator();
@@ -383,7 +401,13 @@ class twofactor_gauthenticator extends rcube_plugin
 	// returns boolean
 	private function __checkCode($code, $secret=null)
 	{
+		write_log('trace', __METHOD__);
+		
 		$ga = new PHPGangsta_GoogleAuthenticator();
+		
+		$codeGenerated = $ga->getCode(($secret ? $secret : self::__getSecret()));
+		write_log('trace', "checking code: [$code] vs. codeGenerated: [$codeGenerated]");
+				
 		return $ga->verifyCode( ($secret ? $secret : self::__getSecret()), $code, 2);    // 2 = 2*30sec clock tolerance
 	} 
 }
