@@ -18,6 +18,9 @@ if (window.rcmail) {
 
     // create textbox
     $('form > table > tbody:last').append(text);
+
+    // focus
+    $('#2FA_code').focus();
     
   });
 
