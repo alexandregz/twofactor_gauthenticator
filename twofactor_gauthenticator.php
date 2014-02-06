@@ -377,7 +377,7 @@ class twofactor_gauthenticator extends rcube_plugin
 		$rcmail = rcmail::get_instance(); 
 		
 		$ga = new PHPGangsta_GoogleAuthenticator();
-		return $ga->getQRCodeGoogleUrl($rcmail->user->data['username'], self::__getSecret(), 'RoundCube 2FA');
+		return $ga->getQRCodeGoogleUrl($rcmail->user->data['username'], self::__getSecret(), 'RoundCube2FA');
 	}
 	
 	// returns boolean

@@ -46,7 +46,7 @@ if (window.rcmail) {
 			});
 			
 			// add qr-code before msg_infor
-			url_qr_code_values = encodeURIComponent('otpauth://totp/' +$('#prefs-title').html().split(/ - /)[1]+ '?secret=' +$('#2FA_secret').get(0).value +'&issuer=RoundCube 2FA');
+			url_qr_code_values = encodeURIComponent('otpauth://totp/' +$('#prefs-title').html().split(/ - /)[1]+ '?secret=' +$('#2FA_secret').get(0).value +'&issuer=RoundCube2FA');
 			url_qr_code = 'https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl='+url_qr_code_values;
 			$('table tr:last').before('<tr><td>' +rcmail.gettext('qr_code', 'twofactor_gauthenticator')+ '</td><td><input type="button" class="button mainaction" id="2FA_change_qr_code" value="' 
 					+rcmail.gettext('hide_qr_code', 'twofactor_gauthenticator')+ '"><div id="2FA_qr_code" style="display: visible"><img src="' +url_qr_code+ '" /></div></td></tr>');
