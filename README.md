@@ -41,7 +41,7 @@ To add accounts to the app, you can use the QR-Code (easy-way) or type the secre
 ![QR-Code example](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/005-settings_qr_code.png)
 
 
-Also, you can add "Recovery codes" for use one time (they delete when are used))
+Also, you can add "Recovery codes" for use one time (they delete when are used). Recovery codes are OPTIONAL, so they can not appears
 
 ![Recovery codes](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/006-recovery_codes.png) 
 
