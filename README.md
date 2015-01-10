@@ -66,7 +66,7 @@ GPLv2, see License
 
 Notes
 -----
-Tested with RoundCube 0.9.5 and Google app
+Tested with RoundCube 0.9.5 and Google app. Also with Roundcube 1.0.4
 
 Remember, sync time it's essential for TOTP: "For this to work, the clocks of the user's device and the server need to be roughly synchronized (the server will typically accept one-time passwords generated from timestamps that differ by ±1 from the client's timestamp)" (from http://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm)
 
