@@ -32,6 +32,8 @@ $labels['check_code'] = 'Comprobar código';
 $labels['code_ok'] = 'Código correcto';
 $labels['code_ko'] = 'Código incorrecto';
 
+$labels['dont_ask_me_30days'] = 'No solicitar códigos en esta computadora durante 30 días';
+
 // Messages used for the different portions of the plugin
 $messages = array();
 $messages['successfully_saved'] = 'Configuración guardada exitosamente';

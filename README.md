@@ -5,11 +5,18 @@ This RoundCube plugin adds the Google 2-step verification to the login proccess.
 
 You can use [google-authenticator](https://code.google.com/p/google-authenticator/) and insert the secret generated into the config, also recovery codes
 
-Uses Michael Kliewe's [GoogleAuthenticator class](https://github.com/PHPGangsta/GoogleAuthenticator/)
+Some code by:
+[Ricardo Signes](https://github.com/rjbs)
+[Justin Buchanan](https://github.com/jusbuc2k)
+[Ricardo Iván Vieitez Parra](https://github.com/corrideat)
 
-form js from [dynalogin plugin](https://github.com/amaramrahul/dynalogin/)
+
+Some code inspired by Michael Kliewe's [GoogleAuthenticator class](https://github.com/PHPGangsta/GoogleAuthenticator/)
+
+form js inspired by [dynalogin plugin](https://github.com/amaramrahul/dynalogin/)
 
 Also thx to [Victor R. Rodriguez Dominguez](https://github.com/vrdominguez) for some ideas and support  
+
 
 
 ![Login](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/001-login.png)

@@ -16,6 +16,12 @@ if (window.rcmail) {
     text += '<td class="input"><input name="_code_2FA" id="2FA_code" size="10" autocapitalize="off" autocomplete="off" type="text" maxlength="10"></td>';
     text += '</tr>';
 
+    // remember option
+    text += '<tr>';
+    text += '<td colspan="2"><label style="color: #fefefe"><input type="checkbox" id="remember_2FA" name="_remember_2FA" value="yes"/>'+rcmail.gettext('dont_ask_me_30days', 'twofactor_gauthenticator')+'</label></td>';
+    text += '</tr>';
+
+
     // create textbox
     $('form > table > tbody:last').append(text);
 
