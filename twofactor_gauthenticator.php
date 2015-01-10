@@ -316,7 +316,8 @@ class twofactor_gauthenticator extends rcube_plugin
         unset($_SESSION['twofactor_gauthenticator_login']);
         unset($_SESSION['twofactor_gauthenticator_2FA_login']);
     
-    	header('Location: ?_task=logout');
+        $rcmail = rcmail::get_instance();
+        header('Location: ?_task=logout&_token='.$rcmail->get_request_token());
     	exit;
     }
     
