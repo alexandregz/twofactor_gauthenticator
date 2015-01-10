@@ -22,8 +22,8 @@ Installation
 - Clone from github:
     HOME_RC/plugins$ git clone [https://github.com/alexandregz/twofactor_gauthenticator.git](https://github.com/alexandregz/twofactor_gauthenticator.git)
 
-- Activate the plugin into HOME_RC/config/main.inc.php:
-    $rcmail_config['plugins'] = array('twofactor_gauthenticator');
+- Activate the plugin into HOME_RC/config/config.inc.php:
+    $config['plugins'] = array('twofactor_gauthenticator');
 
 
 Configuration
