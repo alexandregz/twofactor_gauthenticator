@@ -56,11 +56,21 @@ Also, you can add "Recovery codes" for use one time (they delete when are used).
 ![Check codes](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/007-check_code.png) 
 
 
-If config value *force_enrollment_users* is true, **ALL** users needs to login with 2-step method. They receive alert message about that, and they can't skip without save configuration
 
 ![Recovery codes](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/008-msg_infor_about_enrollment.png) 
 
+
+
+Enrollment Users
+----------------
+If config value *force_enrollment_users* is true, **ALL** users needs to login with 2-step method. They receive alert message about that, and they can't skip without save configuration
+
+
+Samefield
+---------
 If config value *2step_codes_on_login_form* is true, 2-step codes (and recovery) must be sended with password value, append to this, from the login screen: "Normal" codes just following password (passswordCODE), recovery codes after two pipes (passsword||RECOVERYCODE)
+
+Actually only into samefield branch
 
 
 Codes
