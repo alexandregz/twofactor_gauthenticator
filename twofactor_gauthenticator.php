@@ -38,6 +38,7 @@ class twofactor_gauthenticator extends rcube_plugin
 		$this->register_action('twofactor_gauthenticator', array($this, 'twofactor_gauthenticator_init'));
 		$this->register_action('plugin.twofactor_gauthenticator-save', array($this, 'twofactor_gauthenticator_save'));
 		$this->include_script('twofactor_gauthenticator.js');
+		$this->include_script('qrcode.min.js');
     }
     
     
@@ -246,7 +247,10 @@ class twofactor_gauthenticator extends rcube_plugin
         if($data['secret']) {
 			$table->add('title', $this->gettext('qr_code'));
         	$table->add(null, '<input type="button" class="button mainaction" id="2FA_change_qr_code" value="'.$this->gettext('show_qr_code').'"> 
-        						<div id="2FA_qr_code" style="display: none;"><img src="'.self::__getQRCodeGoogle().'" /></div>');
+        						<div id="2FA_qr_code" style="display: none; margin-top: 10px;"></div>');
+
+        	// new JS qr-code, without call to Google
+        	$this->include_script('2FA_qr_code.js');
         }
         
         // infor
@@ -385,14 +389,16 @@ class twofactor_gauthenticator extends rcube_plugin
 		return $prefs['secret'];
 	}	
 
-	// returns string (url to img)
-	private function __getQRCodeGoogle()
-	{
-		$rcmail = rcmail::get_instance(); 
+	// Commented. If you have problems with qr-code.js, you can uncomment and use this
+	//
+// 	// returns string (url to img)
+// 	private function __getQRCodeGoogle()
+// 	{
+// 		$rcmail = rcmail::get_instance();
 		
-		$ga = new PHPGangsta_GoogleAuthenticator();
-		return $ga->getQRCodeGoogleUrl($rcmail->user->data['username'], self::__getSecret(), 'RoundCube2FA');
-	}
+// 		$ga = new PHPGangsta_GoogleAuthenticator();
+// 		return $ga->getQRCodeGoogleUrl($rcmail->user->data['username'], self::__getSecret(), 'RoundCube2FA');
+// 	}
 	
 	// returns boolean
 	private function __checkCode($code, $secret=null)
