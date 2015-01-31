@@ -60,6 +60,7 @@ if (window.rcmail) {
 			});
 			
 			$('#2FA_change_qr_code').click(click2FA_change_qr_code);
+			$('#2FA_qr_code').prop('title', '');    // enjoy the silence (qrcode.js use text to set title)
 		}
 	  
 	  $('#2FA_setup_fields').click(function(){

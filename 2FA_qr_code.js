@@ -11,5 +11,7 @@ if (window.rcmail) {
 		    colorLight : "#ffffff",
 		    correctLevel : QRCode.CorrectLevel.M	// like charts.googleapis.com
 		});
+
+	$('#2FA_qr_code').prop('title', '');	// enjoy the silence (qrcode.js use text to set title)
   });
 }
