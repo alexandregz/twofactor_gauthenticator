@@ -12,6 +12,6 @@ if (window.rcmail) {
 		    correctLevel : QRCode.CorrectLevel.M	// like charts.googleapis.com
 		});
 
-	$('#2FA_qr_code').prop('title', '');	// enjoy the silence (qrcode.js use text to set title)
+	$('#2FA_qr_code').prop('title', '');	// enjoy the silence (qrcode.js uses text to set title)
   });
 }
