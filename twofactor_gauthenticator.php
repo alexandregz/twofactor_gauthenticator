@@ -2,14 +2,11 @@
 /**
  * Two-factor Google Authenticator for RoundCube
  * 
- * Uses https://github.com/PHPGangsta/GoogleAuthenticator/ library
- * form js from dynalogin plugin (https://github.com/amaramrahul/dynalogin/)
- * 
- * Also thx	 to Victor R. Rodriguez Dominguez for some ideas and support (https://github.com/vrdominguez) 
+ * @version 1.2
  *
- * @version 1.1
- *
- * Author(s): Alexandre Espinosa <aemenor@gmail.com>, Ricardo Signes <rjbs@cpan.org>
+ * Author(s): Alexandre Espinosa <aemenor@gmail.com>
+ * Some ideas and code: Ricardo Signes <rjbs@cpan.org>, Ricardo Iván Vieitez Parra (https://github.com/corrideat), Justin Buchanan (https://github.com/jusbuc2k)
+ * 	, https://github.com/pokrface, Peter Tobias, Víctor R. Rodríguez Domínguez (https://github.com/vrdominguez), etc.
  * Date: 2013-11-30
  */
 require_once 'PHPGangsta/GoogleAuthenticator.php';
