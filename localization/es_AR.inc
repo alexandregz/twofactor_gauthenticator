@@ -34,6 +34,8 @@ $labels['code_ko'] = 'Código incorrecto';
 
 $labels['dont_ask_me_30days'] = 'No solicitar códigos en esta computadora durante 30 días';
 
+$labels['check_code_to_activate'] = 'Para poder guardar, antes debe de chequearse algún código';
+
 // Messages used for the different portions of the plugin
 $messages = array();
 $messages['successfully_saved'] = 'Configuración guardada exitosamente';

@@ -61,6 +61,9 @@ if (window.rcmail) {
 			
 			$('#2FA_change_qr_code').click(click2FA_change_qr_code);
 			$('#2FA_qr_code').prop('title', '');    // enjoy the silence (qrcode.js uses text to set title)
+
+			// disable save button. It needs check code to enabled again
+			$('#2FA_setup_fields').prev().attr('disabled','disabled').attr('title', rcmail.gettext('check_code_to_activate', 'twofactor_gauthenticator'));
 		}
 	  
 	  $('#2FA_setup_fields').click(function(){
@@ -123,6 +126,9 @@ if (window.rcmail) {
 		url = "./?_action=plugin.twofactor_gauthenticator-checkcode&code=" +$('#2FA_code_to_check').val() + '&secret='+$('#2FA_secret').val();
 		$.post(url, function(data){
 				alert(data);
+				if(data == rcmail.gettext('code_ok', 'twofactor_gauthenticator'))
+					$('#2FA_setup_fields').prev().removeAttr('disabled');
+					
 			});
 	});
 	  
