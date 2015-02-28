@@ -91,3 +91,8 @@ Remember, sync time it's essential for TOTP: "For this to work, the clocks of th
 Author
 ------
 Alexandre Espinosa Menor <aemenor@gmail.com>
+
+Issues
+------
+Open issues using github, don't send me emails about that, please -usually Gmail marks messages like SPAM
+
