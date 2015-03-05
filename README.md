@@ -96,3 +96,6 @@ Issues
 ------
 Open issues using github, don't send me emails about that, please -usually Gmail marks messages like SPAM
 
+Testing
+-------
+You can use https://github.com/alexandregz/vagrant-twofactor_gauthenticator
