@@ -42,25 +42,25 @@ class twofactor_gauthenticator extends rcube_plugin
     // Use the form login, but removing inputs with jquery and action (see twofactor_gauthenticator_form.js)
     function login_after($args)
     {
-		$_SESSION['twofactor_gauthenticator_login'] = time;
-		
-		$rcmail = rcmail::get_instance();
-		
-		$config_2FA = self::__get2FAconfig();
-		if(!$config_2FA['activate'])
+	$_SESSION['twofactor_gauthenticator_login'] = time;
+	
+	$rcmail = rcmail::get_instance();
+	
+	$config_2FA = self::__get2FAconfig();
+	if(!$config_2FA['activate'])
+	{
+		if($rcmail->config->get('force_enrollment_users'))
 		{
-			if($rcmail->config->get('force_enrollment_users'))
-			{
-				$this->__goingRoundcubeTask('settings', 'plugin.twofactor_gauthenticator');				
-			}
-			return;
+			$this->__goingRoundcubeTask('settings', 'plugin.twofactor_gauthenticator');				
 		}
+		return;
+	}
 
-		if ($this->__checkRemember()){
-			$_SESSION['twofactor_gauthenticator_2FA_login'] = time;
-			return;
-		}    	
-
+        if ($this->__cookie($set = false)) {
+            $_SESSION['twofactor_gauthenticator_login'] -= 1; // so that we may use ge to check for valid session
+            $this->__goingRoundcubeTask('mail');
+            return;
+        }
 
     	$rcmail->output->set_pagetitle($this->gettext('twofactor_gauthenticator'));
 
@@ -90,9 +90,9 @@ class twofactor_gauthenticator extends rcube_plugin
 						self::__consumeRecoveryCode($code);
 					}
 
-					if ($remember == "yes"){
-						$this->__remember();
-					}
+                                        if (get_input_value('_remember_2FA', RCUBE_INPUT_POST) === 'Y') {
+                                            $this->__cookie($set = true);
+                                        }
 
 					$this->__goingRoundcubeTask('mail');
 				}
@@ -405,52 +405,51 @@ class twofactor_gauthenticator extends rcube_plugin
 	} 
 
 
-	// remember option by https://github.com/jusbuc2k
-	private function __remember()
-	{
-		$rcmail = rcmail::get_instance();
-		
-		// user id
-		$user_id = $rcmail->user->ID;
-		// user name
-		$user_name = $rcmail->user->data['username'];
-		
-		$plain_token = $user_id . "|" . $user_name;
-		
-		$crypt_token = $rcmail->encrypt($plain_token);
-		
-		$rcmail->setcookie("2FA_remember", $crypt_token, time() + (60 * 60 * 24 * 30));
-	}
-	
-	private function __checkRemember()
-	{
-		$rcmail = rcmail::get_instance();
-		$user_id = $rcmail->user->ID;
-		$user_name = $rcmail->user->data['username'];		
-		$crypt_token = $_COOKIE["2FA_remember"];
-				
-		if (empty($crypt_token)){
-			return false;
-		}		
-		
-		$plain_token = $rcmail->decrypt($crypt_token);
-		
-		if (empty($plain_token)){
-			return false;
-		}
-		
-		$token_parts = explode('|', $plain_token);
-		
-		if (empty($token_parts) || !is_array($token_parts) || count($token_parts) !== 2){
-			return;
-		}
-				
-		if ($token_parts[0] == $user_id && $token_parts[1] == $user_name) {
-			return true;
-		}
-		
-		return false;
-	}
+	// remember option by https://github.com/corrideat/ 
+        private function __cookie($set = TRUE) {
+                $rcmail = rcmail::get_instance();
+                $user_agent = hash_hmac('md5', filter_input(INPUT_SERVER, 'USER_AGENT') ?: "\0\0\0\0\0", $rcmail->config->get('des_key'));
+                $key = hash_hmac('sha256', implode("\2\1\2", array($rcmail->user->data['username'], $this->__getSecret())), $rcmail->config->get('des_key'), TRUE);
+                $iv = hash_hmac('md5', implode("\3\2\3", array($rcmail->user->data['username'], $this->__getSecret())), $rcmail->config->get('des_key'), TRUE);
+                $name = hash_hmac('md5', $rcmail->user->data['username'], $rcmail->config->get('des_key'));
+
+                if ($set) {
+                    $expires = time() + 1296000; // 15 days from now
+                    $rand = mt_rand();
+                    $signature = hash_hmac('sha512', implode("\1\0\1", array($rcmail->user->data['username'], $this->__getSecret(), $user_agent, $rand, $expires)), $rcmail->config->get('des_key'), TRUE);
+                    $plain_content = sprintf("%d:%d:%s", $expires, $rand, $signature);
+                    $encrypted_content = openssl_encrypt($plain_content, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+                    if ($encrypted_content !== false) {
+                        $b64_encrypted_content = strtr(base64_encode($encrypted_content), '+/=', '-_,');
+                        setcookie($name, $b64_encrypted_content, $expires);
+                        return TRUE;
+                    }
+                    return false;
+                } else {
+                    $b64_encrypted_content = filter_input(INPUT_COOKIE, $name, FILTER_VALIDATE_REGEXP, array('options' => array('regexp' => '/[a-zA-Z0-9_-]+,{0,3}/')));
+                    if (is_string($b64_encrypted_content) && !empty($b64_encrypted_content) && strlen($b64_encrypted_content)%4 === 0) {
+                        $encrypted_content = base64_decode(strtr($b64_encrypted_content, '-_,', '+/='), TRUE);
+                        if ($encrypted_content !== false) {
+                            $plain_content = openssl_decrypt($encrypted_content, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+                            if ($plain_content !== false) {
+                                $now = time();
+                                list($expires, $rand, $signature) = explode(':', $plain_content, 3);
+                                if ($expires > $now && ($expires - $now) <= 1296000) {
+                                    $signature_verification = hash_hmac('sha512', implode("\1\0\1", array($rcmail->user->data['username'], $this->__getSecret(), $user_agent, $rand, $expires)), $rcmail->config->get('des_key'), TRUE);
+                                    // constant time
+                                    $cmp = strlen($signature) ^ strlen($signature_verification);
+                                    $signature = $signature ^ $signature_verification;
+                                    for($i = 0; $i < strlen($signature); $i++) {
+                                        $cmp += ord($signature {$i});
+                                    }
+                                    return ($cmp===0);
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                }
+        }
 	// END remember
 
 }
