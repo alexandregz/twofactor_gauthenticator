@@ -90,7 +90,7 @@ class twofactor_gauthenticator extends rcube_plugin
 						self::__consumeRecoveryCode($code);
 					}
 
-                                        if (get_input_value('_remember_2FA', RCUBE_INPUT_POST) === 'Y') {
+                                        if (get_input_value('_remember_2FA', RCUBE_INPUT_POST) === 'yes') {
                                             $this->__cookie($set = true);
                                         }
 
