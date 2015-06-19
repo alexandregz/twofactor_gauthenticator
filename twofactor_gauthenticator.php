@@ -414,7 +414,7 @@ class twofactor_gauthenticator extends rcube_plugin
                 $name = hash_hmac('md5', $rcmail->user->data['username'], $rcmail->config->get('des_key'));
 
                 if ($set) {
-                    $expires = time() + 1296000; // 15 days from now
+                    $expires = time() + 2592000; // 30 days from now
                     $rand = mt_rand();
                     $signature = hash_hmac('sha512', implode("\1\0\1", array($rcmail->user->data['username'], $this->__getSecret(), $user_agent, $rand, $expires)), $rcmail->config->get('des_key'), TRUE);
                     $plain_content = sprintf("%d:%d:%s", $expires, $rand, $signature);
