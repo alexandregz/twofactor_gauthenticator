@@ -11,9 +11,9 @@ Some code by:
 [Ricardo Iván Vieitez Parra](https://github.com/corrideat)
 
 
-Some code inspired by Michael Kliewe's [GoogleAuthenticator class](https://github.com/PHPGangsta/GoogleAuthenticator/)
+[GoogleAuthenticator class](https://github.com/PHPGangsta/GoogleAuthenticator/) by Michael Kliewe (to *see* secrets)
 
-form js inspired by [dynalogin plugin](https://github.com/amaramrahul/dynalogin/)
+[qrcode.js](https://github.com/davidshimjs/qrcodejs) by ShimSangmin
 
 Also thx to [Victor R. Rodriguez Dominguez](https://github.com/vrdominguez) for some ideas and support  
 
@@ -91,3 +91,11 @@ Remember, sync time it's essential for TOTP: "For this to work, the clocks of th
 Author
 ------
 Alexandre Espinosa Menor <aemenor@gmail.com>
+
+Issues
+------
+Open issues using github, don't send me emails about that, please -usually Gmail marks messages like SPAM
+
+Testing
+-------
+You can use https://github.com/alexandregz/vagrant-twofactor_gauthenticator

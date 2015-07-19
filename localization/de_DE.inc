@@ -32,7 +32,9 @@ $labels['check_code'] = '&Uuml;berpr&uuml;fe Code';
 $labels['code_ok'] = 'Code OK';
 $labels['code_ko'] = 'Falscher Code';
 
-$labels['dont_ask_me_30days'] = 'Non solicitar códigos nesta computadora durante 30 días';
+$labels['dont_ask_me_30days'] = 'Don\'t ask me codes again on this computer for 30 days';
+
+$labels['check_code_to_activate'] = 'To save, you need to check any code before';
 
 // Messages used for the different portions of the plugin
 $messages = array();

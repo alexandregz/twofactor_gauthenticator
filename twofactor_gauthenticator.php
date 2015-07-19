@@ -2,14 +2,11 @@
 /**
  * Two-factor Google Authenticator for RoundCube
  * 
- * Uses https://github.com/PHPGangsta/GoogleAuthenticator/ library
- * form js from dynalogin plugin (https://github.com/amaramrahul/dynalogin/)
- * 
- * Also thx	 to Victor R. Rodriguez Dominguez for some ideas and support (https://github.com/vrdominguez) 
+ * @version 1.2
  *
- * @version 1.1
- *
- * Author(s): Alexandre Espinosa <aemenor@gmail.com>, Ricardo Signes <rjbs@cpan.org>
+ * Author(s): Alexandre Espinosa <aemenor@gmail.com>
+ * Some ideas and code: Ricardo Signes <rjbs@cpan.org>, Ricardo Iván Vieitez Parra (https://github.com/corrideat), Justin Buchanan (https://github.com/jusbuc2k)
+ * 	, https://github.com/pokrface, Peter Tobias, Víctor R. Rodríguez Domínguez (https://github.com/vrdominguez), etc.
  * Date: 2013-11-30
  */
 require_once 'PHPGangsta/GoogleAuthenticator.php';
@@ -44,6 +41,7 @@ class twofactor_gauthenticator extends rcube_plugin
 		$this->register_action('twofactor_gauthenticator', array($this, 'twofactor_gauthenticator_init'));
 		$this->register_action('plugin.twofactor_gauthenticator-save', array($this, 'twofactor_gauthenticator_save'));
 		$this->include_script('twofactor_gauthenticator.js');
+		$this->include_script('qrcode.min.js');
     }
     
     
@@ -75,25 +73,25 @@ class twofactor_gauthenticator extends rcube_plugin
     // Use the form login, but removing inputs with jquery and action (see twofactor_gauthenticator_form.js)
     function login_after($args)
     {
-		$_SESSION['twofactor_gauthenticator_login'] = time;
-		
-		$rcmail = rcmail::get_instance();
-		
-		$config_2FA = self::__get2FAconfig();
-		if(!$config_2FA['activate'])
+	$_SESSION['twofactor_gauthenticator_login'] = time;
+	
+	$rcmail = rcmail::get_instance();
+	
+	$config_2FA = self::__get2FAconfig();
+	if(!$config_2FA['activate'])
+	{
+		if($rcmail->config->get('force_enrollment_users'))
 		{
-			if($rcmail->config->get('force_enrollment_users'))
-			{
-				$this->__goingRoundcubeTask('settings', 'plugin.twofactor_gauthenticator');				
-			}
-			return;
+			$this->__goingRoundcubeTask('settings', 'plugin.twofactor_gauthenticator');				
 		}
+		return;
+	}
 
-		if ($this->__checkRemember()){
-			$_SESSION['twofactor_gauthenticator_2FA_login'] = time;
-			return;
-		}    	
-
+        if ($this->__cookie($set = false)) {
+            $_SESSION['twofactor_gauthenticator_login'] -= 1; // so that we may use ge to check for valid session
+            $this->__goingRoundcubeTask('mail');
+            return;
+        }
 
     	$rcmail->output->set_pagetitle($this->gettext('twofactor_gauthenticator'));
 
@@ -130,9 +128,9 @@ class twofactor_gauthenticator extends rcube_plugin
 						self::__consumeRecoveryCode($code);
 					}
 
-					if ($remember == "yes"){
-						$this->__remember();
-					}
+                                        if (get_input_value('_remember_2FA', RCUBE_INPUT_POST) === 'yes') {
+                                            $this->__cookie($set = true);
+                                        }
 
 					$_SESSION['logged_2FA'] = 'ok';
     				$this->__goingRoundcubeTask('mail');
@@ -284,7 +282,10 @@ class twofactor_gauthenticator extends rcube_plugin
         if($data['secret']) {
 			$table->add('title', $this->gettext('qr_code'));
         	$table->add(null, '<input type="button" class="button mainaction" id="2FA_change_qr_code" value="'.$this->gettext('show_qr_code').'"> 
-        						<div id="2FA_qr_code" style="display: none;"><img src="'.self::__getQRCodeGoogle().'" /></div>');
+        						<div id="2FA_qr_code" style="display: none; margin-top: 10px;"></div>');
+
+        	// new JS qr-code, without call to Google
+        	$this->include_script('2FA_qr_code.js');
         }
         
         // infor
@@ -426,14 +427,16 @@ class twofactor_gauthenticator extends rcube_plugin
 		return $prefs['secret'];
 	}	
 
-	// returns string (url to img)
-	private function __getQRCodeGoogle()
-	{
-		$rcmail = rcmail::get_instance(); 
+	// Commented. If you have problems with qr-code.js, you can uncomment and use this
+	//
+// 	// returns string (url to img)
+// 	private function __getQRCodeGoogle()
+// 	{
+// 		$rcmail = rcmail::get_instance();
 		
-		$ga = new PHPGangsta_GoogleAuthenticator();
-		return $ga->getQRCodeGoogleUrl($rcmail->user->data['username'], self::__getSecret(), 'RoundCube2FA');
-	}
+// 		$ga = new PHPGangsta_GoogleAuthenticator();
+// 		return $ga->getQRCodeGoogleUrl($rcmail->user->data['username'], self::__getSecret(), 'RoundCube2FA');
+// 	}
 	
 	// returns boolean
 	private function __checkCode($code, $secret=null)
@@ -443,52 +446,51 @@ class twofactor_gauthenticator extends rcube_plugin
 	} 
 
 
-	// remember option by https://github.com/jusbuc2k
-	private function __remember()
-	{
-		$rcmail = rcmail::get_instance();
-		
-		// user id
-		$user_id = $rcmail->user->ID;
-		// user name
-		$user_name = $rcmail->user->data['username'];
-		
-		$plain_token = $user_id . "|" . $user_name;
-		
-		$crypt_token = $rcmail->encrypt($plain_token);
-		
-		$rcmail->setcookie("2FA_remember", $crypt_token, time() + (60 * 60 * 24 * 30));
-	}
-	
-	private function __checkRemember()
-	{
-		$rcmail = rcmail::get_instance();
-		$user_id = $rcmail->user->ID;
-		$user_name = $rcmail->user->data['username'];		
-		$crypt_token = $_COOKIE["2FA_remember"];
-				
-		if (empty($crypt_token)){
-			return false;
-		}		
-		
-		$plain_token = $rcmail->decrypt($crypt_token);
-		
-		if (empty($plain_token)){
-			return false;
-		}
-		
-		$token_parts = explode('|', $plain_token);
-		
-		if (empty($token_parts) || !is_array($token_parts) || count($token_parts) !== 2){
-			return;
-		}
-				
-		if ($token_parts[0] == $user_id && $token_parts[1] == $user_name) {
-			return true;
-		}
-		
-		return false;
-	}
+	// remember option by https://github.com/corrideat/ 
+        private function __cookie($set = TRUE) {
+                $rcmail = rcmail::get_instance();
+                $user_agent = hash_hmac('md5', filter_input(INPUT_SERVER, 'USER_AGENT') ?: "\0\0\0\0\0", $rcmail->config->get('des_key'));
+                $key = hash_hmac('sha256', implode("\2\1\2", array($rcmail->user->data['username'], $this->__getSecret())), $rcmail->config->get('des_key'), TRUE);
+                $iv = hash_hmac('md5', implode("\3\2\3", array($rcmail->user->data['username'], $this->__getSecret())), $rcmail->config->get('des_key'), TRUE);
+                $name = hash_hmac('md5', $rcmail->user->data['username'], $rcmail->config->get('des_key'));
+
+                if ($set) {
+                    $expires = time() + 2592000; // 30 days from now
+                    $rand = mt_rand();
+                    $signature = hash_hmac('sha512', implode("\1\0\1", array($rcmail->user->data['username'], $this->__getSecret(), $user_agent, $rand, $expires)), $rcmail->config->get('des_key'), TRUE);
+                    $plain_content = sprintf("%d:%d:%s", $expires, $rand, $signature);
+                    $encrypted_content = openssl_encrypt($plain_content, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+                    if ($encrypted_content !== false) {
+                        $b64_encrypted_content = strtr(base64_encode($encrypted_content), '+/=', '-_,');
+                        setcookie($name, $b64_encrypted_content, $expires);
+                        return TRUE;
+                    }
+                    return false;
+                } else {
+                    $b64_encrypted_content = filter_input(INPUT_COOKIE, $name, FILTER_VALIDATE_REGEXP, array('options' => array('regexp' => '/[a-zA-Z0-9_-]+,{0,3}/')));
+                    if (is_string($b64_encrypted_content) && !empty($b64_encrypted_content) && strlen($b64_encrypted_content)%4 === 0) {
+                        $encrypted_content = base64_decode(strtr($b64_encrypted_content, '-_,', '+/='), TRUE);
+                        if ($encrypted_content !== false) {
+                            $plain_content = openssl_decrypt($encrypted_content, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+                            if ($plain_content !== false) {
+                                $now = time();
+                                list($expires, $rand, $signature) = explode(':', $plain_content, 3);
+                                if ($expires > $now && ($expires - $now) <= 2592000) {
+                                    $signature_verification = hash_hmac('sha512', implode("\1\0\1", array($rcmail->user->data['username'], $this->__getSecret(), $user_agent, $rand, $expires)), $rcmail->config->get('des_key'), TRUE);
+                                    // constant time
+                                    $cmp = strlen($signature) ^ strlen($signature_verification);
+                                    $signature = $signature ^ $signature_verification;
+                                    for($i = 0; $i < strlen($signature); $i++) {
+                                        $cmp += ord($signature {$i});
+                                    }
+                                    return ($cmp===0);
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                }
+        }
 	// END remember
 
 }
