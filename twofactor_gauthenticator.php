@@ -19,14 +19,20 @@ class twofactor_gauthenticator extends rcube_plugin
     {
 		$rcmail = rcmail::get_instance();
 		
-		// hooks
-    	$this->add_hook('login_after', array($this, 'login_after'));
-    	$this->add_hook('send_page', array($this, 'check_2FAlogin'));
-    	$this->add_hook('render_page', array($this, 'popup_msg_enrollment'));
-    	    	 
-    	$this->load_config();
-    	 
+		$this->load_config();
 		$this->add_texts('localization/', true);
+		
+		// hooks
+		//   if not force config option to remove, plugin uses intermediate window to get 2step codes (standard use)
+		if($rcmail->config->get('2step_codes_on_login_form')) {
+			$this->add_hook('authenticate', array($this, 'beforeCheckLogin'));
+		}
+		else {
+			$this->add_hook('login_after', array($this, 'login_after'));
+		}
+		$this->add_hook('send_page', array($this, 'check_2FAlogin'));
+		$this->add_hook('render_page', array($this, 'popup_msg_enrollment'));
+		
 		
 		// check code with ajax
 		$this->register_action('plugin.twofactor_gauthenticator-checkcode', array($this, 'checkCode'));
@@ -37,6 +43,31 @@ class twofactor_gauthenticator extends rcube_plugin
 		$this->include_script('twofactor_gauthenticator.js');
 		$this->include_script('qrcode.min.js');
     }
+    
+    
+    // to remove intermediate window to get 2step codes (a la Google)
+    // - put last 6 chars into session 'code' var
+    // - if is present string "||", first part can be password and last part one recovery code (for example, "mypassword||ABCDEFGH" into password input)
+    function beforeCheckLogin($p)
+    {
+    	// don't need to control, error with password value
+    	if(strlen($p['pass']) <= 6) {
+    		$p['abort'] = true;
+    	}
+    	else {
+    		if(strpos($p['pass'], '||')) {
+    			$_SESSION['recovery_code'] = substr($p['pass'], -10);
+    			$p['pass'] = substr($p['pass'], 0, strlen($p['pass'])-12);
+    		}
+    		else{
+    			$_SESSION['code'] = substr($p['pass'], -6);
+    			$p['pass'] = substr($p['pass'], 0, strlen($p['pass'])-6);
+    		}
+    	}
+    	
+    	return $p;
+    }  
+    // --------
     
     
     // Use the form login, but removing inputs with jquery and action (see twofactor_gauthenticator_form.js)
@@ -80,8 +111,15 @@ class twofactor_gauthenticator extends rcube_plugin
 		{
 			$code = get_input_value('_code_2FA', RCUBE_INPUT_POST);
 			$remember = get_input_value('_remember_2FA', RCUBE_INPUT_POST);
+				
+			
+			// samefield branch
+			if($rcmail->config->get('2step_codes_on_login_form')) {
+				$code = isset($_SESSION['code']) ? $_SESSION['code'] : $_SESSION['recovery_code'];
+				$remember = false;
+			}
 
-			if($code)
+			if($code && !$_SESSION['logged_2FA'])
 			{
 				if(self::__checkCode($code) || self::__isRecoveryCode($code))
 				{
@@ -94,7 +132,8 @@ class twofactor_gauthenticator extends rcube_plugin
                                             $this->__cookie($set = true);
                                         }
 
-					$this->__goingRoundcubeTask('mail');
+					$_SESSION['logged_2FA'] = 'ok';
+    				$this->__goingRoundcubeTask('mail');
 				}
 				else
 				{
@@ -106,7 +145,6 @@ class twofactor_gauthenticator extends rcube_plugin
 			{
 				$this->__exitSession();
 			}
-			
 		}
 		elseif($rcmail->config->get('force_enrollment_users') && ($rcmail->task !== 'settings' || $rcmail->action !== 'plugin.twofactor_gauthenticator'))	
 		{
@@ -325,11 +363,14 @@ class twofactor_gauthenticator extends rcube_plugin
     	header('Location: ?_task='.$task . ($action ? '&_action='.$action : '') );
     	exit;
     }
-
+    
     private function __exitSession() {
-        unset($_SESSION['twofactor_gauthenticator_login']);
         unset($_SESSION['twofactor_gauthenticator_2FA_login']);
     
+    	unset($_SESSION['code']);
+    	unset($_SESSION['recovery_code']);
+    	unset($_SESSION['logged_2FA']);
+        
         $rcmail = rcmail::get_instance();
         header('Location: ?_task=logout&_token='.$rcmail->get_request_token());
     	exit;

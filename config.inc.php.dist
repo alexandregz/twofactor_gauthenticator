@@ -1,3 +1,8 @@
 <?php
 // if true ALL users must have 2-steps active
 $rcmail_config['force_enrollment_users'] = false;
+
+// to use same field to password and code into login screen
+//   with "normal" codes: passswordCODE
+//   with recovery codes: password||RECOVERYCODE
+$rcmail_config['2step_codes_on_login_form'] = true;
