@@ -445,7 +445,7 @@ class twofactor_gauthenticator extends rcube_plugin
                             if ($plain_content !== false) {
                                 $now = time();
                                 list($expires, $rand, $signature) = explode(':', $plain_content, 3);
-                                if ($expires > $now && ($expires - $now) <= 1296000) {
+                                if ($expires > $now && ($expires - $now) <= 2592000) {
                                     $signature_verification = hash_hmac('sha512', implode("\1\0\1", array($rcmail->user->data['username'], $this->__getSecret(), $user_agent, $rand, $expires)), $rcmail->config->get('des_key'), TRUE);
                                     // constant time
                                     $cmp = strlen($signature) ^ strlen($signature_verification);
