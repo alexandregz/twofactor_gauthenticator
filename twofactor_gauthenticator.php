@@ -421,7 +421,7 @@ class twofactor_gauthenticator extends rcube_plugin
                     $encrypted_content = openssl_encrypt($plain_content, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
                     if ($encrypted_content !== false) {
                         $b64_encrypted_content = strtr(base64_encode($encrypted_content), '+/=', '-_,');
-                        setcookie($name, $b64_encrypted_content, $expires);
+                        rcube_utils::setcookie($name, $b64_encrypted_content, $expires);
                         return TRUE;
                     }
                     return false;
