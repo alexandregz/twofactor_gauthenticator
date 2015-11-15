@@ -99,3 +99,9 @@ Open issues using github, don't send me emails about that, please -usually Gmail
 Testing
 -------
 You can use https://github.com/alexandregz/vagrant-twofactor_gauthenticator
+
+Using with Kolab
+----------------
+Add a symlink into the public_html/assets directory
+
+Show explained https://github.com/alexandregz/twofactor_gauthenticator/issues/29#issuecomment-156838186 by @d7415
