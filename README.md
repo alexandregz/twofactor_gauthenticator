@@ -104,4 +104,4 @@ Using with Kolab
 ----------------
 Add a symlink into the public_html/assets directory
 
-Show explained https://github.com/alexandregz/twofactor_gauthenticator/issues/29#issuecomment-156838186 by @d7415
+Show explained https://github.com/alexandregz/twofactor_gauthenticator/issues/29#issuecomment-156838186 by https://github.com/d7415
