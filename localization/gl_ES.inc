@@ -8,13 +8,13 @@ $labels['code'] = 'Google Authenticator Code';
 
 $labels['two_step_verification_form'] = 'Verificación de dous pasos';
 
-$labels['secret'] = 'Secreto';
+$labels['secret'] = 'Segredo';
 $labels['qr_code'] = 'Código QR';
-$labels['msg_infor'] = 'Podes engadir un <i>secreto</i> generado na tua computadora con <a href="https://code.google.com/p/google-authenticator/" target="_blank">google-authenticator</a> e empregalo';
+$labels['msg_infor'] = 'Podes engadir un <i>segredo</i> generado na tua computadora con <a href="https://code.google.com/p/google-authenticator/" target="_blank">google-authenticator</a> e empregalo';
 
-$labels['show_secret'] = 'Ver secreto';
-$labels['hide_secret'] = 'Agochar secreto';
-$labels['create_secret'] = 'Crear secreto';
+$labels['show_secret'] = 'Ver segredo';
+$labels['hide_secret'] = 'Agochar segredo';
+$labels['create_secret'] = 'Crear segredo';
 
 $labels['show_qr_code'] = 'Ver código QR';
 $labels['hide_qr_code'] = 'Agochar código QR';
