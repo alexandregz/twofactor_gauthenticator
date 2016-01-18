@@ -3,7 +3,7 @@
 
 This RoundCube plugin adds the Google 2-step verification to the login proccess.
 
-You can use [google-authenticator](https://code.google.com/p/google-authenticator/) and insert the secret generated into the config, also recovery codes
+You can use [google-authenticator](https://code.google.com/p/google-authenticator/) and insert the secret generated into the config, also recovery codes. It works with all TOTP applications complains [RFC 6238](https://www.rfc-editor.org/info/rfc6238) 
 
 Some code by:
 [Ricardo Signes](https://github.com/rjbs)
