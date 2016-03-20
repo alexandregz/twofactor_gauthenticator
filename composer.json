@@ -1,6 +1,6 @@
 {
     "name": "alexandregz/twofactor_gauthenticator",
-    "description": "This RoundCube plugin adds the Google 2-step verification to the login proccess",
+    "description": "This RoundCube plugin adds the Google 2-step verification to the login proccess (OTP)",
     "keywords": ["authentication","security"],
     "homepage": "https://github.com/alexandregz/twofactor_gauthenticator",
     "type": "roundcube-plugin",
