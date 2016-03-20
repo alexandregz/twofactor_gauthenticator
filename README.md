@@ -1,9 +1,9 @@
-2Steps Google verification
+2Steps verification
 ==========================
 
-This RoundCube plugin adds the Google 2-step verification to the login proccess.
+This RoundCube plugin adds the 2-step verification(OTP) to the login proccess.
 
-You can use [google-authenticator](https://code.google.com/p/google-authenticator/) and insert the secret generated into the config, also recovery codes. It works with all TOTP applications complains [RFC 6238](https://www.rfc-editor.org/info/rfc6238) 
+It works with all TOTP applications [RFC 6238](https://www.rfc-editor.org/info/rfc6238)
 
 Some code by:
 [Ricardo Signes](https://github.com/rjbs)
@@ -35,11 +35,12 @@ Installation
 
 Configuration
 -------------
-Go to Settings task and activate (and save) into "2steps Google verification" menu.
+Go to the Settings task and in the "2steps Google verification" menu, click 'Setup all fields (needs Save)'.
 
-The plugin creates automatically the secret if you doesn't this.
+The plugin automatically creates the secret for you.
 	
 To add accounts to the app, you can use the QR-Code (easy-way) or type the secret.
+After checking thje first code click 'Save'.
 
 ![Settings by default](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/003-settings_default.png)
 
@@ -48,7 +49,7 @@ To add accounts to the app, you can use the QR-Code (easy-way) or type the secre
 ![QR-Code example](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/005-settings_qr_code.png)
 
 
-Also, you can add "Recovery codes" for use one time (they delete when are used). Recovery codes are OPTIONAL, so they can not appears
+Also, you can add "Recovery codes" for use one time (they delete when are used). Recovery codes are OPTIONAL, so they can be left blank.
 
 ![Recovery codes](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/006-recovery_codes.png) 
 
