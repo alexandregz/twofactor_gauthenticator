@@ -34,7 +34,7 @@ $labels['code_ko'] = 'Incorrect code';
 
 $labels['dont_ask_me_30days'] = 'Don\'t ask me codes again on this computer for 30 days';
 
-$labels['check_code_to_activate'] = 'To save, you need to check any code before';
+$labels['check_code_to_activate'] = 'To save, please scan the QR Code and enter a first verification code below.';
 
 // Messages used for the different portions of the plugin
 $messages = array();
