@@ -64,6 +64,7 @@ if (window.rcmail) {
 
 			// disable save button. It needs check code to enabled again
 			$('#2FA_setup_fields').prev().attr('disabled','disabled').attr('title', rcmail.gettext('check_code_to_activate', 'twofactor_gauthenticator'));
+                       alert(rcmail.gettext('check_code_to_activate', 'twofactor_gauthenticator'));
 		}
 	  
 	  $('#2FA_setup_fields').click(function(){
