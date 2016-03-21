@@ -1,7 +1,7 @@
 if (window.rcmail) {
   rcmail.addEventListener('init', function() {
 	  
-	  var url_qr_code_values = 'otpauth://totp/Roundcube:' +$('#prefs-title').html().split(/ - /)[1]+ '?secret=' +$('#2FA_secret').get(0).value +'&issuer=RoundCube2FA';
+	  var url_qr_code_values = 'otpauth://totp/Roundcube: ' +$('#prefs-title').html().split(/ - /)[1]+ '?secret=' +$('#2FA_secret').get(0).value +'&issuer=RoundCube2FA '+window.location.hostname;
 	  
 	  var qrcode = new QRCode(document.getElementById("2FA_qr_code"), {
 		    text: url_qr_code_values,
