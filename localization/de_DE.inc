@@ -10,7 +10,7 @@ $labels['two_step_verification_form'] = '2-Faktor Best&auml;tigungscode';
 
 $labels['secret'] = 'Secret';
 $labels['qr_code'] = 'QR Code';
-$labels['msg_infor'] = 'Sie k&ouml;nnen mit dem <a href="https://code.google.com/p/google-authenticator/" target="_blank">Google-Authenticator</a> ein Secret erstellen und dieses benutzen.';
+$labels['msg_infor'] = 'Sie k&ouml;nnen mit dem <a href="https://github.com/google/google-authenticator" target="_blank">Google-Authenticator</a> ein Secret erstellen und dieses benutzen.';
 
 $labels['show_secret'] = 'Zeige Secret';
 $labels['hide_secret'] = 'Verstecke Secret';

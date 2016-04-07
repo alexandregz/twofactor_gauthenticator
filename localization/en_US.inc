@@ -10,7 +10,7 @@ $labels['two_step_verification_form'] = '2-Step Verification';
 
 $labels['secret'] = 'Secret';
 $labels['qr_code'] = 'QR Code';
-$labels['msg_infor'] = 'You can add a <i>secret</i> generated with <a href="https://code.google.com/p/google-authenticator/" target="_blank">google-authenticator</a> and use that';
+$labels['msg_infor'] = 'You can add a <i>secret</i> generated with <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a> and use that';
 
 $labels['show_secret'] = 'Show secret';
 $labels['hide_secret'] = 'Hide secret';

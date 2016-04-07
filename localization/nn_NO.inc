@@ -11,7 +11,7 @@ $labels['remember_computer'] = 'Hugs denne datamaskinen';
 
 $labels['secret'] = 'Hemmelegheit';
 $labels['qr_code'] = 'QR-kode';
-$labels['msg_infor'] = 'You can add a <i>secret</i> generated with <a href="https://code.google.com/p/google-authenticator/" target="_blank">google-authenticator</a> and use that';
+$labels['msg_infor'] = 'You can add a <i>secret</i> generated with <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a> and use that';
 
 $labels['show_secret'] = 'Vis hemmelegheita';
 $labels['hide_secret'] = 'Skjul hemmelegheita';

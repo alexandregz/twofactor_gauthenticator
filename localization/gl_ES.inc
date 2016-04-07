@@ -10,7 +10,7 @@ $labels['two_step_verification_form'] = 'Verificación de dous pasos';
 
 $labels['secret'] = 'Segredo';
 $labels['qr_code'] = 'Código QR';
-$labels['msg_infor'] = 'Podes engadir un <i>segredo</i> generado na tua computadora con <a href="https://code.google.com/p/google-authenticator/" target="_blank">google-authenticator</a> e empregalo';
+$labels['msg_infor'] = 'Podes engadir un <i>segredo</i> xerado na tua computadora con <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a> e empregalo';
 
 $labels['show_secret'] = 'Ver segredo';
 $labels['hide_secret'] = 'Agochar segredo';

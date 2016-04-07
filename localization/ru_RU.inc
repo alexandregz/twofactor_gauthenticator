@@ -10,7 +10,7 @@ $labels['two_step_verification_form'] = 'Двухэтапная Аутентиф
 
 $labels['secret'] = 'Ключ';
 $labels['qr_code'] = 'QR-код';
-$labels['msg_infor'] = 'Вы можете добавить <i>ключ</i> сгенерированный <a href="https://code.google.com/p/google-authenticator/" target="_blank">google-authenticator</a> и использовать его';
+$labels['msg_infor'] = 'Вы можете добавить <i>ключ</i> сгенерированный <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a> и использовать его';
 
 $labels['show_secret'] = 'Показать ключ';
 $labels['hide_secret'] = 'Скрыть ключ';
