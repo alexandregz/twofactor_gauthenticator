@@ -3,7 +3,7 @@
 // Labels used for different portions of the plugin
 $labels = array();
 $labels['activate'] = 'Activate';
-$labels['twofactor_gauthenticator'] = '2steps Google verification';
+$labels['twofactor_gauthenticator'] = '2-Step Authentication';
 $labels['code'] = 'Google Authenticator Code';
 
 $labels['two_step_verification_form'] = '2-Step Verification';
