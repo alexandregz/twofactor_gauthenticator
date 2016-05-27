@@ -10,7 +10,7 @@ $labels['two_step_verification_form'] = '2-Step Verification';
 
 $labels['secret'] = 'Secret';
 $labels['qr_code'] = 'QR Code';
-$labels['msg_infor'] = 'You can add a <i>secret</i> generated with <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a> and use that';
+$labels['msg_infor'] = 'You can scan this QR code using a TOTP compatible app.';
 
 $labels['show_secret'] = 'Show secret';
 $labels['hide_secret'] = 'Hide secret';
@@ -25,7 +25,7 @@ $labels['hide_recovery_codes'] = 'Hide recovery codes';
 
 $labels['setup_all_fields'] = 'Setup all fields (needs Save)';
 
-$labels['enrollment_dialog_title'] = '2steps Google verification';
+$labels['enrollment_dialog_title'] = '2steps OTP verification';
 $labels['enrollment_dialog_msg'] = '<strong>2-steps verification codes</strong> are required for safety, please config';
 
 $labels['check_code'] = 'Check code';
