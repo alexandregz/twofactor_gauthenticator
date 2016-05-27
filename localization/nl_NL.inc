@@ -2,12 +2,12 @@
 // Labels used for different portions of the plugin
 $labels = array();
 $labels['activate'] = 'Activeren';
-$labels['twofactor_gauthenticator'] = '2steps Google verification';
+$labels['twofactor_gauthenticator'] = '2-staps verificatie';
 $labels['code'] = 'Google Authenticator Code';
 $labels['two_step_verification_form'] = '2-staps verificatie';
 $labels['secret'] = 'Secret';
 $labels['qr_code'] = 'QR Code';
-$labels['msg_infor'] = 'Je kunt een <i>secret</i> genereren via <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a> en die hier gebruiken.';
+$labels['msg_infor'] = 'Scan deze QR code met een TOTP app, beschikbaar op de meeste platformen.';
 $labels['show_secret'] = 'Secret weergeven';
 $labels['hide_secret'] = 'Secret verbergen';
 $labels['create_secret'] = 'Secret aanmaken';
