@@ -106,3 +106,9 @@ Using with Kolab
 Add a symlink into the public_html/assets directory
 
 Show explained https://github.com/alexandregz/twofactor_gauthenticator/issues/29#issuecomment-156838186 by https://github.com/d7415
+
+Client implementations
+----------------------
+
+You can use various [TOTP clients](https://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm#Client_implementations) -link by https://github.com/helmo
+
