@@ -2,4 +2,3 @@
 
 - IP subnet whitelisting (https://github.com/alexandregz/twofactor_gauthenticator/issues/54)
 - permanent recovery code (simon@magrin.com)
-- logs; useful with Fail2Ban for example (simon@magrin.com)
