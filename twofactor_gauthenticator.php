@@ -14,6 +14,11 @@ require_once 'PHPGangsta/GoogleAuthenticator.php';
 class twofactor_gauthenticator extends rcube_plugin 
 {
 	private $_number_recovery_codes = 4;
+
+        // log errors
+        private $_enable_logs = false;
+        // relative from RC home dir, not plugin directory
+        private $_logs_file = '/logs/log_errors_2FA.txt';
 	
     function init() 
     {
@@ -98,6 +103,9 @@ class twofactor_gauthenticator extends rcube_plugin
 				}
 				else
 				{
+                                        if($this->_enable_logs) {
+                                                $this->__logError();
+                                        }
 					$this->__exitSession();
 				}
 			}
@@ -451,5 +459,11 @@ class twofactor_gauthenticator extends rcube_plugin
                 }
         }
 	// END remember
+
+
+        // log error into $_logs_file directory
+        private function __logError() {
+                file_put_contents(realpath(".").$this->_logs_file, date("Y-m-d H:i:s")."|".$_SERVER['HTTP_X_FORWARDED_FOR']."|".$_SERVER['REMOTE_ADDR']."\n", FILE_APPEND);
+        }
 
 }
