@@ -112,3 +112,12 @@ Client implementations
 
 You can use various [TOTP clients](https://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm#Client_implementations) -link by https://github.com/helmo
 
+
+Logs
+----
+
+Suggested by simon@magrin.com
+
+To log errors with bad codes, change the $_enable_logs variable to true.
+
+The logs are stored to the file HOME_RC/logs/log_errors_2FA.txt -directory must be created
