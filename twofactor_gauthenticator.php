@@ -11,6 +11,8 @@
  */
 require_once 'PHPGangsta/GoogleAuthenticator.php';
 
+require_once 'CIDR.php';
+
 class twofactor_gauthenticator extends rcube_plugin 
 {
 	private $_number_recovery_codes = 4;
@@ -80,9 +82,21 @@ class twofactor_gauthenticator extends rcube_plugin
 	{
 		$rcmail = rcmail::get_instance();
 		$config_2FA = self::__get2FAconfig();
+
 		
 		if($config_2FA['activate'])
 		{
+                        // with IP allowed, we don't need to check anything
+                        if($rcmail->config->get('whitelist')) {
+                                foreach($rcmail->config->get('whitelist') as $ip_to_check) {
+                                        if(CIDR::match($_SERVER['REMOTE_ADDR'], $ip_to_check)) {
+                                                if($rcmail->task === 'login') $this->__goingRoundcubeTask('mail');
+                                                return $p;
+                                        }
+                                }
+                        }
+
+
 			$code = get_input_value('_code_2FA', RCUBE_INPUT_POST);
 			$remember = get_input_value('_remember_2FA', RCUBE_INPUT_POST);
 

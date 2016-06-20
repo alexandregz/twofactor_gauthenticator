@@ -121,3 +121,10 @@ Suggested by simon@magrin.com
 To log errors with bad codes, change the $_enable_logs variable to true.
 
 The logs are stored to the file HOME_RC/logs/log_errors_2FA.txt -directory must be created
+
+
+
+Whitelist
+---------
+
+You can define whitelist IPs into config file (see config.inc.php.dist) to automatic login -the plugin don't ask you for code
