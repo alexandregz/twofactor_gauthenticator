@@ -227,7 +227,7 @@ class twofactor_gauthenticator extends rcube_plugin
         // Activate/deactivate
         $field_id = '2FA_activate';
         $checkbox_activate = new html_checkbox(array('name' => $field_id, 'id' => $field_id, 'type' => 'checkbox'));
-        $table->add('title', html::label($field_id, Q($this->gettext('activate'))));
+        $table->add('title', html::label($field_id, rcube::Q($this->gettext('activate'))));
 		$checked = $data['activate'] ? null: 1; // :-?
         $table->add(null, $checkbox_activate->show( $checked )); 
 
@@ -235,7 +235,7 @@ class twofactor_gauthenticator extends rcube_plugin
         // secret
         $field_id = '2FA_secret';
         $input_descsecret = new html_inputfield(array('name' => $field_id, 'id' => $field_id, 'size' => 60, 'type' => 'password', 'value' => $data['secret']));
-        $table->add('title', html::label($field_id, Q($this->gettext('secret'))));
+        $table->add('title', html::label($field_id, rcube::Q($this->gettext('secret'))));
         $html_secret = $input_descsecret->show();
         if($data['secret'])
         {
