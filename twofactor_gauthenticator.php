@@ -97,8 +97,8 @@ class twofactor_gauthenticator extends rcube_plugin
                         }
 
 
-			$code = get_input_value('_code_2FA', RCUBE_INPUT_POST);
-			$remember = get_input_value('_remember_2FA', RCUBE_INPUT_POST);
+			$code = rcube_utils::get_input_value('_code_2FA', RCUBE_INPUT_POST);
+			$remember = rcube_utils::get_input_value('_remember_2FA', RCUBE_INPUT_POST);
 
 			if($code)
 			{
@@ -109,7 +109,7 @@ class twofactor_gauthenticator extends rcube_plugin
 						self::__consumeRecoveryCode($code);
 					}
 
-                                        if (get_input_value('_remember_2FA', RCUBE_INPUT_POST) === 'yes') {
+                                        if (rcube_utils::get_input_value('_remember_2FA', RCUBE_INPUT_POST) === 'yes') {
                                             $this->__cookie($set = true);
                                         }
 
@@ -188,9 +188,9 @@ class twofactor_gauthenticator extends rcube_plugin
         $rcmail->output->set_pagetitle($this->gettext('twofactor_gauthenticator'));
         
         // POST variables
-        $activar = get_input_value('2FA_activate', RCUBE_INPUT_POST);
-        $secret = get_input_value('2FA_secret', RCUBE_INPUT_POST);
-        $recovery_codes = get_input_value('2FA_recovery_codes', RCUBE_INPUT_POST);
+        $activar = rcube_utils::get_input_value('2FA_activate', RCUBE_INPUT_POST);
+        $secret = rcube_utils::get_input_value('2FA_secret', RCUBE_INPUT_POST);
+        $recovery_codes = rcube_utils::get_input_value('2FA_recovery_codes', RCUBE_INPUT_POST);
         
         // remove recovery codes without value
         $recovery_codes = array_values(array_diff($recovery_codes, array('')));        
@@ -323,8 +323,8 @@ class twofactor_gauthenticator extends rcube_plugin
     
     // used with ajax
     function checkCode() {
-    	$code = get_input_value('code', RCUBE_INPUT_GET);
-    	$secret = get_input_value('secret', RCUBE_INPUT_GET);
+    	$code = rcube_utils::get_input_value('code', RCUBE_INPUT_GET);
+    	$secret = rcube_utils::get_input_value('secret', RCUBE_INPUT_GET);
     	
     	if(self::__checkCode($code, $secret))
     	{
