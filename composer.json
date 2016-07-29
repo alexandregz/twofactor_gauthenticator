@@ -4,7 +4,7 @@
     "keywords": ["authentication","security"],
     "homepage": "https://github.com/alexandregz/twofactor_gauthenticator",
     "type": "roundcube-plugin",
-    "license": "GPLv2",
+    "license": "MIT",
     "authors": [
       {
         "name": "Alexandre Espinosa Menor",
