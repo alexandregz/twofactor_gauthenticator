@@ -5,6 +5,7 @@
     "homepage": "https://github.com/alexandregz/twofactor_gauthenticator",
     "type": "roundcube-plugin",
     "license": "MIT",
+    "version": "2.0.0",
     "authors": [
       {
         "name": "Alexandre Espinosa Menor",

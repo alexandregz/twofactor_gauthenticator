@@ -2,7 +2,7 @@
 /**
  * Two-factor Google Authenticator for RoundCube
  * 
- * @version 1.2
+ * @version 2.0.0
  *
  * Author(s): Alexandre Espinosa <aemenor@gmail.com>
  * Some ideas and code: Ricardo Signes <rjbs@cpan.org>, Ricardo Iván Vieitez Parra (https://github.com/corrideat), Justin Buchanan (https://github.com/jusbuc2k)
