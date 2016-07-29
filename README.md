@@ -81,7 +81,7 @@ Codes have a 2*30 seconds clock tolerance, like by default with Google app (Mayb
 
 License
 -------
-GPLv2, see License
+MIT, see License
 
 Notes
 -----
