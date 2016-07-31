@@ -36,4 +36,4 @@ $labels['code_ko'] = 'Kode feil';
 // Messages used for the different portions of the plugin
 $messages = array();
 $messages['successfully_saved'] = 'Configuration are saved successfully.';
-?>
+

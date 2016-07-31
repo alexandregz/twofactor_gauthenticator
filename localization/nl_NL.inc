@@ -27,4 +27,4 @@ $labels['check_code_to_activate'] = 'Om op te slaan, scan alstublieft de QR Code
 // Messages used for the different portions of the plugin
 $messages = array();
 $messages['successfully_saved'] = 'Instellingen zijn succesvol opgeslagen.';
-?>
+

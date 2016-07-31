@@ -40,4 +40,3 @@ $labels['check_code_to_activate'] = 'Para poder gardar, antes debese ter comprob
 $messages = array();
 $messages['successfully_saved'] = 'Os datos para a conta foron gardados correctamente.';
 
-?>

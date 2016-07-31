@@ -39,4 +39,4 @@ $labels['check_code_to_activate'] = 'Para poder guardar, antes debe de chequears
 // Messages used for the different portions of the plugin
 $messages = array();
 $messages['successfully_saved'] = 'Configuración guardada exitosamente';
-?>
+

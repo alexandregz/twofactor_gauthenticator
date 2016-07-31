@@ -39,4 +39,4 @@ $labels['check_code_to_activate'] = 'Для сохранения, необход
 // Messages used for the different portions of the plugin
 $messages = array();
 $messages['successfully_saved'] = 'Настройки успешно сохранены.';
-?>
+

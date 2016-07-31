@@ -39,4 +39,3 @@ $labels['check_code_to_activate'] = 'For at gemme, scan QR koden og indtast veri
 // Messages used for the different portions of the plugin
 $messages = array();
 $messages['successfully_saved'] = 'Gemt succesefuldt.';
-?>

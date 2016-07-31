@@ -39,4 +39,3 @@ $labels['check_code_to_activate'] = 'To save, you need to check any code before'
 // Messages used for the different portions of the plugin
 $messages = array();
 $messages['successfully_saved'] = 'Konfiguration erfolgreich gespeichert.';
-?>

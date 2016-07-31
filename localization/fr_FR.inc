@@ -39,4 +39,4 @@ $labels['check_code_to_activate'] = 'Pour enregistrer, scannez le QR Code et ent
 // Messages used for the different portions of the plugin
 $messages = array();
 $messages['successfully_saved'] = 'Configuration sauvegardée.';
-?>
+

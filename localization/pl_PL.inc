@@ -39,4 +39,4 @@ $labels['check_code_to_activate'] = 'Aby zapisać, zeskanuj kod QR i zweryfikuj 
 // Messages used for the different portions of the plugin
 $messages = array();
 $messages['successfully_saved'] = 'Konfiguracja zapisana prawidłowo.';
-?>
+
