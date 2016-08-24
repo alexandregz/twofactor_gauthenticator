@@ -40,7 +40,7 @@ Go to the Settings task and in the "2steps Google verification" menu, click 'Set
 The plugin automatically creates the secret for you.
 	
 To add accounts to the app, you can use the QR-Code (easy-way) or type the secret.
-After checking thje first code click 'Save'.
+After checking the first code click 'Save'.
 
 ![Settings by default](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/003-settings_default.png)
 
