@@ -208,7 +208,7 @@ class twofactor_gauthenticator extends rcube_plugin
         
 	$rcmail->output->show_message($this->gettext('successfully_saved'), 'confirmation');
          
-        //rcmail_overwrite_action('plugin.twofactor_gauthenticator');
+        $rcmail->overwrite_action('plugin.twofactor_gauthenticator');
         $rcmail->output->send('plugin');
     }
   
