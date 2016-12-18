@@ -28,6 +28,11 @@ Installation
 ------------
 - Clone from github:
     HOME_RC/plugins$ git clone [https://github.com/alexandregz/twofactor_gauthenticator.git](https://github.com/alexandregz/twofactor_gauthenticator.git)
+    
+(Or use composer
+     HOME_RC$ composer require alexandregz/twofactor_gauthenticator:dev-master
+     
+ NOTE: Answer **N** when composer ask you about plugin activation)
 
 - Activate the plugin into HOME_RC/config/config.inc.php:
     $config['plugins'] = array('twofactor_gauthenticator');
