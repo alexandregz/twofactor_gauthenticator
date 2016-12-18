@@ -99,7 +99,8 @@ Open issues using github, don't send me emails about that, please -usually Gmail
 
 Testing
 -------
-You can use https://github.com/alexandregz/vagrant-twofactor_gauthenticator
+- Vagrant: https://github.com/alexandregz/vagrant-twofactor_gauthenticator
+- Docker: https://hub.docker.com/r/alexandregz/twofactor_gauthenticator/
 
 Using with Kolab
 ----------------
