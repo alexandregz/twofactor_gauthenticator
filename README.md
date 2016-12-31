@@ -116,7 +116,7 @@ Show explained https://github.com/alexandregz/twofactor_gauthenticator/issues/29
 Client implementations
 ----------------------
 
-You can use various [TOTP clients](https://en.wikipedia.org/wiki/HMAC-based_One-time_Password_Algorithm#Applications) -link by https://github.com/helmo
+You can use various [OTP clients](https://en.wikipedia.org/wiki/HMAC-based_One-time_Password_Algorithm#Applications) -link by https://github.com/helmo
 
 
 Logs
