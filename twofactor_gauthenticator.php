@@ -32,6 +32,9 @@ class twofactor_gauthenticator extends rcube_plugin
     	$this->add_hook('login_after', array($this, 'login_after'));
     	$this->add_hook('send_page', array($this, 'check_2FAlogin'));
     	$this->add_hook('render_page', array($this, 'popup_msg_enrollment'));
+
+        // to disable CSRF (from https://gist.github.com/huglester/0730e8b3835d039e1bb9)
+        $this->add_hook('authenticate', array($this, 'authenticate'));
     	    	 
     	$this->load_config();
     	 
@@ -46,7 +49,15 @@ class twofactor_gauthenticator extends rcube_plugin
 		$this->include_script('twofactor_gauthenticator.js');
 		$this->include_script('qrcode.min.js');
     }
-    
+
+    // to disable CSRF (from https://gist.github.com/huglester/0730e8b3835d039e1bb9)
+    function authenticate($args)
+    {
+      $args['valid'] = true;
+
+      return $args;
+    }
+
     
     // Use the form login, but removing inputs with jquery and action (see twofactor_gauthenticator_form.js)
     function login_after($args)
