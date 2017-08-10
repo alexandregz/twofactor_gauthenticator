@@ -45,6 +45,10 @@ class twofactor_gauthenticator extends rcube_plugin
 		$this->register_action('plugin.twofactor_gauthenticator-save', array($this, 'twofactor_gauthenticator_save'));
 		$this->include_script('twofactor_gauthenticator.js');
 		$this->include_script('qrcode.min.js');
+		
+		// settings we will export to the form javascript
+		$this->api->output->set_env('allow_save_device_30days',$rcmail->config->get('allow_save_device_30days',true));
+		$this->api->output->set_env('twofactor_formfield_as_password',$rcmail->config->get('twofactor_formfield_as_password',false));
     }
     
     

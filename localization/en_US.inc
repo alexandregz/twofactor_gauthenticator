@@ -22,7 +22,7 @@ $labels['recovery_codes'] = 'Recovery codes';
 $labels['show_recovery_codes'] = 'Show recovery codes';
 $labels['hide_recovery_codes'] = 'Hide recovery codes';
 
-$labels['setup_all_fields'] = 'All fields are required. (Make sure you click save to store your settings)';
+$labels['setup_all_fields'] = 'Fill all fields (make sure you click save to store your settings)';
 
 $labels['enrollment_dialog_title'] = '2-Factor authentication enrollment';
 $labels['enrollment_dialog_msg'] = '<strong>2-Factor authentication codes</strong> are required for increased security, please configure them now.';
