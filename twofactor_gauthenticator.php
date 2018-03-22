@@ -55,7 +55,7 @@ class twofactor_gauthenticator extends rcube_plugin
     // Use the form login, but removing inputs with jquery and action (see twofactor_gauthenticator_form.js)
     function login_after($args)
     {
-	$_SESSION['twofactor_gauthenticator_login'] = time;
+	$_SESSION['twofactor_gauthenticator_login'] = time();
 	
 	$rcmail = rcmail::get_instance();
 	
