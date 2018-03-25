@@ -208,7 +208,7 @@ class twofactor_gauthenticator extends rcube_plugin
         self::__set2FAconfig($data);
 
         // if we can't save time into SESSION, the plugin logouts
-        $_SESSION['twofactor_gauthenticator_2FA_login'] = time;        
+        $_SESSION['twofactor_gauthenticator_2FA_login'] = time();
         
 	$rcmail->output->show_message($this->gettext('successfully_saved'), 'confirmation');
          
@@ -350,7 +350,7 @@ class twofactor_gauthenticator extends rcube_plugin
 	// redirect to some RC task and remove 'login' user pref
     private function __goingRoundcubeTask($task='mail', $action=null) {
     		
-        $_SESSION['twofactor_gauthenticator_2FA_login'] = time;
+        $_SESSION['twofactor_gauthenticator_2FA_login'] = time();
     	header('Location: ?_task='.$task . ($action ? '&_action='.$action : '') );
     	exit;
     }
