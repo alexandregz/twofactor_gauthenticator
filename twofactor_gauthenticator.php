@@ -133,7 +133,7 @@ class twofactor_gauthenticator extends rcube_plugin
 				}
 			}
 			// we're into some task but marked with login...
-			elseif($rcmail->task !== 'login' && ! $_SESSION['twofactor_gauthenticator_2FA_login'] >= $_SESSION['twofactor_gauthenticator_2FA_login'])
+			elseif($rcmail->task !== 'login' && ! $_SESSION['twofactor_gauthenticator_2FA_login'] >= $_SESSION['twofactor_gauthenticator_login'])
 			{
 				$this->__exitSession();
 			}
