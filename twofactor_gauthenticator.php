@@ -197,7 +197,7 @@ class twofactor_gauthenticator extends rcube_plugin
         $rcmail->output->set_pagetitle($this->gettext('twofactor_gauthenticator'));
         
         // POST variables
-        $activar = rcube_utils::get_input_value('2FA_activate', rcube_utils::INPUT_POST);
+        $activate = rcube_utils::get_input_value('2FA_activate', rcube_utils::INPUT_POST);
         $secret = rcube_utils::get_input_value('2FA_secret', rcube_utils::INPUT_POST);
         $recovery_codes = rcube_utils::get_input_value('2FA_recovery_codes', rcube_utils::INPUT_POST);
         
@@ -206,7 +206,7 @@ class twofactor_gauthenticator extends rcube_plugin
         
         $data = self::__get2FAconfig();
        	$data['secret'] = $secret;
-       	$data['activate'] = $activar ? true : false;
+        $data['activate'] = $activate ? true : false;
        	$data['recovery_codes'] = $recovery_codes;
         self::__set2FAconfig($data);
 
