@@ -1,5 +1,4 @@
 <?php
-
 // Labels used for different portions of the plugin
 $labels = array();
 $labels['activate'] = 'Aktivieren';
@@ -10,7 +9,7 @@ $labels['two_step_verification_form'] = 'Zwei-Faktor-Best&auml;tigungscode';
 
 $labels['secret'] = 'Secret';
 $labels['qr_code'] = 'QR-Code';
-$labels['msg_infor'] = 'Sie k&ouml;nnen mit dem <a href="https://github.com/google/google-authenticator" target="_blank">Google-Authenticator</a> ein Secret erstellen und dieses verwenden.';
+$labels['msg_infor'] = 'Sie k&ouml;nnen mit jeder TOTP kompatiblen App wie z.B. <a href="https://github.com/google/google-authenticator" target="_blank">Google-Authenticator</a> ein Secret erstellen und dieses verwenden.';
 
 $labels['show_secret'] = 'Zeige Secret';
 $labels['hide_secret'] = 'Verstecke Secret';
@@ -23,7 +22,7 @@ $labels['recovery_codes'] = 'Wiederherstellungscodes';
 $labels['show_recovery_codes'] = 'Zeige Wiederherstellungscodes';
 $labels['hide_recovery_codes'] = 'Verstecke Wiederherstellungscodes';
 
-$labels['setup_all_fields'] = 'Alle fehlenden Werte erstellen und speichern';
+$labels['setup_all_fields'] = 'Erstelle fehlende Werte (Speichern klicken, um Ihre Einstellungen zu sichern)';
 
 $labels['enrollment_dialog_title'] = 'Zwei-Faktor-Authentifizierung';
 $labels['enrollment_dialog_msg'] = '<strong>Best&auml;tigungscodes f&uuml;r Zwei-Faktor-Authentifizierung</strong> werden aus Sicherheitsgr&uuml;nden ben&ouml;tigt, bitte konfigurieren!';
