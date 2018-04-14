@@ -34,7 +34,7 @@ class CIDR{
 			 list($subnet, $mask) = explode('/', $cidr);
 		} else {
 			$subnet = $cidr;
-			$mask = '';
+			$mask = 0;
 		}
 
 		// validate ips and shorten them

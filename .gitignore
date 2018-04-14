@@ -1,6 +1,7 @@
 .project
 .buildpath
 .settings*
+config.inc.php
 #### joe made this: https://goel.io/joe
 
 #####=== Vim ===#####
