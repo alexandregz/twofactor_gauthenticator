@@ -32,7 +32,7 @@ $labels['check_code'] = 'Vérifier le code';
 $labels['code_ok'] = 'Code OK';
 $labels['code_ko'] = 'Code incorrect';
 
-$labels['dont_ask_me_30days'] = 'Ne plus me demander de codes sur cet ordinateur pour 30 jours.';
+$labels['dont_ask_me_30days'] = 'Ne plus me demander de codes pour 30 jours.';
 
 $labels['check_code_to_activate'] = 'Pour enregistrer, scannez le QR Code et entrez un premier code de vérification ci-dessous.';
 
