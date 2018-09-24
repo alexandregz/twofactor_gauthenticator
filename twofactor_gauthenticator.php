@@ -47,8 +47,11 @@ class twofactor_gauthenticator extends rcube_plugin
 		$this->include_script('qrcode.min.js');
 		
 		// settings we will export to the form javascript
-		$this->api->output->set_env('allow_save_device_30days',$rcmail->config->get('allow_save_device_30days',true));
-		$this->api->output->set_env('twofactor_formfield_as_password',$rcmail->config->get('twofactor_formfield_as_password',false));
+    $this_output = $this->api->output;
+    if ($this_output) {
+      $this->api->output->set_env('allow_save_device_30days',$rcmail->config->get('allow_save_device_30days',true));
+      $this->api->output->set_env('twofactor_formfield_as_password',$rcmail->config->get('twofactor_formfield_as_password',false));
+    }
     }
     
     
@@ -130,7 +133,7 @@ class twofactor_gauthenticator extends rcube_plugin
 				}
 			}
 			// we're into some task but marked with login...
-			elseif($rcmail->task !== 'login' && ! $_SESSION['twofactor_gauthenticator_2FA_login'] >= $_SESSION['twofactor_gauthenticator_2FA_login'])
+			elseif($rcmail->task !== 'login' && ! $_SESSION['twofactor_gauthenticator_2FA_login'] >= $_SESSION['twofactor_gauthenticator_login'])
 			{
 				$this->__exitSession();
 			}
@@ -194,7 +197,7 @@ class twofactor_gauthenticator extends rcube_plugin
         $rcmail->output->set_pagetitle($this->gettext('twofactor_gauthenticator'));
         
         // POST variables
-        $activar = rcube_utils::get_input_value('2FA_activate', rcube_utils::INPUT_POST);
+        $activate = rcube_utils::get_input_value('2FA_activate', rcube_utils::INPUT_POST);
         $secret = rcube_utils::get_input_value('2FA_secret', rcube_utils::INPUT_POST);
         $recovery_codes = rcube_utils::get_input_value('2FA_recovery_codes', rcube_utils::INPUT_POST);
         
@@ -203,7 +206,7 @@ class twofactor_gauthenticator extends rcube_plugin
         
         $data = self::__get2FAconfig();
        	$data['secret'] = $secret;
-       	$data['activate'] = $activar ? true : false;
+        $data['activate'] = $activate ? true : false;
        	$data['recovery_codes'] = $recovery_codes;
         self::__set2FAconfig($data);
 
