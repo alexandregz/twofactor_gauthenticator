@@ -26,9 +26,9 @@ class twofactor_gauthenticator extends rcube_plugin
 	
     function init() 
     {
-		$rcmail = rcmail::get_instance();
+			$rcmail = rcmail::get_instance();
 		
-		// hooks
+			// hooks
     	$this->add_hook('login_after', array($this, 'login_after'));
     	$this->add_hook('send_page', array($this, 'check_2FAlogin'));
     	$this->add_hook('render_page', array($this, 'popup_msg_enrollment'));
@@ -213,7 +213,7 @@ class twofactor_gauthenticator extends rcube_plugin
         // if we can't save time into SESSION, the plugin logouts
         $_SESSION['twofactor_gauthenticator_2FA_login'] = time();
         
-	$rcmail->output->show_message($this->gettext('successfully_saved'), 'confirmation');
+				$rcmail->output->show_message($this->gettext('successfully_saved'), 'confirmation');
          
         $rcmail->overwrite_action('plugin.twofactor_gauthenticator');
         $rcmail->output->send('plugin');
@@ -237,15 +237,22 @@ class twofactor_gauthenticator extends rcube_plugin
         $field_id = '2FA_activate';
         $checkbox_activate = new html_checkbox(array('name' => $field_id, 'id' => $field_id, 'type' => 'checkbox'));
         $table->add('title', html::label($field_id, rcube::Q($this->gettext('activate'))));
-		$checked = $data['activate'] ? null: 1; // :-?
+				$checked = $data['activate'] ? null: 1; // :-?
         $table->add(null, $checkbox_activate->show( $checked )); 
 
         
         // secret
         $field_id = '2FA_secret';
-        $input_descsecret = new html_inputfield(array('name' => $field_id, 'id' => $field_id, 'size' => 60, 'type' => 'password', 'value' => $data['secret']));
+        $input_descsecret = new html_inputfield(array(
+					'name' => $field_id, 
+					'id' => $field_id, 
+					'size' => 60, 
+					'type' => 'password', 
+					'value' => $data['secret'], 
+					'class' => 'form-control'
+				));
         $table->add('title', html::label($field_id, rcube::Q($this->gettext('secret'))));
-        $html_secret = $input_descsecret->show();
+        $html_secret = '<div class="form-group">' . $input_descsecret->show() . '</div>';
         if($data['secret'])
         {
         	$html_secret .= '<input type="button" class="button mainaction" id="2FA_change_secret" value="'.$this->gettext('show_secret').'">';
@@ -265,24 +272,20 @@ class twofactor_gauthenticator extends rcube_plugin
        	for($i = 0; $i < $this->_number_recovery_codes; $i++)
        	{
        		$value = isset($data['recovery_codes'][$i]) ? $data['recovery_codes'][$i] : '';
-       		$html_recovery_codes .= ' <input type="password" name="2FA_recovery_codes[]" value="'.$value.'" maxlength="10"> &nbsp; ';
+       		$html_recovery_codes .= ' <input class="form-control" type="password" name="2FA_recovery_codes[]" value="'.$value.'" maxlength="10"> &nbsp; ';
        	}
-       	$html_recovery_codes .= '<input type="button" class="button mainaction" id="2FA_show_recovery_codes" value="'.$this->gettext('show_recovery_codes').'">';
+       	$html_recovery_codes .= '<div class="form-group"><input type="button" class="button mainaction" id="2FA_show_recovery_codes" value="'.$this->gettext('show_recovery_codes').'"></div>';
        	$table->add(null, $html_recovery_codes);
         
         
         // qr-code
         if($data['secret']) {
-			$table->add('title', $this->gettext('qr_code'));
+					$table->add('title', $this->gettext('qr_code'));
         	$table->add(null, '<input type="button" class="button mainaction" id="2FA_change_qr_code" value="'.$this->gettext('show_qr_code').'"> 
-        						<div id="2FA_qr_code" style="display: none; margin-top: 10px;"></div>');
-
+        						<div id="2FA_qr_code" style="display: none; margin-top: 10px;"></div><br><p>' .$this->gettext('msg_infor') . '</p>');
         	// new JS qr-code, without call to Google
         	$this->include_script('2FA_qr_code.js');
         }
-        
-        // infor
-        $table->add(null, '<td><br>'.$this->gettext('msg_infor').'</td>');
 
         // button to setup all fields if doesn't exists secret
         $html_setup_all_fields = '';
@@ -290,31 +293,25 @@ class twofactor_gauthenticator extends rcube_plugin
         	$html_setup_all_fields = '<input type="button" class="button mainaction" id="2FA_setup_fields" value="'.$this->gettext('setup_all_fields').'">';
         }
         
-        $html_check_code = '<br /><br /><input type="button" class="button mainaction" id="2FA_check_code" value="'.$this->gettext('check_code').'"> &nbsp;&nbsp; <input type="text" id="2FA_code_to_check" maxlength="10">';
+				$table->add('title', $this->gettext('check_code'));
+				$table->add(null, '<div class="form-group"><input type="text" id="2FA_code_to_check" class="form-control" maxlength="10"></div> <input type="button" class="button mainaction" id="2FA_check_code" value="'.$this->gettext('check_code').'">');
+				
+				
+				// Build the table with the divs around it
+				$prefs_title = '<input type="hidden" value="' . $this->gettext('twofactor_gauthenticator') . ' - ' . $rcmail->user->data['username'] . '" id="rc_username" />';
+				$save_button = html::p(['class' => 'text-center'], $rcmail->output->button([
+					'command' => 'plugin.twofactor_gauthenticator-save',
+					'type' => 'input',
+					'class' => 'button mainaction',
+					'label' => 'save'
+				]) . $html_setup_all_fields);
+			
+				$html_gen =  html::div(['class' => 'boxcontent'], $table->show() . $save_button);
+
+				$out = html::div(['class' => 'settingsbox', 'style' => 'margin: 0'], 
+					$html_gen . $prefs_title
+				);
         
-        
-        
-        // Build the table with the divs around it
-        $out = html::div(array('class' => 'settingsbox', 'style' => 'margin: 0;'),
-        html::div(array('id' => 'prefs-title', 'class' => 'boxtitle'), $this->gettext('twofactor_gauthenticator') . ' - ' . $rcmail->user->data['username']) .  
-        html::div(array('class' => 'boxcontent'), $table->show() . 
-            html::p(null, 
-	                $rcmail->output->button(array(
-		                'command' => 'plugin.twofactor_gauthenticator-save',
-		                'type' => 'input',
-		                'class' => 'button mainaction',
-		                'label' => 'save'
-		            ))
-                
-            		// button show/hide secret
-            		//.'<input type="button" class="button mainaction" id="2FA_change_secret" value="'.$this->gettext('show_secret').'">'
-            		
-            		// button to setup all fields
-            		.$html_setup_all_fields
-            		.$html_check_code
-                )
-        	)
-        );
         
         // Construct the form
         $rcmail->output->add_gui_object('twofactor_gauthenticatorform', 'twofactor_gauthenticator-form');

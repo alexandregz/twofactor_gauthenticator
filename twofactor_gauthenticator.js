@@ -135,8 +135,15 @@ if (window.rcmail) {
 	  
     
     // Define Variables
-    var tabtwofactorgauthenticator = $('<span>').attr('id', 'settingstabplugintwofactor_gauthenticator').addClass('tablink');
-    var button = $('<a>').attr('href', rcmail.env.comm_path + '&_action=plugin.twofactor_gauthenticator').html(rcmail.gettext('twofactor_gauthenticator', 'twofactor_gauthenticator')).appendTo(tabtwofactorgauthenticator);
+		var tabtwofactorgauthenticator = $('<li>').attr('id', 'settingstabplugintwofactor_gauthenticator').addClass('listitem authfactor');
+		var icon = $('<i>').css('margin-right', '0.5rem')
+											 .css('float', 'left')
+											 .addClass('fas fa-unlock-alt').appendTo(tabtwofactorgauthenticator);
+		var button = $('<a>').attr('href', rcmail.env.comm_path + '&_action=plugin.twofactor_gauthenticator')
+												 .attr('aria-disabled', false)
+												 .attr('title', 'Google F2A')
+												 .attr('role', 'button')
+												 .html(rcmail.gettext('twofactor_gauthenticator', 'twofactor_gauthenticator')).appendTo(tabtwofactorgauthenticator);
     
     button.bind('click', function(e){ return rcmail.command('plugin.twofactor_gauthenticator', this) });
 
