@@ -35,9 +35,11 @@ if (window.rcmail) {
 			$('#2FA_create_secret').prop('id', '2FA_change_secret');
 			$('#2FA_change_secret').get(0).value = rcmail.gettext('hide_secret', 'twofactor_gauthenticator');
 			$('#2FA_change_secret').click(click2FA_change_secret);
+			$('#2FA_change_secret').removeAttr('disabled');		// now we disable all buttons previosly and user needs to "setup_all_fields"
 
 			$('#2FA_activate').prop('checked', true);
 			$('#2FA_show_recovery_codes').get(0).value = rcmail.gettext('hide_recovery_codes', 'twofactor_gauthenticator');
+			$('#2FA_show_recovery_codes').removeAttr('disabled');		// now we disable all buttons previosly and user needs to "setup_all_fields"
 			$('#2FA_qr_code').slideDown();
 			
 			$('#2FA_secret').get(0).value = createSecret();
