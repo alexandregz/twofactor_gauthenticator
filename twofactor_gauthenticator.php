@@ -58,19 +58,19 @@ class twofactor_gauthenticator extends rcube_plugin
     // Use the form login, but removing inputs with jquery and action (see twofactor_gauthenticator_form.js)
     function login_after($args)
     {
-	$_SESSION['twofactor_gauthenticator_login'] = time();
-	
-	$rcmail = rcmail::get_instance();
-	
-	$config_2FA = self::__get2FAconfig();
-	if(!$config_2FA['activate'])
-	{
-		if($rcmail->config->get('force_enrollment_users'))
+		$_SESSION['twofactor_gauthenticator_login'] = time();
+		
+		$rcmail = rcmail::get_instance();
+		
+		$config_2FA = self::__get2FAconfig();
+		if(!$config_2FA['activate'])
 		{
-			$this->__goingRoundcubeTask('settings', 'plugin.twofactor_gauthenticator');				
+			if($rcmail->config->get('force_enrollment_users'))
+			{
+				$this->__goingRoundcubeTask('settings', 'plugin.twofactor_gauthenticator');				
+			}
+			return;
 		}
-		return;
-	}
 
         if ($this->__cookie($set = false)) {
             $_SESSION['twofactor_gauthenticator_login'] -= 1; // so that we may use ge to check for valid session
@@ -213,7 +213,7 @@ class twofactor_gauthenticator extends rcube_plugin
         // if we can't save time into SESSION, the plugin logouts
         $_SESSION['twofactor_gauthenticator_2FA_login'] = time();
         
-	$rcmail->output->show_message($this->gettext('successfully_saved'), 'confirmation');
+		$rcmail->output->show_message($this->gettext('successfully_saved'), 'confirmation');
          
         $rcmail->overwrite_action('plugin.twofactor_gauthenticator');
         $rcmail->output->send('plugin');
@@ -252,7 +252,7 @@ class twofactor_gauthenticator extends rcube_plugin
         }
         else
         {
-        	$html_secret .= '<input type="button" class="button mainaction" id="2FA_create_secret" value="'.$this->gettext('create_secret').'">';
+        	$html_secret .= '<input type="button" class="button mainaction" id="2FA_create_secret" disabled="disabled" value="'.$this->gettext('create_secret').'">';
         }
         $table->add(null, $html_secret);
         
@@ -267,7 +267,7 @@ class twofactor_gauthenticator extends rcube_plugin
        		$value = isset($data['recovery_codes'][$i]) ? $data['recovery_codes'][$i] : '';
        		$html_recovery_codes .= ' <input type="password" name="2FA_recovery_codes[]" value="'.$value.'" maxlength="10"> &nbsp; ';
        	}
-       	$html_recovery_codes .= '<input type="button" class="button mainaction" id="2FA_show_recovery_codes" value="'.$this->gettext('show_recovery_codes').'">';
+       	$html_recovery_codes .= '<input type="button" class="button mainaction" id="2FA_show_recovery_codes" disabled="disabled" value="'.$this->gettext('show_recovery_codes').'">';
        	$table->add(null, $html_recovery_codes);
         
         
