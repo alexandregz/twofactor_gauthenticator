@@ -144,3 +144,11 @@ To deactivate the plugin, you can use two methods:
 - To only one user: restore the user prefs from DB to null (rouncubeDB.users.prefs) -the user plugin options stored there.
 
 - To all: remove the plugin from config.inc.php/remove the plugin itself
+
+
+Activate only for specific users
+--------------------------------
+
+- Use config.inc.php file (see config.inc.php.dist example file)
+
+- Modify array  **users_allowed_2FA** with users that you want to use plugin. NOTE: you can use regular expressions

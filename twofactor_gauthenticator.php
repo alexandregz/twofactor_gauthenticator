@@ -27,19 +27,26 @@ class twofactor_gauthenticator extends rcube_plugin
     function init() 
     {
 		$rcmail = rcmail::get_instance();
-		
+    	    	 
 		// hooks
     	$this->add_hook('login_after', array($this, 'login_after'));
     	$this->add_hook('send_page', array($this, 'check_2FAlogin'));
     	$this->add_hook('render_page', array($this, 'popup_msg_enrollment'));
     	    	 
     	$this->load_config();
+		
+		$allowedPlugin = $this->__pluginAllowedByConfig();
+			
+		// skipping all logic and plugin not appears
+		if(!$allowedPlugin) {
+			return false;
+		}		
     	 
 		$this->add_texts('localization/', true);
 		
 		// check code with ajax
 		$this->register_action('plugin.twofactor_gauthenticator-checkcode', array($this, 'checkCode'));
-		
+
 		// config
 		$this->register_action('twofactor_gauthenticator', array($this, 'twofactor_gauthenticator_init'));
 		$this->register_action('plugin.twofactor_gauthenticator-save', array($this, 'twofactor_gauthenticator_save'));
@@ -47,13 +54,40 @@ class twofactor_gauthenticator extends rcube_plugin
 		$this->include_script('qrcode.min.js');
 		
 		// settings we will export to the form javascript
-    $this_output = $this->api->output;
-    if ($this_output) {
-      $this->api->output->set_env('allow_save_device_30days',$rcmail->config->get('allow_save_device_30days',true));
-      $this->api->output->set_env('twofactor_formfield_as_password',$rcmail->config->get('twofactor_formfield_as_password',false));
+		$this_output = $this->api->output;
+		if ($this_output) {
+			$this->api->output->set_env('allow_save_device_30days',$rcmail->config->get('allow_save_device_30days',true));
+			$this->api->output->set_env('twofactor_formfield_as_password',$rcmail->config->get('twofactor_formfield_as_password',false));
+		}
     }
-    }
-    
+	
+	// check if user are valid from config.inc.php or true (by default) if config.inc.php not exists
+	function __pluginAllowedByConfig() {
+		$rcmail = rcmail::get_instance();
+    	    	 
+		$this->load_config();
+
+		// users allowed to use plugin (not showed for others!).
+		//	-- From config.inc.php file.
+		//  -- You can use regexp: admin.*@domain.com
+		$users = $rcmail->config->get('users_allowed_2FA');
+		if(is_array($users)) {		// exists "users" from config.inc.php
+			foreach($users as $u) {
+				preg_match("/$u/", $rcmail->user->data['username'], $matches);
+
+				if(isset($matches[0])) {
+					return true;
+				}
+			}
+
+			// not allowed for all, except explicit
+			return false;
+		}
+
+		// by default, all users have plugin activated
+		return true;
+	}
+
     
     // Use the form login, but removing inputs with jquery and action (see twofactor_gauthenticator_form.js)
     function login_after($args)
@@ -61,6 +95,7 @@ class twofactor_gauthenticator extends rcube_plugin
 		$_SESSION['twofactor_gauthenticator_login'] = time();
 		
 		$rcmail = rcmail::get_instance();
+		
 		
 		$config_2FA = self::__get2FAconfig();
 		if(!$config_2FA['activate'])
@@ -72,16 +107,16 @@ class twofactor_gauthenticator extends rcube_plugin
 			return;
 		}
 
-        if ($this->__cookie($set = false)) {
+        if ($this->__cookie($set = false) || !$this->__pluginAllowedByConfig()) {
             $_SESSION['twofactor_gauthenticator_login'] -= 1; // so that we may use ge to check for valid session
             $this->__goingRoundcubeTask('mail');
             return;
         }
 
-    	$rcmail->output->set_pagetitle($this->gettext('twofactor_gauthenticator'));
+		$rcmail->output->set_pagetitle($this->gettext('twofactor_gauthenticator'));
 
-    	$this->add_texts('localization', true);
-    	$this->include_script('twofactor_gauthenticator_form.js');
+		$this->add_texts('localization', true);
+		$this->include_script('twofactor_gauthenticator_form.js');
     	
     	$rcmail->output->send('login');
     }
@@ -182,7 +217,7 @@ class twofactor_gauthenticator extends rcube_plugin
        
         $this->add_texts('localization/', true);
         $this->register_handler('plugin.body', array($this, 'twofactor_gauthenticator_form'));
-        
+		
         $rcmail->output->set_pagetitle($this->gettext('twofactor_gauthenticator'));
         $rcmail->output->send('plugin');
     }
