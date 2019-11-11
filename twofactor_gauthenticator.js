@@ -137,7 +137,7 @@ if (window.rcmail) {
 	  
     
     // Define Variables
-    var tabtwofactorgauthenticator = $('<span>').attr('id', 'settingstabplugintwofactor_gauthenticator').addClass('tablink');
+    var tabtwofactorgauthenticator = $('<li>').attr('id', 'settingstabplugintwofactor_gauthenticator').addClass('listitem twofactor_gauthenticator');
     var button = $('<a>').attr('href', rcmail.env.comm_path + '&_action=plugin.twofactor_gauthenticator').html(rcmail.gettext('twofactor_gauthenticator', 'twofactor_gauthenticator')).appendTo(tabtwofactorgauthenticator);
     
     button.bind('click', function(e){ return rcmail.command('plugin.twofactor_gauthenticator', this) });
