@@ -361,7 +361,7 @@ class twofactor_gauthenticator extends rcube_plugin
             'action' => './?_task=settings&_action=plugin.twofactor_gauthenticator-save',
         ), $out);
 	    
-	$out = "<div class='box formcontainer scroller'>".$out."</div>";
+        $out = "<div class='box formcontainer scroller'>".$out."</div>";
         
         return $out;
     }
