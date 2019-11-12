@@ -331,7 +331,7 @@ class twofactor_gauthenticator extends rcube_plugin
         
         // Build the table with the divs around it
         $out = html::div(array('class' => 'settingsbox', 'style' => 'margin: 0;'),
-        html::div(array('id' => 'prefs-title', 'class' => 'boxtitle'), $this->gettext('twofactor_gauthenticator') . ' - ' . $rcmail->user->data['username']) .  
+        html::div(array('id' => 'prefs-title', 'class' => ''), $this->gettext('twofactor_gauthenticator') . ' - ' . $rcmail->user->data['username']) .  
         html::div(array('class' => 'boxcontent'), $table->show() . 
             html::p(null, 
 	                $rcmail->output->button(array(
@@ -360,6 +360,8 @@ class twofactor_gauthenticator extends rcube_plugin
             'method' => 'post',
             'action' => './?_task=settings&_action=plugin.twofactor_gauthenticator-save',
         ), $out);
+	    
+	$out = "<div class='box formcontainer scroller'>".$out."</div>";
         
         return $out;
     }
