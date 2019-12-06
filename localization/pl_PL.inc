@@ -3,7 +3,7 @@
 // Labels used for different portions of the plugin
 $labels = array();
 $labels['activate'] = 'Aktywuj';
-$labels['twofactor_gauthenticator'] = 'Dwu etapowa autentykacja';
+$labels['twofactor_gauthenticator'] = 'Dwuskładnikowe uwierzytelnianie';
 $labels['code'] = 'Google Authenticator Code';
 
 $labels['two_step_verification_form'] = 'Podaj hasło jednorazowe';
@@ -25,8 +25,8 @@ $labels['hide_recovery_codes'] = 'Ukryj hasła jednorazowe';
 
 $labels['setup_all_fields'] = 'Generuj wszystkie pola (Po weryfikacji kodu kliknij zapisz)';
 
-$labels['enrollment_dialog_title'] = 'Dwu Etapowa Autentykacja';
-$labels['enrollment_dialog_msg'] = 'Ze względów bezpieczeństwa konieczne jest skonfigurowanie  i włączenie <strong>dwu etapowej autentykacji</strong>';
+$labels['enrollment_dialog_title'] = 'Dwuskładnikowe uwierzytelnianie';
+$labels['enrollment_dialog_msg'] = 'Ze względów bezpieczeństwa konieczne jest skonfigurowanie i włączenie <strong>dwuskładnikowego uwierzytelniania</strong>';
 
 $labels['check_code'] = 'Sprawdź Kod';
 $labels['code_ok'] = 'Kod OK';
