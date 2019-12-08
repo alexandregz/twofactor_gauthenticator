@@ -164,6 +164,6 @@ Use *1.3.9-version* branch
 
 If you download 1.4.x RC version (with *elastic skin*), use *master* version normally (thx to [tborgans](https://github.com/tborgans))
 
-![Elastic Skin start](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/009-elastic_skin_start.png)
+![Elastic Skin start](https://raw.githubusercontent.com/alexandregz/twofactor_gauthenticator/master/screenshots/009-elastic_skin_start.png)
 
-![Elastic Skin config](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/.png)
+![Elastic Skin config](https://raw.githubusercontent.com/alexandregz/twofactor_gauthenticator/master/screenshots/010-elastic_skin_config.png)
