@@ -29,6 +29,7 @@ Installation
 - Clone from github:
     HOME_RC/plugins$ git clone [https://github.com/alexandregz/twofactor_gauthenticator.git](https://github.com/alexandregz/twofactor_gauthenticator.git)
     
+
 (Or use composer
      HOME_RC$ composer require alexandregz/twofactor_gauthenticator:dev-master
      
@@ -152,3 +153,17 @@ Activate only for specific users
 - Use config.inc.php file (see config.inc.php.dist example file)
 
 - Modify array  **users_allowed_2FA** with users that you want to use plugin. NOTE: you can use regular expressions
+
+
+
+## Use with 1.3.x version
+
+Use *1.3.9-version* branch
+
+`$ git checkout 1.3.9-version`
+
+If you download 1.4.x RC version (with *elastic skin*), use *master* version normally (thx to [tborgans](https://github.com/tborgans))
+
+![Elastic Skin start](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/009-elastic_skin_start.png)
+
+![Elastic Skin config](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/.png)
