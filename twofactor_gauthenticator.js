@@ -137,10 +137,17 @@ if (window.rcmail) {
 	  
     
     // Define Variables
-    var tabtwofactorgauthenticator = $('<span>').attr('id', 'settingstabplugintwofactor_gauthenticator').addClass('tablink');
-    var button = $('<a>').attr('href', rcmail.env.comm_path + '&_action=plugin.twofactor_gauthenticator').html(rcmail.gettext('twofactor_gauthenticator', 'twofactor_gauthenticator')).appendTo(tabtwofactorgauthenticator);
-    
-    button.bind('click', function(e){ return rcmail.command('plugin.twofactor_gauthenticator', this) });
+    var tabtwofactorgauthenticator = $('<li>')
+      .attr('id', 'settingstabplugintwofactor_gauthenticator')
+      .addClass('listitem twofactor_gauthenticator');
+    var button = $('<a>')
+      .attr('href', rcmail.env.comm_path + '&_action=plugin.twofactor_gauthenticator')
+      .html(rcmail.gettext('twofactor_gauthenticator', 'twofactor_gauthenticator'))
+      .attr('role', 'button') 
+      .attr('onclick', 'return rcmail.command(\'show\', \'plugin.twofactor_gauthenticator\', this, event)') 
+      .attr('tabindex', '0') 
+      .attr('aria-disabled', 'false')
+      .appendTo(tabtwofactorgauthenticator);
 
     // Button & Register commands
     rcmail.add_element(tabtwofactorgauthenticator, 'tabs');
