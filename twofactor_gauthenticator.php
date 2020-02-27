@@ -509,7 +509,7 @@ class twofactor_gauthenticator extends rcube_plugin
                                     $cmp = strlen($signature) ^ strlen($signature_verification);
                                     $signature = $signature ^ $signature_verification;
                                     for($i = 0; $i < strlen($signature); $i++) {
-                                        $cmp += ord($signature {$i});
+                                        $cmp += ord($signature [$i]);
                                     }
                                     return ($cmp===0);
                                 }
