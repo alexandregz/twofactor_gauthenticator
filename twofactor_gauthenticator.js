@@ -2,26 +2,27 @@ if (window.rcmail) {
   rcmail.addEventListener('init', function(evt) {
 
 	  // ripped from PHPGansta/GoogleAuthenticator.php
-		function createSecret(secretLength)
-		{
+		function createSecret(secretLength) {
 			if(!secretLength) secretLength = 16;
-			
-		    LookupTable = new Array(
+
+			var lookupTable = new Array(
 		            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', //  7
 		            'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', // 15
 		            'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', // 23
 		            'Y', 'Z', '2', '3', '4', '5', '6', '7' // 31
 		            //'='  // padding char
 		        );
-		
-		    secret = '';
-		    for (i = 0; i < secretLength; i++) {
-		        secret += LookupTable[Math.floor(Math.random()*LookupTable.length)];
-		    }
-		    return secret;
+
+			var secret = '';
+			var random = new Uint8Array(secretLength);
+			var cryptoapi = window.crypto || window.msCrypto; // Support IE11 for now
+			cryptoapi.getRandomValues(random);
+			for (var i = 0; i < secretLength; i++) {
+				secret += lookupTable[random[i]%lookupTable.length];
+			}
+			return secret;
 		}
 
-		
 		// populate all fields
 		function setup2FAfields() {
 			if($('#2FA_secret').get(0).value) return;
