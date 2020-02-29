@@ -142,7 +142,7 @@ Uninstall
 
 To deactivate the plugin, you can use two methods:
 
-- To only one user: restore the user prefs from DB to null (rouncubeDB.users.prefs) -the user plugin options stored there.
+- To only one user: restore the user prefs from DB to null (rouncubeDB.users.preferences) -the user plugin options stored there.
 
 - To all: remove the plugin from config.inc.php/remove the plugin itself
 
