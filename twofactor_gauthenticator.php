@@ -302,7 +302,12 @@ class twofactor_gauthenticator extends rcube_plugin
        		$value = isset($data['recovery_codes'][$i]) ? $data['recovery_codes'][$i] : '';
        		$html_recovery_codes .= ' <input type="password" name="2FA_recovery_codes[]" value="'.$value.'" maxlength="10"> &nbsp; ';
        	}
-       	$html_recovery_codes .= '<input type="button" class="button mainaction" id="2FA_show_recovery_codes" disabled="disabled" value="'.$this->gettext('show_recovery_codes').'">';
+        if($data['secret']) {
+       		$html_recovery_codes .= '<input type="button" class="button mainaction" id="2FA_show_recovery_codes" value="'.$this->gettext('show_recovery_codes').'">';
+	}
+	else {
+       		$html_recovery_codes .= '<input type="button" class="button mainaction" id="2FA_show_recovery_codes" disabled="disabled" value="'.$this->gettext('show_recovery_codes').'">';
+	}
        	$table->add(null, $html_recovery_codes);
         
         
