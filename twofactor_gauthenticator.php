@@ -19,8 +19,6 @@ class twofactor_gauthenticator extends rcube_plugin
 {
 	private $_number_recovery_codes = 4;
 
-        // log errors
-        private $_enable_logs = false;
         // relative from RC home dir, not plugin directory
         private $_logs_file = '/logs/log_errors_2FA.txt';
 	
@@ -161,7 +159,7 @@ class twofactor_gauthenticator extends rcube_plugin
 				}
 				else
 				{
-                                        if($this->_enable_logs) {
+                                        if($rcmail->config->get('enable_fail_logs')) {
                                                 $this->__logError();
                                         }
 					$this->__exitSession();
