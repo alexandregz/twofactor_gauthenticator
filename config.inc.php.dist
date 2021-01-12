@@ -24,3 +24,10 @@ $rcmail_config['users_allowed_2FA'] = null;
 
 // failure logging, suggested by @pngd (issue 131)
 $rcmail_config['enable_fail_logs'] = false;
+
+// This key is used to encrypt the users imap password which is stored
+// in the session record. For the default cipher method it must be
+// exactly 24 characters long.
+// YOUR KEY MUST BE DIFFERENT THAN THE SAMPLE VALUE FOR SECURITY REASONS
+$rcmail_config['otp_des_key'] = '12345abcdefg12345abcdefg';
+
