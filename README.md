@@ -47,6 +47,9 @@ The plugin automatically creates the secret for you.
 
 NOTE: plugin must be base32 valid characters ([A-Z][2-7]), see https://github.com/alexandregz/twofactor_gauthenticator/blob/master/PHPGangsta/GoogleAuthenticator.php#L18
 
+From https://github.com/alexandregz/twofactor_gauthenticator/issues/139
+
+
 	
 To add accounts to the app, you can use the QR-Code (easy-way) or type the secret.
 After checking the first code click 'Save'.
