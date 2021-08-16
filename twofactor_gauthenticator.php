@@ -276,7 +276,7 @@ class twofactor_gauthenticator extends rcube_plugin
         
         // secret
         $field_id = '2FA_secret';
-        $input_descsecret = new html_inputfield(array('name' => $field_id, 'id' => $field_id, 'size' => 60, 'type' => 'password', 'value' => $data['secret']));
+	$input_descsecret = new html_inputfield(array('name' => $field_id, 'id' => $field_id, 'size' => 60, 'type' => 'password', 'value' => $data['secret'], 'autocomplete' => 'new-password'));
         $table->add('title', html::label($field_id, rcube::Q($this->gettext('secret'))));
         $html_secret = $input_descsecret->show();
         if($data['secret'])
