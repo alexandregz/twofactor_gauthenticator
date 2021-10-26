@@ -12,6 +12,8 @@ Roundcube Mail plugin: 2-Factor Authentication
 
 ![2Steps](https://raw.github.com/camilord/twofactor_gauthenticator/master/screenshots/rcube1.5_002.png)
 
+![2Steps](https://raw.github.com/camilord/twofactor_gauthenticator/master/screenshots/rcube1.5_003.png)
+
 ---
 
 2Steps verification
