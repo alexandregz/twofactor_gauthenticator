@@ -142,7 +142,7 @@ if (window.rcmail) {
 		  $('#2FA_secret').get(0).value = createSecret();
 	  });
 
-	  if ($('#2FA_secret').get(0).value) {
+	  if ($('#2FA_secret').length && $('#2FA_secret').val().length) {
 		  $('#2FA_qr_code').show();
 	  }
 	
@@ -164,15 +164,15 @@ if (window.rcmail) {
     var button = $('<a>')
       .attr('href', rcmail.env.comm_path + '&_action=plugin.twofactor_gauthenticator')
       .html(rcmail.gettext('twofactor_gauthenticator', 'twofactor_gauthenticator'))
-      .attr('role', 'button') 
-      .attr('onclick', 'return rcmail.command(\'show\', \'plugin.twofactor_gauthenticator\', this, event)') 
-      .attr('tabindex', '0') 
+      .attr('role', 'button')
+      .attr('onclick', 'return rcmail.command(\'show\', \'plugin.twofactor_gauthenticator\', this, event)')
+      .attr('tabindex', '0')
       .attr('aria-disabled', 'false')
       .appendTo(tabtwofactorgauthenticator);
 
     // Button & Register commands
     rcmail.add_element(tabtwofactorgauthenticator, 'tabs');
-    rcmail.register_command('plugin.twofactor_gauthenticator', function() { rcmail.goto_url('plugin.twofactor_gauthenticator') }, true);
+    rcmail.register_command('plugin.twofactor_gauthenticator', function() { console.log('loaded'); rcmail.goto_url('plugin.twofactor_gauthenticator') }, true);
     rcmail.register_command('plugin.twofactor_gauthenticator-save', function() {
     	if(!$('#2FA_secret').get(0).value) {
     		$('#2FA_secret').get(0).value = createSecret();

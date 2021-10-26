@@ -360,7 +360,7 @@ class twofactor_gauthenticator extends rcube_plugin
         
         // Build the table with the divs around it
         $out = html::div(array('class' => 'settingsbox', 'style' => 'margin: 0;'),
-            html::div(array('id' => 'prefs-title', 'class' => 'formcontent'),
+            html::div(array('id' => 'prefs-title', 'class' => 'boxtitle'),
                 '<legend>'.$this->gettext('twofactor_gauthenticator') . ' - ' . $rcmail->user->data['username'].'</legend>'
             ) . html::div(array('class' => 'boxcontent'), $table->show() .
                 '<div class="col-md-4">'.html::p(null,
