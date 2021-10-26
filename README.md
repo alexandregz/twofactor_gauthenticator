@@ -1,11 +1,16 @@
 RoundCube Mail Plugin: 2-Factor Authentication
 ==============================================
 
+**Requirement**
+- roundcube mail 1.5.x
+
 **Changelog**
  - fixed UI using bootstrap 4.5.x
  - improve UI form functionalities
 
+![Login](https://raw.github.com/camilord/twofactor_gauthenticator/master/screenshots/rcube1.5_001.png)
 
+![2Steps](https://raw.github.com/camilord/twofactor_gauthenticator/master/screenshots/rcube1.5_002.png)
 
 ---
 
