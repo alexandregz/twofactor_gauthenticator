@@ -49,13 +49,35 @@ if (window.rcmail) {
 				$(this).get(0).value = createSecret(10);
 			});
 
+
+
 			// add qr-code before msg_infor
-			var url_qr_code_values = 'otpauth://totp/' +$('#prefs-title').html().split(/ - /)[1]+ '?secret=' +$('#2FA_secret').get(0).value +'&issuer=RoundCube2FA%20'+window.location.hostname;
 			/*$('table tr:last').before('<tr><td>' +rcmail.gettext('qr_code', 'twofactor_gauthenticator')+ '</td><td><input type="button" class="button mainaction btn btn-primary" id="2FA_change_qr_code" value="'
 					+rcmail.gettext('hide_qr_code', 'twofactor_gauthenticator')+ '"><div id="2FA_qr_code" style="display: visible; margin-top: 10px;"></div></td></tr>');*/
-			$('table tr:last').before('<tr><td>' +rcmail.gettext('qr_code', 'twofactor_gauthenticator')+ '</td><td><div id="2FA_qr_code" style="display: visible; margin-top: 10px;"></div></td></tr>');
+			var qr_container_elem = $('#2FA_qr_code');
+			if (!qr_container_elem.length) {
+				$('table tr:last').before('<tr><td>' +rcmail.gettext('qr_code', 'twofactor_gauthenticator')+ '</td><td><div id="2FA_qr_code" style="display: visible; margin-top: 10px;"></div></td></tr>');
+			}
 
-			var qrcode = new QRCode(document.getElementById("2FA_qr_code"), {
+			var qrcode = generateQrCode();
+
+			//$('#2FA_change_qr_code').click(click2FA_change_qr_code);
+			qr_container_elem.prop('title', '');    // enjoy the silence (qrcode.js uses text to set title)
+
+			// disable save button. It needs check code to enabled again
+			$('#2FA_setup_fields').prev().attr('disabled','disabled').attr('title', rcmail.gettext('check_code_to_activate', 'twofactor_gauthenticator'));
+					   alert(rcmail.gettext('check_code_to_activate', 'twofactor_gauthenticator'));
+		}
+
+		function generateQrCode() {
+			var elem = $('#prefs-title');
+			var label = '';
+			if (elem.length) {
+				label = elem.html().split(/ - /)[1];
+			}
+			var url_qr_code_values = 'otpauth://totp/' +label+ '?secret=' +$('#2FA_secret').get(0).value +'&issuer=RoundCube2FA%20'+window.location.hostname;
+			$('#2FA_qr_code').empty();
+			return new QRCode(document.getElementById("2FA_qr_code"), {
 				text: url_qr_code_values,
 				width: 200,
 				height: 200,
@@ -63,16 +85,10 @@ if (window.rcmail) {
 				colorLight : "#ffffff",
 				correctLevel : QRCode.CorrectLevel.L		// like charts.googleapis.com
 			});
-
-			//$('#2FA_change_qr_code').click(click2FA_change_qr_code);
-			$('#2FA_qr_code').prop('title', '');    // enjoy the silence (qrcode.js uses text to set title)
-
-			// disable save button. It needs check code to enabled again
-			$('#2FA_setup_fields').prev().attr('disabled','disabled').attr('title', rcmail.gettext('check_code_to_activate', 'twofactor_gauthenticator'));
-					   alert(rcmail.gettext('check_code_to_activate', 'twofactor_gauthenticator'));
+			$('#2FA_qr_code').show();
 		}
 
-		function generate2faData() {
+		function validate2FApin() {
 			let url = "./?_action=plugin.twofactor_gauthenticator-checkcode&code=" +$('#2FA_code_to_check').val() + '&secret='+$('#2FA_secret').val();
 			$.post(url, function(data){
 				alert(data);
@@ -140,6 +156,7 @@ if (window.rcmail) {
 
 	  $('#2FA_new_secret').click(function(){
 		  $('#2FA_secret').get(0).value = createSecret();
+		  generateQrCode();
 	  });
 
 	  if ($('#2FA_secret').length && $('#2FA_secret').val().length) {
@@ -148,12 +165,14 @@ if (window.rcmail) {
 	
 	  // ajax
 	  $('#2FA_check_code').click(function(){
-  		generate2faData();
+  		validate2FApin();
 	  });
 
 	  $('#2FA_activate').on('click', function() {
 		  if (!$(this).val().length || $(this).val().length < 3) {
 			  setup2FAfields();
+		  } else {
+			  generateQrCode();
 		  }
 	  });
     

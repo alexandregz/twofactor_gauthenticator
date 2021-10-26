@@ -128,15 +128,15 @@ class twofactor_gauthenticator extends rcube_plugin
 		
 		if($config_2FA['activate'])
 		{
-                        // with IP allowed, we don't need to check anything
-                        if($rcmail->config->get('whitelist')) {
-                                foreach($rcmail->config->get('whitelist') as $ip_to_check) {
-                                        if(CIDR::match($_SERVER['REMOTE_ADDR'], $ip_to_check)) {
-                                                if($rcmail->task === 'login') $this->__goingRoundcubeTask('mail');
-                                                return $p;
-                                        }
-                                }
-                        }
+            // with IP allowed, we don't need to check anything
+            if($rcmail->config->get('whitelist')) {
+                    foreach($rcmail->config->get('whitelist') as $ip_to_check) {
+                            if(CIDR::match($_SERVER['REMOTE_ADDR'], $ip_to_check)) {
+                                    if($rcmail->task === 'login') $this->__goingRoundcubeTask('mail');
+                                    return $p;
+                            }
+                    }
+            }
 
 
 			$code = rcube_utils::get_input_value('_code_2FA', rcube_utils::INPUT_POST);
@@ -360,7 +360,7 @@ class twofactor_gauthenticator extends rcube_plugin
         
         // Build the table with the divs around it
         $out = html::div(array('class' => 'settingsbox', 'style' => 'margin: 0;'),
-            html::div(array('id' => 'prefs-title', 'class' => 'boxtitle'),
+            html::div(array('id' => 'prefs-title', 'class' => 'formcontent'),
                 '<legend>'.$this->gettext('twofactor_gauthenticator') . ' - ' . $rcmail->user->data['username'].'</legend>'
             ) . html::div(array('class' => 'boxcontent'), $table->show() .
                 '<div class="col-md-4">'.html::p(null,

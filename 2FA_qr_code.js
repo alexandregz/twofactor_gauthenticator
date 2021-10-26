@@ -1,7 +1,13 @@
 if (window.rcmail) {
   rcmail.addEventListener('init', function() {
-	  
-	  var url_qr_code_values = 'otpauth://totp/Roundcube:' +$('#prefs-title').html().split(/ - /)[1]+ '?secret=' +$('#2FA_secret').get(0).value +'&issuer=RoundCube2FA%20'+window.location.hostname;
+
+	  var elem = $('#prefs-title');
+	  var label = '';
+	  if (elem.length) {
+		  label = elem.html().split(/ - /)[1];
+	  }
+	  var url_qr_code_values = 'otpauth://totp/Roundcube:' + label + '?secret=' +$('#2FA_secret').get(0).value +'&issuer=RoundCube2FA%20'+window.location.hostname;
+	  $('#2FA_qr_code').empty();
 	  
 	  var qrcode = new QRCode(document.getElementById("2FA_qr_code"), {
 		    text: url_qr_code_values,
