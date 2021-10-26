@@ -11,7 +11,7 @@
  * @copyright   Copyright (c) 2015 Frank Forte
  * @license     BSD-3 License https://opensource.org/licenses/BSD-3-Clause
  */
-class CIDR{
+class CIDR {
 
    /**
 	* compare an IPv4 or IPv6 address with a CIDR address or range

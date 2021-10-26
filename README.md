@@ -1,3 +1,14 @@
+RoundCube Mail Plugin: 2-Factor Authentication
+==============================================
+
+**Changelog**
+ - fixed UI using bootstrap 4.5.x
+ - improve UI form functionalities
+
+
+
+---
+
 2Steps verification
 ==========================
 
