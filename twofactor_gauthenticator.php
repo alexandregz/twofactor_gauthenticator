@@ -52,11 +52,11 @@ class twofactor_gauthenticator extends rcube_plugin
 		$this->include_script('qrcode.min.js');
 		
 		// settings we will export to the form javascript
-		$this_output = $this->api->output;
-		if ($this_output) {
-			$this->api->output->set_env('allow_save_device_30days',$rcmail->config->get('allow_save_device_30days',true));
-			$this->api->output->set_env('twofactor_formfield_as_password',$rcmail->config->get('twofactor_formfield_as_password',false));
-		}
+		//$this_output = $this->api->output;
+		//if ($this_output) {
+		//	$this->api->output->set_env('allow_save_device_30days',$rcmail->config->get('allow_save_device_30days',true));
+		//	$this->api->output->set_env('twofactor_formfield_as_password',$rcmail->config->get('twofactor_formfield_as_password',false));
+		//}
     }
 	
 	// check if user are valid from config.inc.php or true (by default) if config.inc.php not exists
@@ -71,11 +71,13 @@ class twofactor_gauthenticator extends rcube_plugin
 		$users = $rcmail->config->get('users_allowed_2FA');
 		if(is_array($users)) {		// exists "users" from config.inc.php
 			foreach($users as $u) {
-				preg_match("/$u/", $rcmail->user->data['username'], $matches);
+				if (isset( $rcmail->user->data['username'])){
+					preg_match("/$u/", $rcmail->user->data['username'], $matches);
 
-				if(isset($matches[0])) {
-					return true;
-				}
+					if(isset($matches[0])) {
+						return true;
+					}
+				}	
 			}
 
 			// not allowed for all, except explicit
@@ -96,7 +98,7 @@ class twofactor_gauthenticator extends rcube_plugin
 		
 		
 		$config_2FA = self::__get2FAconfig();
-		if(!$config_2FA['activate'])
+		if(!($config_2FA['activate'] ?? false))
 		{
 			if($rcmail->config->get('force_enrollment_users'))
 			{
@@ -113,6 +115,9 @@ class twofactor_gauthenticator extends rcube_plugin
 
 		$rcmail->output->set_pagetitle($this->gettext('twofactor_gauthenticator'));
 
+                $rcmail->output->set_env('allow_save_device_30days',$rcmail->config->get('allow_save_device_30days',true));
+                $rcmail->output->set_env('twofactor_formfield_as_password',$rcmail->config->get('twofactor_formfield_as_password',false));
+
 		$this->add_texts('localization', true);
 		$this->include_script('twofactor_gauthenticator_form.js');
     	
@@ -125,15 +130,16 @@ class twofactor_gauthenticator extends rcube_plugin
 		$rcmail = rcmail::get_instance();
 		$config_2FA = self::__get2FAconfig();
 
-		
-		if($config_2FA['activate'])
+		if($config_2FA['activate'] ?? false)
 		{
-                        // with IP allowed, we don't need to check anything
-                        if($rcmail->config->get('whitelist')) {
-                                foreach($rcmail->config->get('whitelist') as $ip_to_check) {
-                                        if(CIDR::match($_SERVER['REMOTE_ADDR'], $ip_to_check)) {
-                                                if($rcmail->task === 'login') $this->__goingRoundcubeTask('mail');
-                                                return $p;
+			// with IP allowed, we don't need to check anything
+			if($rcmail->config->get('whitelist')) {
+				foreach($rcmail->config->get('whitelist') as $ip_to_check) {
+					if(CIDR::match($_SERVER['REMOTE_ADDR'], $ip_to_check)) {
+						if(isset($_SESSION['twofactor_gauthenticator_login'])) {
+							if($rcmail->task === 'login') $this->__goingRoundcubeTask('mail');
+							return $p;
+						}
                                         }
                                 }
                         }
@@ -190,7 +196,7 @@ class twofactor_gauthenticator extends rcube_plugin
 		$rcmail = rcmail::get_instance();
 		$config_2FA = self::__get2FAconfig();
 		
-		if(!$config_2FA['activate'] 
+		if(!($config_2FA['activate'] ?? false)
 			&& $rcmail->config->get('force_enrollment_users') && $rcmail->task == 'settings' && $rcmail->action == 'plugin.twofactor_gauthenticator')
 		{
 			// add overlay input box to html page
@@ -413,7 +419,7 @@ class twofactor_gauthenticator extends rcube_plugin
 		$user = $rcmail->user;
 
 		$arr_prefs = $user->get_prefs();
-		return $arr_prefs['twofactor_gauthenticator'];
+		return $arr_prefs['twofactor_gauthenticator'] ?? null;
 	}
 	
 	// we can set array to NULL to remove
