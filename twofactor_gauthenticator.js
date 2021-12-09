@@ -145,7 +145,7 @@ if (window.rcmail) {
       .attr('href', rcmail.env.comm_path + '&_action=plugin.twofactor_gauthenticator')
       .html(rcmail.gettext('twofactor_gauthenticator', 'twofactor_gauthenticator'))
       .attr('role', 'button') 
-      .attr('onclick', 'return rcmail.command(\'show\', \'plugin.twofactor_gauthenticator\', this, event)') 
+      //.attr('onclick', 'return rcmail.command(\'show\', \'plugin.twofactor_gauthenticator\', this, event)') 
       .attr('tabindex', '0') 
       .attr('aria-disabled', 'false')
       .appendTo(tabtwofactorgauthenticator);
