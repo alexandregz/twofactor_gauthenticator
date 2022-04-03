@@ -182,7 +182,7 @@ If you download 1.4.x RC version (with *elastic skin*), use *master* version nor
 
 Reported by kototilt@haiiro.dev (thx for the report and the PoC script)
 
-I make a little modification on script to not allow to save config without param session generated from a rendered page, to force user to introduce previously 2FA code and navigate across site.
+I made a little modification on script to not allow to save config without param session generated from a rendered page, to force user to introduce previously 2FA code and navigate across site.
 
 NOTE: Also I check if user have 2FA activated because with only first condition -check SESSION- app kick out me before to activate 2FA.
 
