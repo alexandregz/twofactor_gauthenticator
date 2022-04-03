@@ -173,3 +173,71 @@ If you download 1.4.x RC version (with *elastic skin*), use *master* version nor
 ![Elastic Skin start](https://raw.githubusercontent.com/alexandregz/twofactor_gauthenticator/master/screenshots/009-elastic_skin_start.png)
 
 ![Elastic Skin config](https://raw.githubusercontent.com/alexandregz/twofactor_gauthenticator/master/screenshots/010-elastic_skin_config.png)
+
+
+
+
+
+## Security incident 2022-04-02
+
+Reported by kototilt@haiiro.dev (thx for the report and the PoC script)
+
+I make a little modification on script to not allow to save config without param session generated from a rendered page, to force user to introduce previously 2FA code and navigate across site.
+
+NOTE: Also I check if user have 2FA activated because with only first condition -check SESSION- app kick out me before to activate 2FA.
+
+
+#### `twofactor_gauthenticator_save()`
+
+On function `twofactor_gauthenticator_save()` I added this code:
+
+```php
+    // save config
+    function twofactor_gauthenticator_save() 
+    {
+        $rcmail = rcmail::get_instance();
+
+		// 2022-04-03: Corrected security incidente reported by kototilt@haiiro.dev
+		//					"2FA in twofactor_gauthenticator can be bypassed allowing an attacker to disable 2FA or change the TOTP secret."
+		//
+		// Solution: if user don't have session created by any rendered page, we kick out
+		$config_2FA = self::__get2FAconfig();
+		if(!$_SESSION['twofactor_gauthenticator_2FA_login'] && $config_2FA['activate']) {
+			$this->__exitSession();
+		}
+```
+
+
+The idea is to create a session variable from a rendered page, redirected from `__goingRoundcubeTask` function (redirector to `roundcube tasks`)
+
+
+#### tests with PoC python script
+
+Previously, with security compromised:
+
+```bash
+alex@vosjod:~/Desktop/report$ ./poc.py
+Password:xxxxxxxx
+1. Fetching login page (http://localhost:8888/roundcubemail-1.4.8)
+2. Logging in
+  POST http://localhost:8888/roundcubemail-1.4.8/?_task=login
+3. Disabling 2FA
+  POST http://localhost:8888/roundcubemail-1.4.8/?_task=settings&_action=plugin.twofactor_gauthenticator-save
+  POST returned task "settings"
+2FA disabled!
+``` 
+
+Modified code and tested again, not allowed to deactivated/modified without going to a RC task (with 2FA authentication):
+
+```bash
+alex@vosjod:~/Desktop/report$ ./poc.py
+Password:xxxxxxxxx
+1. Fetching login page (http://localhost:8888/roundcubemail-1.4.8)
+2. Logging in
+  POST http://localhost:8888/roundcubemail-1.4.8/?_task=login
+3. Disabling 2FA
+  POST http://localhost:8888/roundcubemail-1.4.8/?_task=settings&_action=plugin.twofactor_gauthenticator-save
+  POST returned task "login"
+Expected "settings" task, something went wrong
+``` 
+
