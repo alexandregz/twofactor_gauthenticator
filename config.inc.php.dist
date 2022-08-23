@@ -8,7 +8,11 @@ $rcmail_config['whitelist'] = array('192.168.1.0/24', '::1', '192.168.0.9');
 
 // Admin can disable saving devices for all users (paranoid mode)
 // Default: allow saving devices (true)
-$rcmail_config['allow_save_device_30days'] = true;
+$rcmail_config['allow_save_device_xdays'] = true;
+
+$rcmail_config['save_device_xdays'] = 120;
+
+$rcmail_config['qr_image_colour'] = "#112265";
 
 // Make the 2-step field a masked password input type
 // Default: form field will be text (false)
