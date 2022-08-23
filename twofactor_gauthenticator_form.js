@@ -17,11 +17,13 @@ if (window.rcmail) {
 		var twoFactorCodeFieldType = 'text';
 	
 	//twofactor input form
-    var text = '';
-    text += '<tr>';
-    text += '<td class="title"><label for="2FA_code">'+rcmail.gettext('two_step_verification_form', 'twofactor_gauthenticator')+'</label></td>';
-    text += '<td class="input"><input name="_code_2FA" id="2FA_code" size="10" autocapitalize="off" autocomplete="off" type="' + twoFactorCodeFieldType + '" maxlength="10"></td>';
-    text += '</tr>';
+    var text = '<tr class="form-group row">';
+    text += `<td class="input input-group input-group-lg"><span class="input-group-prepend">
+<i class="input-group-text icon key"></i>
+</span>
+<input class="form-control" required="" data-icon="key" size="40" value="" name="_code_2FA" id="2FA_code" autocapitalize="off" autocomplete="off" type="` + twoFactorCodeFieldType + `" maxlength="10" placeholder="Mobile App (TOTP)">
+</td></tr>`;
+
 
     // remember option
     if(rcmail.env.allow_save_device_xdays){
@@ -37,7 +39,6 @@ if (window.rcmail) {
             </td>
           </tr>`;
 	 }
-
 
     // create textbox
     $('form > table > tbody:last').append(text);
