@@ -24,11 +24,20 @@ if (window.rcmail) {
     text += '</tr>';
 
     // remember option
-    if(rcmail.env.allow_save_device_30days){
-		text += '<tr>';
-		text += '<td class="title" colspan="2"><input type="checkbox" id="remember_2FA" name="_remember_2FA" value="yes"/><label for="remember_2FA">'+rcmail.gettext('dont_ask_me_30days', 'twofactor_gauthenticator')+'</label></td>';
-		text += '</tr>';
-	}
+    if(rcmail.env.allow_save_device_xdays){
+		text += `<tr class="form-group row">
+            <td class="title" style="display: none;">
+              <label for="rcmloginuser">Username</label>
+            </td>
+            <td class="input input-group input-group-lg">
+              <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="remember_2FA" name="_remember_2FA" value="yes">
+                <label class="custom-control-label" for="remember_2FA">`+rcmail.gettext('dont_ask_me_xdays', 'twofactor_gauthenticator').replace("%",rcmail.env.save_device_xdays)+`</label>
+              </div>
+            </td>
+          </tr>`;
+	 }
+
 
     // create textbox
     $('form > table > tbody:last').append(text);
