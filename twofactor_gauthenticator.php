@@ -52,11 +52,13 @@ class twofactor_gauthenticator extends rcube_plugin
 		$this->include_script('qrcode.min.js');
 		
 		// settings we will export to the form javascript
-		//$this_output = $this->api->output;
-		//if ($this_output) {
-		//	$this->api->output->set_env('allow_save_device_30days',$rcmail->config->get('allow_save_device_30days',true));
-		//	$this->api->output->set_env('twofactor_formfield_as_password',$rcmail->config->get('twofactor_formfield_as_password',false));
-		//}
+		$this_output = $this->api->output;
+		if ($this_output) {
+			$this->api->output->set_env('allow_save_device_xdays',$rcmail->config->get('allow_save_device_xdays',true));
+			$this->api->output->set_env('save_device_xdays',$rcmail->config->get('save_device_xdays',30));
+			$this->api->output->set_env('twofactor_formfield_as_password',$rcmail->config->get('twofactor_formfield_as_password',false));
+			$this->api->output->set_env('qr_image_colour',$rcmail->config->get('qr_image_colour',"#000000"));
+		}
     }
 	
 	// check if user are valid from config.inc.php or true (by default) if config.inc.php not exists
@@ -71,13 +73,11 @@ class twofactor_gauthenticator extends rcube_plugin
 		$users = $rcmail->config->get('users_allowed_2FA');
 		if(is_array($users)) {		// exists "users" from config.inc.php
 			foreach($users as $u) {
-				if (isset( $rcmail->user->data['username'])){
-					preg_match("/$u/", $rcmail->user->data['username'], $matches);
+				preg_match("/$u/", $rcmail->user->data['username'], $matches);
 
-					if(isset($matches[0])) {
-						return true;
-					}
-				}	
+				if(isset($matches[0])) {
+					return true;
+				}
 			}
 
 			// not allowed for all, except explicit
@@ -98,7 +98,7 @@ class twofactor_gauthenticator extends rcube_plugin
 		
 		
 		$config_2FA = self::__get2FAconfig();
-		if(!($config_2FA['activate'] ?? false))
+		if(!$config_2FA['activate'])
 		{
 			if($rcmail->config->get('force_enrollment_users'))
 			{
@@ -115,12 +115,9 @@ class twofactor_gauthenticator extends rcube_plugin
 
 		$rcmail->output->set_pagetitle($this->gettext('twofactor_gauthenticator'));
 
-                $rcmail->output->set_env('allow_save_device_30days',$rcmail->config->get('allow_save_device_30days',true));
-                $rcmail->output->set_env('twofactor_formfield_as_password',$rcmail->config->get('twofactor_formfield_as_password',false));
-
 		$this->add_texts('localization', true);
 		$this->include_script('twofactor_gauthenticator_form.js');
-    	
+
     	$rcmail->output->send('login');
     }
     
@@ -130,16 +127,15 @@ class twofactor_gauthenticator extends rcube_plugin
 		$rcmail = rcmail::get_instance();
 		$config_2FA = self::__get2FAconfig();
 
-		if($config_2FA['activate'] ?? false)
+		
+		if($config_2FA['activate'])
 		{
-			// with IP allowed, we don't need to check anything
-			if($rcmail->config->get('whitelist')) {
-				foreach($rcmail->config->get('whitelist') as $ip_to_check) {
-					if(CIDR::match($_SERVER['REMOTE_ADDR'], $ip_to_check)) {
-						if(isset($_SESSION['twofactor_gauthenticator_login'])) {
-							if($rcmail->task === 'login') $this->__goingRoundcubeTask('mail');
-							return $p;
-						}
+                        // with IP allowed, we don't need to check anything
+                        if($rcmail->config->get('whitelist')) {
+                                foreach($rcmail->config->get('whitelist') as $ip_to_check) {
+                                        if(CIDR::match($_SERVER['REMOTE_ADDR'], $ip_to_check)) {
+                                                if($rcmail->task === 'login') $this->__goingRoundcubeTask('mail');
+                                                return $p;
                                         }
                                 }
                         }
@@ -196,7 +192,7 @@ class twofactor_gauthenticator extends rcube_plugin
 		$rcmail = rcmail::get_instance();
 		$config_2FA = self::__get2FAconfig();
 		
-		if(!($config_2FA['activate'] ?? false)
+		if(!$config_2FA['activate'] 
 			&& $rcmail->config->get('force_enrollment_users') && $rcmail->task == 'settings' && $rcmail->action == 'plugin.twofactor_gauthenticator')
 		{
 			// add overlay input box to html page
@@ -230,15 +226,6 @@ class twofactor_gauthenticator extends rcube_plugin
     function twofactor_gauthenticator_save() 
     {
         $rcmail = rcmail::get_instance();
-
-		// 2022-04-03: Corrected security incidente reported by kototilt@haiiro.dev
-		//					"2FA in twofactor_gauthenticator can be bypassed allowing an attacker to disable 2FA or change the TOTP secret."
-		//
-		// Solution: if user don't have session created by any rendered page, we kick out
-		$config_2FA = self::__get2FAconfig();
-		if(!$_SESSION['twofactor_gauthenticator_2FA_login'] && $config_2FA['activate']) {
-			$this->__exitSession();
-		}
         
         $this->add_texts('localization/', true);
         $this->register_handler('plugin.body', array($this, 'twofactor_gauthenticator_form'));
@@ -250,7 +237,11 @@ class twofactor_gauthenticator extends rcube_plugin
         $recovery_codes = rcube_utils::get_input_value('2FA_recovery_codes', rcube_utils::INPUT_POST);
         
         // remove recovery codes without value
-        $recovery_codes = array_values(array_diff($recovery_codes, array('')));        
+        if($recovery_codes != null){
+        	        $recovery_codes = array_values(array_diff($recovery_codes, array('')));        
+        }else{
+        	$recovery_codes =  array('');
+        }
         
         $data = self::__get2FAconfig();
        	$data['secret'] = $secret;
@@ -279,29 +270,40 @@ class twofactor_gauthenticator extends rcube_plugin
         $data = self::__get2FAconfig();
                 
         // Fields will be positioned inside of a table
-        $table = new html_table(array('cols' => 2));
+        $table = new html_table(array('cols' => 2, 'class' => 'propform cols-sm-6-6'));
 
         // Activate/deactivate
         $field_id = '2FA_activate';
-        $checkbox_activate = new html_checkbox(array('name' => $field_id, 'id' => $field_id, 'type' => 'checkbox'));
+
+        
+        $activateData = array('name' => $field_id, 'id' => $field_id, 'type' => 'checkbox');
+
+        if(array_key_exists('secret', $data)){
+        	$activateData['checked'] = "checked";
+        }
+
+        $checkbox_activate = new html_checkbox($activateData);
         $table->add('title', html::label($field_id, rcube::Q($this->gettext('activate'))));
 		$checked = $data['activate'] ? null: 1; // :-?
         $table->add(null, $checkbox_activate->show( $checked )); 
-
         
         // secret
         $field_id = '2FA_secret';
-	$input_descsecret = new html_inputfield(array('name' => $field_id, 'id' => $field_id, 'size' => 60, 'type' => 'password', 'value' => $data['secret'], 'autocomplete' => 'new-password'));
+
+	    $input_descsecret = new html_inputfield(array('name' => $field_id, 'id' => $field_id, 'size' => 60, 'type' => 'password', 'value' => $data['secret'], 'autocomplete' => 'new-password'));
         $table->add('title', html::label($field_id, rcube::Q($this->gettext('secret'))));
         $html_secret = $input_descsecret->show();
+        $html_secret = "<div style='display:block;'>".$html_secret;
         if($data['secret'])
         {
-        	$html_secret .= '<input type="button" class="button mainaction" id="2FA_change_secret" value="'.$this->gettext('show_secret').'">';
+        	$html_secret .= '<hr /><input type="button" class="button mainaction" id="2FA_change_secret" value="'.$this->gettext('show_secret').'"><br /><br />';
         }
         else
         {
-        	$html_secret .= '<input type="button" class="button mainaction" id="2FA_create_secret" disabled="disabled" value="'.$this->gettext('create_secret').'">';
+        	$html_secret .= '<hr /><input type="button" class="button mainaction" id="2FA_create_secret" disabled="disabled" value="'.$this->gettext('create_secret').'"><br /><br />';
         }
+        $html_secret .= "</div>";
+
         $table->add(null, $html_secret);
         
         
@@ -313,13 +315,18 @@ class twofactor_gauthenticator extends rcube_plugin
        	for($i = 0; $i < $this->_number_recovery_codes; $i++)
        	{
        		$value = isset($data['recovery_codes'][$i]) ? $data['recovery_codes'][$i] : '';
-       		$html_recovery_codes .= ' <input type="password" name="2FA_recovery_codes[]" value="'.$value.'" maxlength="10"> &nbsp; ';
+       		if(($i+1) == $this->_number_recovery_codes){
+       			$html_recovery_codes .= ' <input type="password" name="2FA_recovery_codes[]" value="'.$value.'" maxlength="10"> <hr /> ';
+       		}else{
+       			$html_recovery_codes .= ' <input type="password" name="2FA_recovery_codes[]" value="'.$value.'" maxlength="10"> <br /> ';
+       		}
+       		
        	}
         if($data['secret']) {
-       		$html_recovery_codes .= '<input type="button" class="button mainaction" id="2FA_show_recovery_codes" value="'.$this->gettext('show_recovery_codes').'">';
+       		$html_recovery_codes .= '<input type="button" class="button mainaction" id="2FA_show_recovery_codes" value="'.$this->gettext('show_recovery_codes').'"><br /><br />';
 	}
 	else {
-       		$html_recovery_codes .= '<input type="button" class="button mainaction" id="2FA_show_recovery_codes" disabled="disabled" value="'.$this->gettext('show_recovery_codes').'">';
+       		$html_recovery_codes .= '<input type="button" class="button mainaction" id="2FA_show_recovery_codes" disabled="disabled" value="'.$this->gettext('show_recovery_codes').'"><br /><br />';
 	}
        	$table->add(null, $html_recovery_codes);
         
@@ -328,7 +335,7 @@ class twofactor_gauthenticator extends rcube_plugin
         if($data['secret']) {
 			$table->add('title', $this->gettext('qr_code'));
         	$table->add(null, '<input type="button" class="button mainaction" id="2FA_change_qr_code" value="'.$this->gettext('show_qr_code').'"> 
-        						<div id="2FA_qr_code" style="display: none; margin-top: 10px;"></div>');
+        						<div id="2FA_qr_code" style="display: none; margin-top: 10px; text-align: center;"></div>');
 
         	// new JS qr-code, without call to Google
         	$this->include_script('2FA_qr_code.js');
@@ -340,24 +347,23 @@ class twofactor_gauthenticator extends rcube_plugin
         // button to setup all fields if doesn't exists secret
         $html_setup_all_fields = '';
         if(!$data['secret']) {
-        	$html_setup_all_fields = '<input type="button" class="button mainaction" id="2FA_setup_fields" value="'.$this->gettext('setup_all_fields').'">';
+        	$html_setup_all_fields = '<button type="button" class="button mainaction btn btn-primary submit" id="2FA_setup_fields" value="fill">Fill all fields</button><br />'.$this->gettext('setup_all_fields').'<br /><hr />';
         }
         
-        $html_check_code = '<br /><br /><input type="button" class="button mainaction" id="2FA_check_code" value="'.$this->gettext('check_code').'"> &nbsp;&nbsp; <input type="text" id="2FA_code_to_check" maxlength="10">';
+        $html_check_code = '<div style="text-align:center;"><button style="margin-right: 10px; margin-bottom: 5px;" type="button" class="button mainaction btn btn-primary" id="2FA_check_code" value="'.$this->gettext('check_code').'">'.$this->gettext('check_code').'</button> <input data-icon="key" size="40" autocapitalize="off" autocomplete="off" placeholder="Enter TOTP code..." type="text" class="form-control" style="display: inline-block; width: 250px; margin-bottom: 5px;" id="2FA_code_to_check" maxlength="10"></div>';
         
         
         
         // Build the table with the divs around it
-        $out = html::div(array('class' => 'settingsbox', 'style' => 'margin: 0;'),
-        html::div(array('id' => 'prefs-title', 'class' => ''), $this->gettext('twofactor_gauthenticator') . ' - ' . $rcmail->user->data['username']) .  
+        $out = html::tag('fieldset', array('class' => 'main'), html::tag('legend', array('id' => 'prefs-title', 'class' => 'boxtitle'), $this->gettext('twofactor_gauthenticator')). html::tag('legend', array('id' => 'prefs-title'), $rcmail->user->data['username']). html::div(array('class' => 'settingsbox', 'style' => 'margin: 0;'),
         html::div(array('class' => 'boxcontent'), $table->show() . 
             html::p(null, 
 	                $rcmail->output->button(array(
 		                'command' => 'plugin.twofactor_gauthenticator-save',
-		                'type' => 'input',
-		                'class' => 'button mainaction',
+		                'type' => 'button',
+		                'class' => 'button mainaction btn btn-primary submit',
 		                'label' => 'save'
-		            ))
+		            ))."<hr>"
                 
             		// button show/hide secret
             		//.'<input type="button" class="button mainaction" id="2FA_change_secret" value="'.$this->gettext('show_secret').'">'
@@ -367,7 +373,9 @@ class twofactor_gauthenticator extends rcube_plugin
             		.$html_check_code
                 )
         	)
-        );
+        ));
+
+
         
         // Construct the form
         $rcmail->output->add_gui_object('twofactor_gauthenticatorform', 'twofactor_gauthenticator-form');
@@ -378,8 +386,10 @@ class twofactor_gauthenticator extends rcube_plugin
             'method' => 'post',
             'action' => './?_task=settings&_action=plugin.twofactor_gauthenticator-save',
         ), $out);
+
+
 	    
-        $out = "<div class='box formcontainer scroller'>".$out."</div>";
+        $out = "<div class='box formcontainer scroller formcontent'>".$out."</div>";
         
         return $out;
     }
@@ -428,7 +438,7 @@ class twofactor_gauthenticator extends rcube_plugin
 		$user = $rcmail->user;
 
 		$arr_prefs = $user->get_prefs();
-		return $arr_prefs['twofactor_gauthenticator'] ?? null;
+		return $arr_prefs['twofactor_gauthenticator'];
 	}
 	
 	// we can set array to NULL to remove
@@ -501,7 +511,13 @@ class twofactor_gauthenticator extends rcube_plugin
                 $name = hash_hmac('md5', $rcmail->user->data['username'], $rcmail->config->get('des_key'));
 
                 if ($set) {
-                    $expires = time() + 2592000; // 30 days from now
+                	$daysInSeconds = intval($rcmail->config->get('save_device_xdays',true));
+                	if(is_numeric($daysInSeconds) && $daysInSeconds > 0){
+                		$daysInSeconds = $daysInSeconds * 86400;
+                	}else{
+                		$daysInSeconds = 2592000;
+                	}
+                    $expires = time() + $daysInSeconds; // X days from now
                     $rand = mt_rand();
                     $signature = hash_hmac('sha512', implode("\1\0\1", array($rcmail->user->data['username'], $this->__getSecret(), $user_agent, $rand, $expires)), $rcmail->config->get('des_key'), TRUE);
                     $plain_content = sprintf("%d:%d:%s", $expires, $rand, $signature);
@@ -521,7 +537,7 @@ class twofactor_gauthenticator extends rcube_plugin
                             if ($plain_content !== false) {
                                 $now = time();
                                 list($expires, $rand, $signature) = explode(':', $plain_content, 3);
-                                if ($expires > $now && ($expires - $now) <= 2592000) {
+                                if ($expires > $now && ($expires - $now) <= $daysInSeconds) {
                                     $signature_verification = hash_hmac('sha512', implode("\1\0\1", array($rcmail->user->data['username'], $this->__getSecret(), $user_agent, $rand, $expires)), $rcmail->config->get('des_key'), TRUE);
                                     // constant time
                                     $cmp = strlen($signature) ^ strlen($signature_verification);
