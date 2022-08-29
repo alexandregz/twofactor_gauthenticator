@@ -134,16 +134,14 @@ class twofactor_gauthenticator extends rcube_plugin
 		{
                         // with IP allowed, we don't need to check anything
                         if($rcmail->config->get('whitelist')) {
-                                $whitelist = $rcmail->config->get('whitelist');
-                                if(is_string($whitelist)){
-                                        $whitelist = explode(" ",$whitelist);
-                                }
-                                foreach($whitelist as $ip_to_check) {
-                                        if(CIDR::match($_SERVER['REMOTE_ADDR'], $ip_to_check)) {
-                                                if($rcmail->task === 'login') $this->__goingRoundcubeTask('mail');
-                                                return $p;
-                                        }
-                                }
+				if(is_array($rcmail->config->get('whitelist'))){
+					foreach($whitelist as $ip_to_check) {
+						if(CIDR::match($_SERVER['REMOTE_ADDR'], $ip_to_check)) {
+							if($rcmail->task === 'login') $this->__goingRoundcubeTask('mail');
+							return $p;
+						}
+					}
+				}
                         }
 
 			$code = rcube_utils::get_input_value('_code_2FA', rcube_utils::INPUT_POST);
