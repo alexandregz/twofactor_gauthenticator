@@ -18,6 +18,7 @@ $rcmail_config['qr_image_colour'] = "#000000";
 // Default: form field will be text (false)
 $rcmail_config['twofactor_formfield_as_password'] = false;
 
+$rcmail_config['enable_ua2fa'] = false;
 
 // Users allowed to use plugin (IMPORTANT: other users DON'T have plugin activated)
 $rcmail_config['users_allowed_2FA'] = array('ale.*@tereborace.com', 'administrator@tereborace.com');
