@@ -67,23 +67,27 @@ class twofactor_gauthenticator extends rcube_plugin
     	    	 
 		$this->load_config();
 
-		// users allowed to use plugin (not showed for others!).
-		//	-- From config.inc.php file.
-		//  -- You can use regexp: admin.*@domain.com
-		$users = $rcmail->config->get('users_allowed_2FA');
-		if(is_array($users)) {		// exists "users" from config.inc.php
-			foreach($users as $u) {
-				if (isset( $rcmail->user->data['username'])){
-					preg_match("/$u/", $rcmail->user->data['username'], $matches);
+		if($rcmail->config->get('enable_ua2fa')){
+			
+			// users allowed to use plugin (not showed for others!).
+			//	-- From config.inc.php file.
+			//  -- You can use regexp: admin.*@domain.com
+			$users = $rcmail->config->get('users_allowed_2FA');
+			if(is_array($users)) {		// exists "users" from config.inc.php
+				foreach($users as $u) {
+					if (isset( $rcmail->user->data['username'])){
+						preg_match("/$u/", $rcmail->user->data['username'], $matches);
 
-					if(isset($matches[0])) {
-						return true;
-					}
-				}	
+						if(isset($matches[0])) {
+							return true;
+						}
+					}	
+				}
+
+				// not allowed for all, except explicit
+				return false;
 			}
-
-			// not allowed for all, except explicit
-			return false;
+			
 		}
 
 		// by default, all users have plugin activated
