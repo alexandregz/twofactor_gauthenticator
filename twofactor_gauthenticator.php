@@ -234,6 +234,15 @@ class twofactor_gauthenticator extends rcube_plugin
     {
         $rcmail = rcmail::get_instance();
         
+        // 2022-04-03: Corrected security incidente reported by kototilt@haiiro.dev
+        //					"2FA in twofactor_gauthenticator can be bypassed allowing an attacker to disable 2FA or change the TOTP secret."
+        //
+        // Solution: if user don't have session created by any rendered page, we kick out
+        $config_2FA = self::__get2FAconfig();
+        if(!$_SESSION['twofactor_gauthenticator_2FA_login'] && $config_2FA['activate']) {
+            $this->__exitSession();
+        }
+	    
         $this->add_texts('localization/', true);
         $this->register_handler('plugin.body', array($this, 'twofactor_gauthenticator_form'));
         $rcmail->output->set_pagetitle($this->gettext('twofactor_gauthenticator'));
