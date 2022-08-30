@@ -445,7 +445,7 @@ class twofactor_gauthenticator extends rcube_plugin
 		$user = $rcmail->user;
 
 		$arr_prefs = $user->get_prefs();
-		return $arr_prefs['twofactor_gauthenticator'];
+		return array_key_exists('twofactor_gauthenticator',$arr_prefs) ? $arr_prefs['twofactor_gauthenticator'] : [];
 	}
 	
 	// we can set array to NULL to remove
