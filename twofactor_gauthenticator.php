@@ -139,7 +139,7 @@ class twofactor_gauthenticator extends rcube_plugin
                         // with IP allowed, we don't need to check anything
                         if($rcmail->config->get('whitelist')) {
 				if(is_array($rcmail->config->get('whitelist'))){
-					foreach($whitelist as $ip_to_check) {
+					foreach($rcmail->config->get('whitelist') as $ip_to_check) {
 						if(CIDR::match($_SERVER['REMOTE_ADDR'], $ip_to_check)) {
 							if($rcmail->task === 'login') $this->__goingRoundcubeTask('mail');
 							return $p;
@@ -366,9 +366,7 @@ class twofactor_gauthenticator extends rcube_plugin
         	$html_setup_all_fields = '<button type="button" class="button mainaction btn btn-primary submit" id="2FA_setup_fields" value="fill">Fill all fields</button><br />'.$this->gettext('setup_all_fields').'<br /><hr />';
         }
         
-        $html_check_code = '<div style="text-align:center;"><button style="margin-right: 10px; margin-bottom: 5px;" type="button" class="button mainaction btn btn-primary" id="2FA_check_code" value="'.$this->gettext('check_code').'">'.$this->gettext('check_code').'</button> <input data-icon="key" size="40" autocapitalize="off" autocomplete="off" placeholder="Enter TOTP code..." type="text" class="form-control" style="display: inline-block; width: 250px; margin-bottom: 5px;" id="2FA_code_to_check" maxlength="10"></div>';
-        
-        
+        $html_check_code = '<div style="text-align:center;"><input data-icon="key" size="40" autocapitalize="off" autocomplete="off" placeholder="Enter TOTP code..." type="text" class="form-control" style="display: inline-block; width: 250px; margin-right: 10px; margin-bottom: 5px;" id="2FA_code_to_check" maxlength="10" /><button style="margin-bottom: 5px;" type="button" class="button mainaction btn btn-primary" id="2FA_check_code" value="'.$this->gettext('check_code').'">'.$this->gettext('check_code').'</button></div>';        
         
         // Build the table with the divs around it
         $out = html::tag('fieldset', array('class' => 'main'), html::tag('legend', array('id' => 'prefs-title', 'class' => 'boxtitle'), $this->gettext('twofactor_gauthenticator')). html::tag('legend', array('id' => 'prefs-title'), $rcmail->user->data['username']). html::div(array('class' => 'settingsbox', 'style' => 'margin: 0;'),
