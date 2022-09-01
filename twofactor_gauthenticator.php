@@ -286,7 +286,7 @@ class twofactor_gauthenticator extends rcube_plugin
         $data = self::__get2FAconfig();
                 
         // Fields will be positioned inside of a table
-        $table = new html_table(array('cols' => 2, 'class' => 'propform cols-sm-6-6'));
+        $table = new html_table(array('cols' => 2, 'class' => 'propform cols-sm-8'));
 
         // Activate/deactivate
         $field_id = '2FA_activate';
