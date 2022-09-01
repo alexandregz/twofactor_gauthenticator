@@ -294,7 +294,7 @@ class twofactor_gauthenticator extends rcube_plugin
         
         $activateData = array('name' => $field_id, 'id' => $field_id, 'type' => 'checkbox');
 
-        if($data != null && array_key_exists('secret', $data)){
+        if($data != null && array_key_exists('secret', $data) && !empty($data['secret'])){
         	$activateData['checked'] = "checked";
         }
 
