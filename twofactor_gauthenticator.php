@@ -260,9 +260,17 @@ class twofactor_gauthenticator extends rcube_plugin
         }
         
         $data = self::__get2FAconfig();
-       	$data['secret'] = $secret;
-        $data['activate'] = $activate ? true : false;
-       	$data['recovery_codes'] = $recovery_codes;
+  
+	$data['activate'] = $activate ? true : false;
+
+       	if($data['activate']){
+	       	$data['secret'] = $secret;
+	       	$data['recovery_codes'] = $recovery_codes;
+       	}else{
+	       	$data['secret'] = null;
+	       	$data['recovery_codes'] = null;
+       	}
+	    
         self::__set2FAconfig($data);
 
         // if we can't save time into SESSION, the plugin logouts
