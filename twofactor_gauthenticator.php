@@ -175,7 +175,7 @@ class twofactor_gauthenticator extends rcube_plugin
 				}
 			}
 			// we're into some task but marked with login...
-			elseif($rcmail->task !== 'login' && ! $_SESSION['twofactor_gauthenticator_2FA_login'] >= $_SESSION['twofactor_gauthenticator_login'])
+			elseif($rcmail->task !== 'login' && array_key_exists("twofactor_gauthenticator_2FA_login",$_SESSION) && ! $_SESSION['twofactor_gauthenticator_2FA_login'] >= $_SESSION['twofactor_gauthenticator_login'])
 			{
 				$this->__exitSession();
 			}
@@ -239,7 +239,7 @@ class twofactor_gauthenticator extends rcube_plugin
         //
         // Solution: if user don't have session created by any rendered page, we kick out
         $config_2FA = self::__get2FAconfig();
-        if(!$_SESSION['twofactor_gauthenticator_2FA_login'] && $config_2FA['activate']) {
+        if((!array_key_exists("twofactor_gauthenticator_2FA_login",$_SESSION) && $config_2FA['activate']) {
             $this->__exitSession();
         }
 	    
