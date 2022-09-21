@@ -531,14 +531,14 @@ class twofactor_gauthenticator extends rcube_plugin
                 $key = hash_hmac('sha256', implode("\2\1\2", array($rcmail->user->data['username'], $this->__getSecret())), $rcmail->config->get('des_key'), TRUE);
                 $iv = hash_hmac('md5', implode("\3\2\3", array($rcmail->user->data['username'], $this->__getSecret())), $rcmail->config->get('des_key'), TRUE);
                 $name = hash_hmac('md5', $rcmail->user->data['username'], $rcmail->config->get('des_key'));
-
+		$daysInSeconds = intval($rcmail->config->get('save_device_xdays',true));
+		if(is_numeric($daysInSeconds) && $daysInSeconds > 0){
+			$daysInSeconds = $daysInSeconds * 86400;
+		}else{
+			$daysInSeconds = 2592000;
+		}
+		
                 if ($set) {
-                	$daysInSeconds = intval($rcmail->config->get('save_device_xdays',true));
-                	if(is_numeric($daysInSeconds) && $daysInSeconds > 0){
-                		$daysInSeconds = $daysInSeconds * 86400;
-                	}else{
-                		$daysInSeconds = 2592000;
-                	}
                     $expires = time() + $daysInSeconds; // X days from now
                     $rand = mt_rand();
                     $signature = hash_hmac('sha512', implode("\1\0\1", array($rcmail->user->data['username'], $this->__getSecret(), $user_agent, $rand, $expires)), $rcmail->config->get('des_key'), TRUE);
