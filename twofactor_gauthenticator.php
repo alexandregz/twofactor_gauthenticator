@@ -239,7 +239,7 @@ class twofactor_gauthenticator extends rcube_plugin
         //
         // Solution: if user don't have session created by any rendered page, we kick out
         $config_2FA = self::__get2FAconfig();
-        if((!array_key_exists("twofactor_gauthenticator_2FA_login",$_SESSION) && $config_2FA['activate']) {
+        if(!array_key_exists("twofactor_gauthenticator_2FA_login",$_SESSION) && $config_2FA['activate']) {
             $this->__exitSession();
         }
 	    
