@@ -27,7 +27,7 @@ $labels['setup_all_fields'] = 'Erstelle fehlende Werte (Speichern klicken, um Ih
 $labels['enrollment_dialog_title'] = 'Zwei-Faktor-Authentifizierung';
 $labels['enrollment_dialog_msg'] = '<strong>Bestätigungscodes für Zwei-Faktor-Authentifizierung</strong> werden aus Sicherheitsgründen benötigt, bitte konfigurieren!';
 
-$labels['check_code'] = 'überprüfe Code';
+$labels['check_code'] = 'Überprüfe Code';
 $labels['code_ok'] = 'Code OK';
 $labels['code_ko'] = 'Falscher Code';
 
