@@ -241,3 +241,12 @@ Password:xxxxxxxxx
 Expected "settings" task, something went wrong
 ``` 
 
+
+
+## docker-compose
+
+You can use `docker-compose` file to modify and test plugin:
+
+- Replace `mail.EXAMPLE.com` for your IMAP and SMTP server.
+- `docker-compose up`
+- You can use `adminer` to check DB and reset secrets, for example.

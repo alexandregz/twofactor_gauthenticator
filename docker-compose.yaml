@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+    roundcubedb:
+        image: mysql:5.7
+        container_name: roundcubedb
+        #    restart: unless-stopped
+        volumes:
+            - ./db/mysql:/var/lib/mysql
+        # ports:
+        #     - 34010:5432
+        #     - 33006:3306
+        environment:
+            - MYSQL_ROOT_PASSWORD=roundcube-mysql-pw
+            - MYSQL_DATABASE=roundcubemail
+
+    roundcubemail:
+        image: roundcube/roundcubemail:latest
+        container_name: roundcubemail
+        #    restart: unless-stopped
+        depends_on:
+            - roundcubedb
+        links:
+            - roundcubedb
+        volumes:
+            - .:/var/www/html/plugins/twofactor_gauthenticator
+        ports:
+            - 9001:80
+        environment:
+            - ROUNDCUBEMAIL_DB_TYPE=mysql
+            - ROUNDCUBEMAIL_DB_HOST=roundcubedb
+            - ROUNDCUBEMAIL_DB_PASSWORD=roundcube-mysql-pw
+            - ROUNDCUBEMAIL_SKIN=elastic
+            - ROUNDCUBEMAIL_DEFAULT_HOST=mail.EXAMPLE.com
+            - ROUNDCUBEMAIL_SMTP_SERVER=mail.EXAMPLE.com
+            - ROUNDCUBEMAIL_PLUGINS=twofactor_gauthenticator
+
+    adminer:
+        container_name: adminer
+        image: adminer
+        restart: always
+        ports:
+        - 8080:8080
+        environment:
+            ADMINER_DEFAULT_SERVER: roundcubedb
+

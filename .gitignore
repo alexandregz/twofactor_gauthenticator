@@ -14,3 +14,5 @@ Session.vim
 
 
 .DS_Store
+
+db/*
