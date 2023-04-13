@@ -49,7 +49,7 @@ if (window.rcmail) {
 			});
 			
 			// add qr-code before msg_infor
-			var url_qr_code_values = 'otpauth://totp/' +$('#prefs-title').html().split(/ - /)[1]+ '?secret=' +$('#2FA_secret').get(0).value +'&issuer=RoundCube2FA%20'+window.location.hostname;
+			var url_qr_code_values = 'otpauth://totp/' +$('#prefs-title').html().split(/ - /)[0]+ '?secret=' +$('#2FA_secret').get(0).value +'&issuer=%20'+window.location.hostname;
 			$('table tr:last').before('<tr class="form-group row"><td class="title col-sm-6">' +rcmail.gettext('qr_code', 'twofactor_gauthenticator')+ '</td><td class="col-sm-6"><input type="button" class="button mainaction btn btn-primary" id="2FA_change_qr_code" value="' 
 					+rcmail.gettext('hide_qr_code', 'twofactor_gauthenticator')+ '"><div id="2FA_qr_code" style="display: visible; margin-top: 10px;"></div></td></tr>');
 			
