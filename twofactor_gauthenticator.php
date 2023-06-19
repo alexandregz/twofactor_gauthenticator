@@ -542,7 +542,7 @@ class twofactor_gauthenticator extends rcube_plugin
 
         // log error into $_logs_file directory
         private function __logError() {
-		$_log_dir = $rcmail->config->get('log_dir')
+		$_log_dir = $rcmail->config->get('log_dir');
                 file_put_contents($_log_dir.'/'.$this->_logs_file, date("Y-m-d H:i:s")."|".$_SERVER['HTTP_X_FORWARDED_FOR']."|".$_SERVER['REMOTE_ADDR']."\n", FILE_APPEND);
         }
 
