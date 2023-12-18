@@ -38,3 +38,4 @@ $labels['check_code_to_activate'] = 'To save, please scan the QR Code and enter 
 // Messages used for the different portions of the plugin
 $messages = array();
 $messages['successfully_saved'] = '2-Factor authentication settings saved successfully.';
+

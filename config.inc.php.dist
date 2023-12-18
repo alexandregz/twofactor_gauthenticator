@@ -8,12 +8,17 @@ $rcmail_config['whitelist'] = array('192.168.1.0/24', '::1', '192.168.0.9');
 
 // Admin can disable saving devices for all users (paranoid mode)
 // Default: allow saving devices (true)
-$rcmail_config['allow_save_device_30days'] = true;
+$rcmail_config['allow_save_device_xdays'] = true;
+
+$rcmail_config['save_device_xdays'] = 30;
+
+$rcmail_config['qr_image_colour'] = "#000000";
 
 // Make the 2-step field a masked password input type
 // Default: form field will be text (false)
 $rcmail_config['twofactor_formfield_as_password'] = false;
 
+$rcmail_config['enable_ua2fa'] = false;
 
 // Users allowed to use plugin (IMPORTANT: other users DON'T have plugin activated)
 $rcmail_config['users_allowed_2FA'] = array('ale.*@tereborace.com', 'administrator@tereborace.com');
