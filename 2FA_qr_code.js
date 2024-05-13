@@ -13,5 +13,11 @@ if (window.rcmail) {
 		});
 
 	$('#2FA_qr_code').prop('title', '');	// enjoy the silence (qrcode.js uses text to set title)
+
+        // white frame to dark mode, only to img generated
+        $('#2FA_qr_code').children('img').css({
+                'background-color': '#fff',
+                padding: '4px'
+        });
   });
 }
