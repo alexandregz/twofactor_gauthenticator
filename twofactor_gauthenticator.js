@@ -160,9 +160,9 @@ if (window.rcmail) {
     rcmail.add_element(tabtwofactorgauthenticator, 'tabs');
     rcmail.register_command('plugin.twofactor_gauthenticator', function() { rcmail.goto_url('plugin.twofactor_gauthenticator') }, true);
     rcmail.register_command('plugin.twofactor_gauthenticator-save', function() {
-    	if(!$('#2FA_secret').get(0).value) {
+    	/*if(!$('#2FA_secret').get(0).value) {
     		$('#2FA_secret').get(0).value = createSecret();
-    	}
+    	}*/
         rcmail.gui_objects.twofactor_gauthenticatorform.submit();
     }, true);
   });
