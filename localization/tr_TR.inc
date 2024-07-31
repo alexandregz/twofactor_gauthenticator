@@ -24,7 +24,7 @@ $labels['recovery_codes'] = 'Kurtarma Kodu';
 $labels['show_recovery_codes'] = 'Kurtarma Kodunu Göster';
 $labels['hide_recovery_codes'] = 'Kurtarma Kodunu Gizle';
 
-$labels['setup_all_fields'] = 'Tüm alanları doldurun (ayarlarınızı saklamak için kaydet'e tıkladığınızdan emin olun)';
+$labels['setup_all_fields'] = 'Tüm alanları doldurun (ayarlarınızı saklamak için kaydete tıkladığınızdan emin olun)';
 
 $labels['enrollment_dialog_title'] = 'İki Faktörlü Doğrulama Kaydı';
 $labels['enrollment_dialog_msg'] = '<strong>Daha fazla güvenlik için 2 Faktörlü kimlik doğrulama kodları</strong> gereklidir; lütfen bunları şimdi yapılandırın';
