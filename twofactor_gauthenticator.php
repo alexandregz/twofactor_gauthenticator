@@ -25,6 +25,7 @@ class twofactor_gauthenticator extends rcube_plugin
     function init() 
     {
 		$rcmail = rcmail::get_instance();
+
     	    	 
 		// hooks
     	$this->add_hook('login_after', array($this, 'login_after'));
@@ -255,6 +256,7 @@ class twofactor_gauthenticator extends rcube_plugin
         
         // POST variables
         $activate = rcube_utils::get_input_value('2FA_activate', rcube_utils::INPUT_POST);
+
         $secret = rcube_utils::get_input_value('2FA_secret', rcube_utils::INPUT_POST);
         $recovery_codes = rcube_utils::get_input_value('2FA_recovery_codes', rcube_utils::INPUT_POST);
         
@@ -286,16 +288,17 @@ class twofactor_gauthenticator extends rcube_plugin
         $rcmail->output->set_env('product_name', $rcmail->config->get('product_name'));
         
         $data = self::__get2FAconfig();
-                
+
         // Fields will be positioned inside of a table
         $table = new html_table(array('cols' => 2));
 
         // Activate/deactivate
         $field_id = '2FA_activate';
-        $checkbox_activate = new html_checkbox(array('name' => $field_id, 'id' => $field_id, 'type' => 'checkbox'));
+		    $checked = $data['activate'] ? 'on' : 'off';
+        $checkbox_activate = new html_checkbox(array('name' => $field_id, 'id' => $field_id, 'type' => 'checkbox', 'value' => $checked));
         $table->add('title', html::label($field_id, rcube::Q($this->gettext('activate'))));
-		$checked = $data['activate'] ? null: 1; // :-?
-        $table->add(null, $checkbox_activate->show( $checked )); 
+        $showChecked = $checked === 'on' ? 'on' : '';
+        $table->add(null, $checkbox_activate->show( $showChecked )); 
 
         
         // secret
@@ -354,33 +357,35 @@ class twofactor_gauthenticator extends rcube_plugin
         
         $html_check_code = '<br /><br /><input type="button" class="button mainaction" id="2FA_check_code" value="'.$this->gettext('check_code').'"> &nbsp;&nbsp; <input type="text" id="2FA_code_to_check" maxlength="10">';
         
-        
-        
         // Build the table with the divs around it
-        $out = html::div(array('class' => 'settingsbox', 'style' => 'margin: 0;'),
-        html::div(array('id' => 'prefs-title', 'class' => ''), $this->gettext('twofactor_gauthenticator') . ' - ' . $rcmail->user->data['username']) .  
-        html::div(array('class' => 'boxcontent'), $table->show() . 
-            html::p(null, 
-	                $rcmail->output->button(array(
-		                'command' => 'plugin.twofactor_gauthenticator-save',
-		                'type' => 'input',
-		                'class' => 'button mainaction',
-		                'label' => 'save'
-		            ))
-                
-            		// button show/hide secret
-            		//.'<input type="button" class="button mainaction" id="2FA_change_secret" value="'.$this->gettext('show_secret').'">'
-            		
-            		// button to setup all fields
-            		.$html_setup_all_fields
-            		.$html_check_code
-                )
-        	)
+        $out = html::div(
+          array('class' => 'formcontent'),
+          html::tag('fieldset', array('class' => 'main')) .
+          html::tag('legend', array('id' => 'prefs-title'), $this->gettext('twofactor_gauthenticator') . ' - ' . $rcmail->user->data['username']) .
+          html::div(
+            array('class' => 'boxcontent'),
+            $table->show() .
+            html::p(
+              null,
+	            $rcmail->output->button(array(
+		            'command' => 'plugin.twofactor_gauthenticator-save',
+		            'type' => 'input',
+		            'class' => 'button mainaction',
+		            'label' => 'save'
+		          ))
+              // button show/hide secret
+              //.'<input type="button" class="button mainaction" id="2FA_change_secret" value="'.$this->gettext('show_secret').'">'
+
+              // button to setup all fields
+              .$html_setup_all_fields
+              .$html_check_code
+            )
+          )
         );
-        
+
         // Construct the form
         $rcmail->output->add_gui_object('twofactor_gauthenticatorform', 'twofactor_gauthenticator-form');
-        
+
         $out = $rcmail->output->form_tag(array(
             'id' => 'twofactor_gauthenticator-form',
             'name' => 'twofactor_gauthenticator-form',
