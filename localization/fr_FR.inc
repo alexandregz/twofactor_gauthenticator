@@ -10,7 +10,7 @@ $labels['two_step_verification_form'] = 'Vérification en 2 étapes';
 
 $labels['secret'] = 'Secret';
 $labels['qr_code'] = 'QR Code';
-$labels['msg_infor'] = 'Vous pouvez scanner ce QR code avec une application compatible TOTP.';
+$labels['msg_infor'] = 'Vous pouvez scanner ce QR code avec une application compatible TOTP comme <a href="https://github.com/Skyost/OpenAuthenticator" target="_blank">OpenAuthenticator</a> (<a href="https://play.google.com/store/apps/details?id=app.openauthenticator" target="_blank">Play Store</a> | <a href="https://apps.apple.com/us/app/open-authenticator-by-skyost/id6479272927" target="_blank">Istore</a>).';
 
 $labels['show_secret'] = 'Afficher le secret';
 $labels['hide_secret'] = 'Masquer le secret';

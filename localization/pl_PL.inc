@@ -10,7 +10,7 @@ $labels['two_step_verification_form'] = 'Podaj hasło jednorazowe';
 
 $labels['secret'] = 'Tajny klucz';
 $labels['qr_code'] = 'Kod QR';
-$labels['msg_infor'] = 'Możesz dodać <i>tajny kod</i> wygenerowany przez aplikację <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a> i użyć go';
+$labels['msg_infor'] = 'Możesz dodać <i>tajny kod</i> wygenerowany przez aplikację <a href="https://github.com/Skyost/OpenAuthenticator" target="_blank">OpenAuthenticator</a> (<a href="https://play.google.com/store/apps/details?id=app.openauthenticator" target="_blank">Play Store</a> | <a href="https://apps.apple.com/us/app/open-authenticator-by-skyost/id6479272927" target="_blank">Istore</a>) lub <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a> i użyć go';
 
 $labels['show_secret'] = 'Pokaż tajny klucz';
 $labels['hide_secret'] = 'Ukryj tajny klucz';

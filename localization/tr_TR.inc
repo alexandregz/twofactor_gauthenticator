@@ -9,9 +9,9 @@ $labels['two_step_verification_form'] = '2-Faktörlü Doğrulama Kodu:';
 
 $labels['secret'] = 'Gizli Kod';
 $labels['qr_code'] = 'QR Kodu';
-$labels['msg_infor'] = 'İki faktörlü doğrulama için Android veya IOS İşletim sistemli telefonunuza Google Authenticator Uygulaması indirmeniz gereklidir.<br>
-IOS : <a href="https://apps.apple.com/tr/app/google-authenticator/id388497605" target="_blank">Uygulamaya git</a><br>
-Android : <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en_US" target="_blank">Uygulamaya git</a>';
+$labels['msg_infor'] = 'İki faktörlü doğrulama için Android veya IOS İşletim sistemli telefonunuza Open Authenticator Uygulaması indirmeniz gereklidir.<br>
+Android : <a href="https://play.google.com/store/apps/details?id=app.openauthenticator" target="_blank">Uygulamaya git</a><br>
+IOS : <a href="https://apps.apple.com/us/app/open-authenticator-by-skyost/id6479272927" target="_blank">Uygulamaya git</a>';
 
 $labels['show_secret'] = 'Gizli Kodu Göster';
 $labels['hide_secret'] = 'Kodu Gizle';
