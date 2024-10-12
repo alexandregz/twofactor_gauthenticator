@@ -11,7 +11,7 @@ $labels['remember_computer'] = 'Hugs denne datamaskinen';
 
 $labels['secret'] = 'Hemmelegheit';
 $labels['qr_code'] = 'QR-kode';
-$labels['msg_infor'] = 'You can add a <i>secret</i> generated with <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a> and use that';
+$labels['msg_infor'] = 'You can add a <i>secret</i> generated with <a href="https://github.com/Skyost/OpenAuthenticator" target="_blank">OpenAuthenticator</a> (<a href="https://play.google.com/store/apps/details?id=app.openauthenticator" target="_blank">Play Store</a> | <a href="https://apps.apple.com/us/app/open-authenticator-by-skyost/id6479272927" target="_blank">Istore</a>) or <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a> and use that';
 
 $labels['show_secret'] = 'Vis hemmelegheita';
 $labels['hide_secret'] = 'Skjul hemmelegheita';

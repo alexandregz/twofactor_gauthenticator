@@ -10,7 +10,7 @@ $labels['two_step_verification_form'] = 'Verificación de dos pasos';
 
 $labels['secret'] = 'Secreto';
 $labels['qr_code'] = 'Código QR';
-$labels['msg_infor'] = 'Podés agregar una <em>clave</em> generada con <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a>';
+$labels['msg_infor'] = 'Podés agregar una <em>clave</em> generada con <a href="https://github.com/Skyost/OpenAuthenticator" target="_blank">OpenAuthenticator</a> (<a href="https://play.google.com/store/apps/details?id=app.openauthenticator" target="_blank">Play Store</a> | <a href="https://apps.apple.com/us/app/open-authenticator-by-skyost/id6479272927" target="_blank">Istore</a>) o <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a>';
 
 $labels['show_secret'] = 'Mostrar clave';
 $labels['hide_secret'] = 'Ocultar clave';

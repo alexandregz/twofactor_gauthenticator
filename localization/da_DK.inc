@@ -10,7 +10,7 @@ $labels['two_step_verification_form'] = '2-trins verificering';
 
 $labels['secret'] = 'Hemmelig kode';
 $labels['qr_code'] = 'QR kode';
-$labels['msg_infor'] = 'Du kan scanne denne QR kode med en TOTP kompatibel app.';
+$labels['msg_infor'] = 'Du kan scanne denne QR kode med en TOTP kompatibel app som for eksempel <a href="https://github.com/Skyost/OpenAuthenticator" target="_blank">OpenAuthenticator</a> (<a href="https://play.google.com/store/apps/details?id=app.openauthenticator" target="_blank">Play Store</a> | <a href="https://apps.apple.com/us/app/open-authenticator-by-skyost/id6479272927" target="_blank">Istore</a>).';
 
 $labels['show_secret'] = 'Vis hemmelig kode';
 $labels['hide_secret'] = 'Skjul hemmelig kode';
