@@ -41,9 +41,9 @@ Installation
 
 Configuration
 -------------
-Go to the Settings task and in the "2steps Google verification" menu, click 'Setup all fields (needs Save)'.
+Copy `HOME_RC/plugins/twofactor_gauthenticator/config.inc.php.dist` to `HOME_RC/plugins/twofactor_gauthenticator/config.inc.php`.
 
-The plugin automatically creates the secret for you.
+Configure or remove at least the config value "users_allowed_2FA" from config.inc.php and configure other config values to your needs.
 
 NOTE: plugin must be base32 valid characters ([A-Z][2-7]), see https://github.com/alexandregz/twofactor_gauthenticator/blob/master/PHPGangsta/GoogleAuthenticator.php#L18
 
@@ -56,13 +56,13 @@ The first time you open the app you see the default settings:
 
 ![Default Settings](https://github.com/user-attachments/assets/deb6718d-e2e0-4615-bf54-77f1207698d1)
 
-The most easy way to configure the app is by clicking "Fill all fields":
+The most easy way to configure the app is by clicking "Fill all fields". The plugin automatically creates the secret for you:
 
 ![Untitled](https://github.com/user-attachments/assets/e8f0582a-66f7-435b-a2d2-bac94cfd5acd)
 
 Now scan the QR code with any authenticator app, generate a code, enter your new code in the bottom field and press "Check code". If your code is a match, you can press "Save" to save the configuration. 
 
-Alternatively, you can configure the app manually by checking the checkbox and pressing "Save". A secret wil be automatically generated:
+Alternatively, you can configure the app manually by checking the checkbox and pressing "Save". A secret will be automatically generated:
 
 ![Settings OK](https://github.com/user-attachments/assets/12acfd8d-b018-4739-ae01-b77940ca631d)
 
