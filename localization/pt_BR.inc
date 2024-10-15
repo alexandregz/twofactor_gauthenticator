@@ -11,6 +11,8 @@ $labels['secret'] = 'Contra Senha';
 $labels['qr_code'] = 'QR Code';
 $labels['msg_infor'] = 'Escaneie o QR code abaixo com um aplicativo TOTP, como o Authy na sua versão <a href="https://github.com/Skyost/OpenAuthenticator" target="_blank">OpenAuthenticator</a> (<a href="https://play.google.com/store/apps/details?id=app.openauthenticator" target="_blank">Play Store</a> | <a href="https://apps.apple.com/us/app/open-authenticator-by-skyost/id6479272927" target="_blank">Istore</a>) ou <a href="https://play.google.com/store/apps/details?id=com.authy.authy" target="_blank">Android - Play Store</a> ou  em sua versão <a href="https://itunes.apple.com/br/app/authy/id494168017" target="_blank">Apple iOS - AppStore</a>.';
 
+$labels['msg_help'] = '<a href="https://github.com/alexandregz/twofactor_gauthenticator/tree/master?tab=readme-ov-file#usage" target="_blank">Manual do usuário</a>';
+
 $labels['show_secret'] = 'Mostrar contra senha';
 $labels['hide_secret'] = 'Esconder contra senha';
 $labels['create_secret'] = 'Criar contra senha';

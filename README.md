@@ -1,7 +1,7 @@
-2Steps verification
+Two-factor verification
 ==========================
 
-This RoundCube plugin adds the 2-step verification(OTP) to the login proccess.
+This RoundCube plugin adds the 2-step verification (OTP) to the login proccess.
 
 It works with all TOTP applications [RFC 6238](https://www.rfc-editor.org/info/rfc6238)
 
@@ -27,51 +27,50 @@ Also thx to [Victor R. Rodriguez Dominguez](https://github.com/vrdominguez) for 
 Installation
 ------------
 - Clone from github:
-    HOME_RC/plugins$ git clone [https://github.com/alexandregz/twofactor_gauthenticator.git](https://github.com/alexandregz/twofactor_gauthenticator.git)
+    `HOME_RC/plugins$ git clone https://github.com/alexandregz/twofactor_gauthenticator.git`
     
 
 (Or use composer
-     HOME_RC$ composer require alexandregz/twofactor_gauthenticator:dev-master
+     `HOME_RC$ composer require alexandregz/twofactor_gauthenticator:dev-master`
      
  NOTE: Answer **N** when composer ask you about plugin activation)
 
-- Activate the plugin into HOME_RC/config/config.inc.php:
-    $config['plugins'] = array('twofactor_gauthenticator');
+- Activate the plugin into `HOME_RC/config/config.inc.php`:
+    `$config['plugins'] = array('twofactor_gauthenticator');`
 
 
 Configuration
 -------------
-Go to the Settings task and in the "2steps Google verification" menu, click 'Setup all fields (needs Save)'.
+Copy `HOME_RC/plugins/twofactor_gauthenticator/config.inc.php.dist` to `HOME_RC/plugins/twofactor_gauthenticator/config.inc.php`.
 
-The plugin automatically creates the secret for you.
+Configure or remove at least the config value "users_allowed_2FA" from config.inc.php and configure other config values to your needs.
 
 NOTE: plugin must be base32 valid characters ([A-Z][2-7]), see https://github.com/alexandregz/twofactor_gauthenticator/blob/master/PHPGangsta/GoogleAuthenticator.php#L18
 
 From https://github.com/alexandregz/twofactor_gauthenticator/issues/139
 
 
-	
-To add accounts to the app, you can use the QR-Code (easy-way) or type the secret.
-After checking the first code click 'Save'.
+Usage
+----------------
+The first time you open the app you see the default settings:
 
-![Settings by default](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/003-settings_default.png)
+![Default Settings](https://github.com/user-attachments/assets/deb6718d-e2e0-4615-bf54-77f1207698d1)
 
-![Settings OK](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/004-settings_ok.png)
+The most easy way to configure the app is by clicking "Fill all fields". The plugin automatically creates the secret for you:
 
-![QR-Code example](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/005-settings_qr_code.png)
+![Untitled](https://github.com/user-attachments/assets/e8f0582a-66f7-435b-a2d2-bac94cfd5acd)
 
+Now scan the QR code with any authenticator app, generate a code, enter your new code in the bottom field and press "Check code". If your code is a match, you can press "Save" to save the configuration. 
 
-Also, you can add "Recovery codes" for use one time (they delete when are used). Recovery codes are OPTIONAL, so they can be left blank.
+Alternatively, you can configure the app manually by checking the checkbox and pressing "Save". A secret will be automatically generated:
 
-![Recovery codes](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/006-recovery_codes.png) 
+![Settings OK](https://github.com/user-attachments/assets/12acfd8d-b018-4739-ae01-b77940ca631d)
 
+Now you can press "Show QR code" or use the generated secret to connect to any authenticator app.
 
-![Check codes](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/007-check_code.png) 
+Also, you can add "Recovery codes" for use one time (they are deleted when used). Recovery codes are OPTIONAL, so they can be left blank.
 
-
-
-![Recovery codes](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/008-msg_infor_about_enrollment.png) 
-
+![Recovery codes](https://github.com/user-attachments/assets/dedba088-50c6-423d-8ed8-a1137c37d41d)
 
 
 Enrollment Users
@@ -97,7 +96,7 @@ MIT, see License
 
 Notes
 -----
-Tested with RoundCube 0.9.5 and Google app. Also with Roundcube 1.0.4
+Tested with RoundCube 0.9.5 and Google app. Also with Roundcube 1.0.4 and 1.6.9 with OpenAuthenticator.
 
 Remember, sync time it's essential for TOTP: "For this to work, the clocks of the user's device and the server need to be roughly synchronized (the server will typically accept one-time passwords generated from timestamps that differ by ±1 from the client's timestamp)" (from http://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm)
 

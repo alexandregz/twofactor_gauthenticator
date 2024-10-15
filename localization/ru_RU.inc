@@ -12,6 +12,8 @@ $labels['secret'] = 'Ключ';
 $labels['qr_code'] = 'QR-код';
 $labels['msg_infor'] = 'Вы можете добавить <i>ключ</i> сгенерированный <a href="https://github.com/Skyost/OpenAuthenticator" target="_blank">OpenAuthenticator</a> (<a href="https://play.google.com/store/apps/details?id=app.openauthenticator" target="_blank">Play Store</a> | <a href="https://apps.apple.com/us/app/open-authenticator-by-skyost/id6479272927" target="_blank">Istore</a>) или <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a> и использовать его';
 
+$labels['msg_help'] = '<a href="https://github.com/alexandregz/twofactor_gauthenticator/tree/master?tab=readme-ov-file#usage" target="_blank">Руководство пользователя</a>';
+
 $labels['show_secret'] = 'Показать ключ';
 $labels['hide_secret'] = 'Скрыть ключ';
 $labels['create_secret'] = 'Создать ключ';

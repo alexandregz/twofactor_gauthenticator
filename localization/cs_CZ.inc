@@ -11,6 +11,8 @@ $labels['secret'] = 'Tajný kód';
 $labels['qr_code'] = 'QR kód';
 $labels['msg_infor'] = 'Zobrazený QR kód, obsahující nastavení pro dvoufázové ověření, můžete použít v TOTP kompatibilní aplikaci jako je <a href="https://github.com/Skyost/OpenAuthenticator" target="_blank">OpenAuthenticator</a> (<a href="https://play.google.com/store/apps/details?id=app.openauthenticator" target="_blank">Play Store</a> | <a href="https://apps.apple.com/us/app/open-authenticator-by-skyost/id6479272927" target="_blank">Istore</a>) nebo <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a>.';
 
+$labels['msg_help'] = '<a href="https://github.com/alexandregz/twofactor_gauthenticator/tree/master?tab=readme-ov-file#usage" target="_blank">Uživatelská příručka</a>';
+
 $labels['show_secret'] = 'Zobrazit tajný kód';
 $labels['hide_secret'] = 'Skrýt tajný kód';
 $labels['create_secret'] = 'Vytvořit tajný kód';
