@@ -8,6 +8,7 @@ $labels['two_step_verification_form'] = 'קוד אימות דו-שלבי:';
 $labels['secret'] = 'קוד סודי';
 $labels['qr_code'] = 'QR קוד';
 $labels['msg_infor'] = 'תוכל לסרוד קוד QR זה המכיל הגדרות אימות דו-שלבי על ידי אפליקצייה התומכת ב-TOTP כמו <a href="https://github.com/Skyost/OpenAuthenticator" target="_blank">OpenAuthenticator</a> (<a href="https://play.google.com/store/apps/details?id=app.openauthenticator" target="_blank">Play Store</a> | <a href="https://apps.apple.com/us/app/open-authenticator-by-skyost/id6479272927" target="_blank">Istore</a>) or <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a>';
+$labels['msg_help'] = '<a href="https://github.com/alexandregz/twofactor_gauthenticator/tree/master?tab=readme-ov-file#usage" target="_blank">מדריך למשתמש</a>';
 $labels['show_secret'] = 'הראה קוד סודי';
 $labels['hide_secret'] = 'הסתר קוד סודי';
 $labels['create_secret'] = 'צור קודי סודי';

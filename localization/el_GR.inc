@@ -11,6 +11,8 @@ $labels['secret'] = 'Μυστικό Κλειδί (Secret)';
 $labels['qr_code'] = 'QR Code';
 $labels['msg_infor'] = 'Μπορείτε να σαρώσετε τον QR code που περιέχει της ρυθμίσεις διπλής πιστοποίησης (2FA) με μια εφαρμογή TOTP (TOTP app) όπως ο <a href="https://github.com/Skyost/OpenAuthenticator" target="_blank">OpenAuthenticator</a> (<a href="https://play.google.com/store/apps/details?id=app.openauthenticator" target="_blank">Play Store</a> | <a href="https://apps.apple.com/us/app/open-authenticator-by-skyost/id6479272927" target="_blank">Istore</a>) ή <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a>';
 
+$labels['msg_help'] = '<a href="https://github.com/alexandregz/twofactor_gauthenticator/tree/master?tab=readme-ov-file#usage" target="_blank">Εγχειρίδιο χρήσης</a>';
+
 $labels['show_secret'] = 'Εμφάνιση Κλειδιού';
 $labels['hide_secret'] = 'Απόκρυψη Κλειδιού';
 $labels['create_secret'] = 'Δημιουργία Κλειδιού';

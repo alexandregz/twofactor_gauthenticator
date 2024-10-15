@@ -11,6 +11,7 @@ $labels['two_step_verification_form'] = '二段階認証';
 $labels['secret'] = '秘密鍵';
 $labels['qr_code'] = 'QRコード';
 $labels['msg_infor'] = 'ここに <a href="https://github.com/Skyost/OpenAuthenticator" target="_blank">OpenAuthenticator</a> (<a href="https://play.google.com/store/apps/details?id=app.openauthenticator" target="_blank">Play Store</a> | <a href="https://apps.apple.com/us/app/open-authenticator-by-skyost/id6479272927" target="_blank">Istore</a>) または <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a> で作成した<i>秘密鍵</i>を追加して使用できます';
+$labels['msg_help'] = '<a href="https://github.com/alexandregz/twofactor_gauthenticator/tree/master?tab=readme-ov-file#usage" target="_blank">ユーザーマニュアル</a>';
 $labels['show_secret'] = '秘密鍵表示';
 $labels['hide_secret'] = '秘密鍵非表示';
 $labels['create_secret'] = '秘密鍵作成';

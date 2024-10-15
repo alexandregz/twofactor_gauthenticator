@@ -8,6 +8,7 @@ $labels['two_step_verification_form'] = '2-staps verificatie';
 $labels['secret'] = 'Secret';
 $labels['qr_code'] = 'QR Code';
 $labels['msg_infor'] = 'Scan deze QR code met een TOTP app, beschikbaar op de meeste platformen, zoals bijvoorbeeld <a href="https://github.com/Skyost/OpenAuthenticator" target="_blank">OpenAuthenticator</a> (<a href="https://play.google.com/store/apps/details?id=app.openauthenticator" target="_blank">Play Store</a> | <a href="https://apps.apple.com/us/app/open-authenticator-by-skyost/id6479272927" target="_blank">Istore</a>).';
+$labels['msg_help'] = '<a href="https://github.com/alexandregz/twofactor_gauthenticator/tree/master?tab=readme-ov-file#usage" target="_blank">Gebruiksaanwijzing</a>';
 $labels['show_secret'] = 'Secret weergeven';
 $labels['hide_secret'] = 'Secret verbergen';
 $labels['create_secret'] = 'Secret aanmaken';

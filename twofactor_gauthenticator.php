@@ -354,7 +354,7 @@ class twofactor_gauthenticator extends rcube_plugin
         
         $html_check_code = '<br /><br /><input type="button" class="button mainaction" id="2FA_check_code" value="'.$this->gettext('check_code').'"> &nbsp;&nbsp; <input type="text" id="2FA_code_to_check" maxlength="10">';
         
-        
+        $html_help_code = '<br /><br /> &#9432; '.$this->gettext('msg_help');
         
         // Build the table with the divs around it
         $out = html::div(array('class' => 'settingsbox', 'style' => 'margin: 0;'),
@@ -374,6 +374,7 @@ class twofactor_gauthenticator extends rcube_plugin
             		// button to setup all fields
             		.$html_setup_all_fields
             		.$html_check_code
+            		.$html_help_code
                 )
         	)
         );

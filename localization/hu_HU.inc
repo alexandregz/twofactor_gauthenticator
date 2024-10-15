@@ -11,6 +11,8 @@ $labels['secret'] = 'Titok';
 $labels['qr_code'] = 'QR-kód';
 $labels['msg_infor'] = 'Beolvashatja ezt a kétfaktoros beállításokat tartalmazó QR-kódot egy TOTP kompatibilis alkalmazással, mint pl. a <a href="https://github.com/Skyost/OpenAuthenticator" target="_blank">OpenAuthenticator</a> (<a href="https://play.google.com/store/apps/details?id=app.openauthenticator" target="_blank">Play Store</a> | <a href="https://apps.apple.com/us/app/open-authenticator-by-skyost/id6479272927" target="_blank">Istore</a>) vagy <a href="https://github.com/google/google-authenticator" target="_blank">Google Hitelesítő</a>';
 
+$labels['msg_help'] = '<a href="https://github.com/alexandregz/twofactor_gauthenticator/tree/master?tab=readme-ov-file#usage" target="_blank">Felhasználói kézikönyv</a>';
+
 $labels['show_secret'] = 'Titok mutatása';
 $labels['hide_secret'] = 'Titok elrejtése';
 $labels['create_secret'] = 'Titok készítése';

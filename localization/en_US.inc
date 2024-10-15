@@ -11,6 +11,8 @@ $labels['secret'] = 'Secret';
 $labels['qr_code'] = 'QR Code';
 $labels['msg_infor'] = 'You can scan this QR code containing the 2-Factor settings using a TOTP compatible app such as <a href="https://github.com/Skyost/OpenAuthenticator" target="_blank">OpenAuthenticator</a> (<a href="https://play.google.com/store/apps/details?id=app.openauthenticator" target="_blank">Play Store</a> | <a href="https://apps.apple.com/us/app/open-authenticator-by-skyost/id6479272927" target="_blank">Istore</a>) or <a href="https://github.com/google/google-authenticator" target="_blank">google-authenticator</a>';
 
+$labels['msg_help'] = '<a href="https://github.com/alexandregz/twofactor_gauthenticator/tree/master?tab=readme-ov-file#usage" target="_blank">User manual</a>';
+
 $labels['show_secret'] = 'Show secret';
 $labels['hide_secret'] = 'Hide secret';
 $labels['create_secret'] = 'Create secret';
