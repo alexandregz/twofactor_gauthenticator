@@ -1,46 +1,50 @@
 Two-factor verification
-==========================
+=======================
 
 This RoundCube plugin adds the 2-step verification (OTP) to the login proccess.
 
-It works with all TOTP applications [RFC 6238](https://www.rfc-editor.org/info/rfc6238)
+It works with all TOTP applications [RFC 6238](https://www.rfc-editor.org/info/rfc6238).
 
 Some code by:
-[Ricardo Signes](https://github.com/rjbs)
-[Justin Buchanan](https://github.com/jusbuc2k)
-[Ricardo Iván Vieitez Parra](https://github.com/corrideat)
 
-
-[GoogleAuthenticator class](https://github.com/PHPGangsta/GoogleAuthenticator/) by Michael Kliewe (to *see* secrets)
-
-[qrcode.js](https://github.com/davidshimjs/qrcodejs) by ShimSangmin
-
-Also thx to [Victor R. Rodriguez Dominguez](https://github.com/vrdominguez) for some ideas and support  
-
-
+- [Ricardo Signes](https://github.com/rjbs)
+- [Justin Buchanan](https://github.com/jusbuc2k)
+- [Ricardo Iván Vieitez Parra](https://github.com/corrideat)
+- [GoogleAuthenticator class](https://github.com/PHPGangsta/GoogleAuthenticator/) by Michael Kliewe (to *see* secrets)
+- [qrcode.js](https://github.com/davidshimjs/qrcodejs) by ShimSangmin
+- Also thx to [Victor R. Rodriguez Dominguez](https://github.com/vrdominguez) for some ideas and support  
 
 ![Login](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/001-login.png)
-
 ![2Steps](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/002-2steps.png)
 
 
 Installation
 ------------
-- Clone from github:
-    `HOME_RC/plugins$ git clone https://github.com/alexandregz/twofactor_gauthenticator.git`
-    
 
-(Or use composer
-     `HOME_RC$ composer require alexandregz/twofactor_gauthenticator:dev-master`
+- Clone from GitHub inside the plugins directory of Roundcube:
+  1. `cd plugins`
+  2. `git clone https://github.com/alexandregz/twofactor_gauthenticator.git`
+
+
+- Or use composer from the Roundcube root directory:
+
+  ```sh
+  composer require alexandregz/twofactor_gauthenticator:dev-master
+  ```
      
- NOTE: Answer **N** when composer ask you about plugin activation)
+  _NOTE:_ Answer **N** when composer ask you about plugin activation.
 
-- Activate the plugin into `HOME_RC/config/config.inc.php`:
-    `$config['plugins'] = array('twofactor_gauthenticator');`
-
+- Activate the plugin by editing the `HOME_RC/config/config.inc.php` file:
+  ```php
+  $config['plugins'] = [
+          // Other plugins...
+          'twofactor_gauthenticator',
+  ];
+  ```
 
 Configuration
 -------------
+
 Copy `HOME_RC/plugins/twofactor_gauthenticator/config.inc.php.dist` to `HOME_RC/plugins/twofactor_gauthenticator/config.inc.php`.
 
 Configure or remove at least the config value "users_allowed_2FA" from config.inc.php and configure other config values to your needs.
@@ -75,46 +79,53 @@ Also, you can add "Recovery codes" for use one time (they are deleted when used)
 
 Enrollment Users
 ----------------
+
 If config value *force_enrollment_users* is true, **ALL** users needs to login with 2-step method. They receive alert message about that, and they can't skip without save configuration
 
 
 Samefield
 ---------
+
 If config value *2step_codes_on_login_form* is true, 2-step codes (and recovery) must be sended with password value, append to this, from the login screen: "Normal" codes just following password (passswordCODE), recovery codes after two pipes (passsword||RECOVERYCODE)
 
 Actually only into samefield branch
 
-
 Codes
 -----
-Codes have a 2*30 seconds clock tolerance, like by default with Google app (Maybe editable in future versions)
 
+Codes have a 2*30 seconds clock tolerance, like by default with Google app (Maybe editable in future versions)
 
 License
 -------
+
 MIT, see License
 
 Notes
 -----
+
 Tested with RoundCube 0.9.5 and Google app. Also with Roundcube 1.0.4 and 1.6.9 with OpenAuthenticator.
 
 Remember, sync time it's essential for TOTP: "For this to work, the clocks of the user's device and the server need to be roughly synchronized (the server will typically accept one-time passwords generated from timestamps that differ by ±1 from the client's timestamp)" (from http://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm)
 
 Author
 ------
+
 Alexandre Espinosa Menor <aemenor@gmail.com>
 
 Issues
 ------
+
 Open issues using github, don't send me emails about that, please -usually Gmail marks messages like SPAM
 
 Testing
 -------
+
 - Vagrant: https://github.com/alexandregz/vagrant-twofactor_gauthenticator
 - Docker: https://hub.docker.com/r/alexandregz/twofactor_gauthenticator/
 
 Using with Kolab
 ----------------
+
 Add a symlink into the public_html/assets directory
 
 Show explained https://github.com/alexandregz/twofactor_gauthenticator/issues/29#issuecomment-156838186 by https://github.com/d7415
@@ -124,7 +135,6 @@ Client implementations
 
 You can use various [OTP clients](https://en.wikipedia.org/wiki/HMAC-based_One-time_Password_Algorithm#Applications) -link by https://github.com/helmo
 
-
 Logs
 ----
 
@@ -133,7 +143,6 @@ Suggested by simon@magrin.com
 To log errors with bad codes, change the $_enable_logs variable to true.
 
 The logs are stored to the file HOME_RC/logs/log_errors_2FA.txt -directory must be created
-
 
 
 Whitelist
@@ -160,7 +169,6 @@ Activate only for specific users
 - Modify array  **users_allowed_2FA** with users that you want to use plugin. NOTE: you can use regular expressions
 
 
-
 ## Use with 1.3.x version
 
 Use *1.3.9-version* branch
@@ -172,9 +180,6 @@ If you download 1.4.x RC version (with *elastic skin*), use *master* version nor
 ![Elastic Skin start](https://raw.githubusercontent.com/alexandregz/twofactor_gauthenticator/master/screenshots/009-elastic_skin_start.png)
 
 ![Elastic Skin config](https://raw.githubusercontent.com/alexandregz/twofactor_gauthenticator/master/screenshots/010-elastic_skin_config.png)
-
-
-
 
 
 ## Security incident 2022-04-02
@@ -239,8 +244,6 @@ Password:xxxxxxxxx
   POST returned task "login"
 Expected "settings" task, something went wrong
 ``` 
-
-
 
 ## docker-compose
 
