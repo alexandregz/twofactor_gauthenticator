@@ -93,10 +93,10 @@ Install PHP-CS-Fixer (requires `composer` to be installed):
 composer install --working-dir=./tools/php-cs-fixer
 ```
 
-Run the coding standards fixer:
+Run the coding standards fixer (in current working directory):
 
 ```sh
-./tools/php-cs-fixer/vendor/bin/php-cs-fixer fix twofactor_gauthenticator.php
+./tools/php-cs-fixer/vendor/bin/php-cs-fixer fix .
 ```
 
 ## License

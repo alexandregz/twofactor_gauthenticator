@@ -14,10 +14,8 @@ $rcmail_config['allow_save_device_30days'] = true;
 // Default: form field will be text (false)
 $rcmail_config['twofactor_formfield_as_password'] = false;
 
-
 // Users allowed to use plugin (IMPORTANT: other users DON'T have plugin activated). Regex is supported.
 $rcmail_config['users_allowed_2FA'] = array('ale.*@tereborace.com', 'administrator@tereborace.com');
-
 
 // failure logging, suggested by @pngd (issue 131)
 $rcmail_config['enable_fail_logs'] = false;
