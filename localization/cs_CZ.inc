@@ -3,7 +3,7 @@
 $labels = array();
 $labels['activate'] = 'Zapnout';
 $labels['twofactor_gauthenticator'] = 'Dvoufázové ověření';
-$labels['code'] = 'Google Authenticator kód';
+$labels['code'] = 'Ověření kód';
 
 $labels['two_step_verification_form'] = 'Kód dvoufázového ověření:';
 

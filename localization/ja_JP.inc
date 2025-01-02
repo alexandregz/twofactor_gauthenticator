@@ -4,7 +4,7 @@
 $labels = array();
 $labels['activate'] = '有効';
 $labels['twofactor_gauthenticator'] = 'Google二段階認証';
-$labels['code'] = 'Google認証コード';
+$labels['code'] = '認証コード';
 
 $labels['two_step_verification_form'] = '二段階認証';
 

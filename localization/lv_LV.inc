@@ -3,7 +3,7 @@
 $labels = array();
 $labels['activate'] = 'Aktivizēt';
 $labels['twofactor_gauthenticator'] = '2-Faktoru Autentifikators';
-$labels['code'] = 'Google Aotentifikatora kods';
+$labels['code'] = 'Autentifikācijas kods';
 
 $labels['two_step_verification_form'] = '2-Faktoru autentifikācijas kods:';
 

@@ -3,7 +3,7 @@
 $labels = array();
 $labels['activate'] = 'Aktif Et';
 $labels['twofactor_gauthenticator'] = 'İki Faktörlü Doğrulama (2FA)';
-$labels['code'] = 'Google Authenticator Kodu';
+$labels['code'] = 'Kimlik Doğrulama Kodu';
 
 $labels['two_step_verification_form'] = '2-Faktörlü Doğrulama Kodu:';
 

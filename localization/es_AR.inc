@@ -4,7 +4,7 @@
 $labels = array();
 $labels['activate'] = 'Activar';
 $labels['twofactor_gauthenticator'] = 'Verificación de Google de dos pasos';
-$labels['code'] = 'Código de Google Authenticator';
+$labels['code'] = 'Código de autenticación';
 
 $labels['two_step_verification_form'] = 'Verificación de dos pasos';
 

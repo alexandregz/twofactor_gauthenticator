@@ -3,7 +3,7 @@
 $labels = array();
 $labels['activate'] = 'Aktiválás';
 $labels['twofactor_gauthenticator'] = 'Kétfaktoros bejelentkezés';
-$labels['code'] = 'Google hitelesítő kód';
+$labels['code'] = 'Hitelesítési kód';
 
 $labels['two_step_verification_form'] = 'Kétfaktoros hitelesítő kód:';
 

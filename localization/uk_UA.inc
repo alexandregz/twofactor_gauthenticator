@@ -4,7 +4,7 @@
 $labels = array();
 $labels['activate'] = 'Активувати';
 $labels['twofactor_gauthenticator'] = 'Двоетапна автентифікація';
-$labels['code'] = 'Код Google автентифікації';
+$labels['code'] = 'Код автентифікації';
 
 $labels['two_step_verification_form'] = 'Двоетапна Аутентифікація';
 
