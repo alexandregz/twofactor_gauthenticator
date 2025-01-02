@@ -3,7 +3,7 @@
 $labels = array();
 $labels['activate'] = 'Ενεργοποίηση';
 $labels['twofactor_gauthenticator'] = 'Διπλή Πιστοποίηση <br>(2-Factor Authentication)';
-$labels['code'] = 'Κωδικός TOTP <br>(Google Authenticator Code)';
+$labels['code'] = 'πιστοποίηση TOTP';
 
 $labels['two_step_verification_form'] = 'Δπλή πιστοποίηση (2FA):';
 

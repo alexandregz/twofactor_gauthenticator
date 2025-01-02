@@ -4,7 +4,7 @@
 $labels = array();
 $labels['activate'] = 'Aktiver';
 $labels['twofactor_gauthenticator'] = '2-trinns Google bekreftelse';
-$labels['code'] = 'Google-autentisering kode';
+$labels['code'] = 'Autentiseringskode';
 
 $labels['two_step_verification_form'] = '2-trinns bekreftelse';
 $labels['remember_computer'] = 'Husk denne datamaskinen';

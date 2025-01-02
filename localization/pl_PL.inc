@@ -4,7 +4,7 @@
 $labels = array();
 $labels['activate'] = 'Aktywuj';
 $labels['twofactor_gauthenticator'] = 'Dwuskładnikowe uwierzytelnianie';
-$labels['code'] = 'Google Authenticator Code';
+$labels['code'] = 'Kod uwierzytelniający';
 
 $labels['two_step_verification_form'] = 'Podaj hasło jednorazowe';
 
