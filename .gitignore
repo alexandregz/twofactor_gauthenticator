@@ -1,8 +1,11 @@
 .project
 .buildpath
 .settings*
+.php-cs-fixer.cache
 config.inc.php
 #### joe made this: https://goel.io/joe
+
+tools/php-cs-fixer/vendor
 
 #####=== Vim ===#####
 [._]*.s[a-w][a-z]
