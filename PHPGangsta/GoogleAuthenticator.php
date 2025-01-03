@@ -78,7 +78,7 @@ class PHPGangsta_GoogleAuthenticator
     {
         $urlencoded = urlencode('otpauth://totp/'.$name.'?secret='.$secret.'');
         if (isset($title)) {
-            $urlencoded .= urlencode('&issuer='.$title);
+            $urlencoded .= urlencode('&issuer='.urlencode($title));
         }
         return 'https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl='.$urlencoded.'';
     }
@@ -89,15 +89,18 @@ class PHPGangsta_GoogleAuthenticator
      * @param string $secret
      * @param string $code
      * @param int $discrepancy This is the allowed time drift in 30 second units (8 means 4 minutes before or after)
+     * @param int|null $currentTimeSlice time slice if we want use other that time()
      * @return bool
      */
-    public function verifyCode($secret, $code, $discrepancy = 1)
+    public function verifyCode($secret, $code, $discrepancy = 1, $currentTimeSlice = null)
     {
-        $currentTimeSlice = floor(time() / 30);
+        if ($currentTimeSlice === null) {
+            $currentTimeSlice = floor(time() / 30);
+        }
 
         for ($i = -$discrepancy; $i <= $discrepancy; $i++) {
             $calculatedCode = $this->getCode($secret, $currentTimeSlice + $i);
-            if ($calculatedCode == $code) {
+            if ($this->timingSafeEquals($calculatedCode, $code)) {
                 return true;
             }
         }
@@ -217,5 +220,36 @@ class PHPGangsta_GoogleAuthenticator
             'Y', 'Z', '2', '3', '4', '5', '6', '7', // 31
             '='  // padding char
         );
+    }
+
+    /**
+     * A timing safe equals comparison
+     * more info here: http://blog.ircmaxell.com/2014/11/its-all-about-time.html
+     *
+     * @param string $safeString The internal (safe) value to be checked
+     * @param string $userString The user submitted (unsafe) value
+     *
+     * @return boolean True if the two strings are identical.
+     */
+    private function timingSafeEquals($safeString, $userString)
+    {
+        if (function_exists('hash_equals')) {
+            return hash_equals($safeString, $userString);
+        }
+        $safeLen = strlen($safeString);
+        $userLen = strlen($userString);
+
+        if ($userLen != $safeLen) {
+            return false;
+        }
+
+        $result = 0;
+
+        for ($i = 0; $i < $userLen; $i++) {
+            $result |= (ord($safeString[$i]) ^ ord($userString[$i]));
+        }
+
+        // They are only identical strings if $result is exactly 0...
+        return $result === 0;
     }
 }
