@@ -90,7 +90,6 @@ class twofactor_gauthenticator extends rcube_plugin
         return true;
     }
 
-
     // Use the form login, but removing inputs with jquery and action (see twofactor_gauthenticator_form.js)
     public function login_after($args)
     {
@@ -190,7 +189,6 @@ class twofactor_gauthenticator extends rcube_plugin
         return $p;
     }
 
-
     // ripped from new_user_dialog plugin
     public function popup_msg_enrollment()
     {
@@ -215,7 +213,6 @@ class twofactor_gauthenticator extends rcube_plugin
             );
         }
     }
-
 
     // show config
     public function twofactor_gauthenticator_init()
@@ -270,7 +267,6 @@ class twofactor_gauthenticator extends rcube_plugin
         $rcmail->output->send('plugin');
     }
 
-
     // form config
     public function twofactor_gauthenticator_form()
     {
@@ -298,9 +294,9 @@ class twofactor_gauthenticator extends rcube_plugin
         $table->add('title', html::label($field_id, rcube::Q($this->gettext('secret'))));
         $html_secret = $input_descsecret->show();
         if ($data['secret']) {
-            $html_secret .= '<input type="button" class="button mainaction" id="2FA_change_secret" value="'.$this->gettext('show_secret').'">';
+            $html_secret .= ' &nbsp; <input type="button" class="button mainaction" id="2FA_change_secret" value="'.$this->gettext('show_secret').'">';
         } else {
-            $html_secret .= '<input type="button" class="button mainaction" id="2FA_create_secret" disabled="disabled" value="'.$this->gettext('create_secret').'">';
+            $html_secret .= ' &nbsp; <input type="button" class="button mainaction" id="2FA_create_secret" disabled="disabled" value="'.$this->gettext('create_secret').'">';
         }
         $table->add(null, $html_secret);
 
@@ -347,14 +343,14 @@ class twofactor_gauthenticator extends rcube_plugin
 
         // Build the table with the divs around it
         $out = html::div(
-            array('class' => 'settingsbox', 'style' => 'margin: 0;'),
-            html::div(array('id' => 'prefs-title', 'class' => ''), $this->gettext('twofactor_gauthenticator') . ' - ' . $rcmail->user->data['username']) .
-        html::div(
-            array('class' => 'boxcontent'),
-            $table->show() .
-            html::p(
-                null,
-                $rcmail->output->button(array(
+            array('class' => 'settingsbox'),
+            html::tag('h3', array('id' => 'prefs-title', 'class' => ''), $this->gettext('twofactor_gauthenticator') . ' - ' . $rcmail->user->data['username']) .
+            html::div(
+                array('class' => 'boxcontent'),
+                $table->show() .
+                html::p(
+                    null,
+                    $rcmail->output->button(array(
                         'command' => 'plugin.twofactor_gauthenticator-save',
                         'type' => 'input',
                         'class' => 'button mainaction',
@@ -368,8 +364,8 @@ class twofactor_gauthenticator extends rcube_plugin
                     .$html_setup_all_fields
                     .$html_check_code
                     .$html_help_code
+                )
             )
-        )
         );
 
         // Construct the form
@@ -382,11 +378,10 @@ class twofactor_gauthenticator extends rcube_plugin
             'action' => './?_task=settings&_action=plugin.twofactor_gauthenticator-save',
         ), $out);
 
-        $out = "<div class='box formcontainer scroller'>".$out."</div>";
+        $out = "<div class='formcontainer'><div class='formcontent'>".$out."</div></div>";
 
         return $out;
     }
-
 
     // used with ajax
     public function checkCode()
@@ -402,7 +397,6 @@ class twofactor_gauthenticator extends rcube_plugin
         }
         exit;
     }
-
 
     //------------- private methods
 

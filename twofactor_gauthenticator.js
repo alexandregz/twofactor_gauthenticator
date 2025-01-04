@@ -1,5 +1,5 @@
 if (window.rcmail) {
-  rcmail.addEventListener('init', function(evt) {
+	rcmail.addEventListener('init', function(evt) {
 
 	  // ripped from PHPGansta/GoogleAuthenticator.php
 		function createSecret(secretLength) {
@@ -65,22 +65,21 @@ if (window.rcmail) {
 			$('#2FA_change_qr_code').click(click2FA_change_qr_code);
 			$('#2FA_qr_code').prop('title', '');    // enjoy the silence (qrcode.js uses text to set title)
 
-                        // white frame to dark mode, only to img generated
-                        $('#2FA_qr_code').children('img').css({
-                                'background-color': '#fff',
-                                padding: '4px'
-                        });
+			// white frame to dark mode, only to img generated
+			$('#2FA_qr_code').children('img').css({
+							'background-color': '#fff',
+							padding: '4px'
+			});
 
 			// disable save button. It needs check code to enabled again
 			$('#2FA_setup_fields').prev().attr('disabled','disabled').attr('title', rcmail.gettext('check_code_to_activate', 'twofactor_gauthenticator'));
-                       alert(rcmail.gettext('check_code_to_activate', 'twofactor_gauthenticator'));
+      alert(rcmail.gettext('check_code_to_activate', 'twofactor_gauthenticator'));
 		}
-	  
+
 	  $('#2FA_setup_fields').click(function(){
 		  setup2FAfields();
 	  });
-	  
-	  
+
 	  // to show/hide secret
 	  click2FA_change_secret = function(){
 		  if($('#2FA_secret').get(0).type == 'text') {
@@ -94,7 +93,7 @@ if (window.rcmail) {
 		  }
 	  };
 	  $('#2FA_change_secret').click(click2FA_change_secret);
-	  
+
 	  // to show/hide recovery_codes
 	  $('#2FA_show_recovery_codes').click(function(){
 
@@ -111,8 +110,7 @@ if (window.rcmail) {
 			  $('#2FA_show_recovery_codes').get(0).value = rcmail.gettext('hide_recovery_codes', 'twofactor_gauthenticator');
 		  }
 	  });
-	  
-	  
+
 	  // to show/hide qr_code
 	  click2FA_change_qr_code = function(){
 		  if( $('#2FA_qr_code').is(':visible') ) {
@@ -125,24 +123,23 @@ if (window.rcmail) {
 		  }
 	  }
 	  $('#2FA_change_qr_code').click(click2FA_change_qr_code);
-	  
+
 	  // create secret
 	  $('#2FA_create_secret').click(function(){
 		  $('#2FA_secret').get(0).value = createSecret();
 	  });
-	
-	// ajax
-	$('#2FA_check_code').click(function(){
-		url = "./?_action=plugin.twofactor_gauthenticator-checkcode&code=" +$('#2FA_code_to_check').val() + '&secret='+$('#2FA_secret').val();
-		$.post(url, function(data){
-				alert(data);
-				if(data == rcmail.gettext('code_ok', 'twofactor_gauthenticator'))
-					$('#2FA_setup_fields').prev().removeAttr('disabled');
-					
-			});
-	});
-	  
-    
+
+		// ajax
+		$('#2FA_check_code').click(function(){
+			url = "./?_action=plugin.twofactor_gauthenticator-checkcode&code=" +$('#2FA_code_to_check').val() + '&secret='+$('#2FA_secret').val();
+			$.post(url, function(data){
+					alert(data);
+					if(data == rcmail.gettext('code_ok', 'twofactor_gauthenticator'))
+						$('#2FA_setup_fields').prev().removeAttr('disabled');
+						
+				});
+		});
+
     // Define Variables
     var tabtwofactorgauthenticator = $('<li>')
       .attr('id', 'settingstabplugintwofactor_gauthenticator')
