@@ -1,4 +1,3 @@
 - show errors with incorrect code, not just a logout message
 
-- IP subnet whitelisting (https://github.com/alexandregz/twofactor_gauthenticator/issues/54)
 - permanent recovery code (simon@magrin.com)
