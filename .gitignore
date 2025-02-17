@@ -3,8 +3,12 @@
 .settings*
 .php-cs-fixer.cache
 config.inc.php
-#### joe made this: https://goel.io/joe
 
+# Composer related
+vendor/
+composer.lock
+
+# Code formatting vendor
 tools/php-cs-fixer/vendor
 
 #####=== Vim ===#####
