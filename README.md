@@ -1,6 +1,6 @@
 # Two-factor verification
 
-This RoundCube plugin adds the 2-step verification (OTP) to the login proccess.
+This RoundCube plugin adds the 2-step verification (OTP) to the login process.
 
 It works with all TOTP applications [RFC 6238](https://www.rfc-editor.org/info/rfc6238).
 
@@ -11,81 +11,145 @@ Some code by:
 - [Ricardo Iván Vieitez Parra](https://github.com/corrideat)
 - [GoogleAuthenticator class](https://github.com/PHPGangsta/GoogleAuthenticator/) by Michael Kliewe (to _see_ secrets)
 - [qrcode.js](https://github.com/davidshimjs/qrcodejs) by ShimSangmin
-- Also thx to [Victor R. Rodriguez Dominguez](https://github.com/vrdominguez) for some ideas and support
+- Also thanks to [Victor R. Rodriguez Dominguez](https://github.com/vrdominguez) for some ideas and support
 
-![Login](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/001-login.png)
-![2Steps](https://raw.github.com/alexandregz/twofactor_gauthenticator/master/screenshots/002-2steps.png)
+<br /><br />
+
+## Screenshots
+
+<img src="screenshots/001-login.png" alt="Login" width="400" />
+<br /><br />
+<img src="screenshots/002-2steps.png" alt="Login" width="400" />
+
+<br /><br />
+
+## Table of Contents
+
+- [Installation](#installation)
+  - [Get the plugin](#get-the-plugin)
+  - [Activate the plugin](#activate-the-plugin)
+  - [Configuration](#configuration)
+    - [Variables](#variables)
+  - [Usage](#usage)
+  - [Docker Compose](#docker-compose)
+  - [Development](#development)
+    - [Code formatting](#code-formatting)
+  - [Additional Information](#additional-information)
+    - [Author](#author)
+    - [Issues](#issues)
+    - [TOTP Codes](#totp-codes)
+    - [License](#license)
+    - [Notes](#notes)
+    - [Testing](#testing)
+    - [Using with Kolab](#using-with-kolab)
+    - [Client implementations](#client-implementations)
+  - [Uninstall](#uninstall)
+  - [For version 1.3.x](#for-version-13x)
+  - [Security incidents](#security-incidents)
+    - [2022-04-02](#2022-04-02)
+
+<br /><br />
 
 ## Installation
 
-- Clone from GitHub inside the plugins directory of Roundcube:
+**If you are using Roundcube 1.3.x, please refer to section [For version 1.3.x](#for-version-13x)**.
 
-  1. `cd plugins`
-  2. `git clone https://github.com/alexandregz/twofactor_gauthenticator.git`
+### Get the plugin
 
-- Or use composer from the Roundcube root directory:
+**Method 1:** Clone from GitHub inside the plugins directory of Roundcube:
 
-  ```sh
-  composer require alexandregz/twofactor_gauthenticator:dev-master
-  ```
+    1. `cd plugins`
+    2. `git clone https://github.com/alexandregz/twofactor_gauthenticator.git`
 
-  _NOTE:_ Answer **N** when composer ask you about plugin activation.
+**Method 2:** Use composer from the Roundcube root directory:
 
-- Activate the plugin by editing the `HOME_RC/config/config.inc.php` file:
-  ```php
-  $config['plugins'] = [
-          // Other plugins...
-          'twofactor_gauthenticator',
-  ];
-  ```
+```sh
+composer require alexandregz/twofactor_gauthenticator:dev-master
+```
 
-## Configuration
+_NOTE:_ Answer **N** when the composer ask you about plugin activation.
 
-Copy `HOME_RC/plugins/twofactor_gauthenticator/config.inc.php.dist` to `HOME_RC/plugins/twofactor_gauthenticator/config.inc.php`.
+### Activate the plugin
 
-Configure or remove at least the config value "users_allowed_2FA" from config.inc.php and configure other config values to your needs.
+Activate the plugin by editing the `HOME_RC/config/config.inc.php` file:
 
-NOTE: plugin must be base32 valid characters ([A-Z][2-7]), see https://github.com/alexandregz/twofactor_gauthenticator/blob/master/PHPGangsta/GoogleAuthenticator.php#L18
+```php
+$config['plugins'] = [
+        // Other plugins...
+        'twofactor_gauthenticator',
+];
+```
 
-From https://github.com/alexandregz/twofactor_gauthenticator/issues/139
+_NOTE:_ For docker user, add env `ROUNDCUBE_PLUGINS=twofactor_gauthenticator` into docker-compose file. For detailed
+information, see [Roundcube Docker Hub](https://hub.docker.com/r/roundcube/roundcubemail/).
+
+### Configuration
+
+Copy `HOME_RC/plugins/twofactor_gauthenticator/config.inc.php.dist` to
+`HOME_RC/plugins/twofactor_gauthenticator/config.inc.php`.
+
+#### Variables
+
+Variables inside `config.inc.php`:
+
+| Variable                          | Variable Type | Default Value | Description                                                                                                                                                                                                                                                                                                                                                                                                      |
+|-----------------------------------|---------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `force_enrollment_users`          | boolean       | false         | If true, all users must log in with 2-step verification. They will receive an alert message and cannot skip the configuration.                                                                                                                                                                                                                                                                                   |
+| `whitelist`                       | array         | N/A           | A Whitelist of IPs which are allowed to bypass the 2FA, CIDR format available. <br /><br /> _NOTE:_ We need to use .0 IP to define LAN because the class CIDR have a issue about that (we can't use 129.168.1.2/24, for example). <br /><br /> _NOTE2:_ To create a empty whitelist, make sure it looks like this: <br />`$rcmail_config['whitelist'] = array();` <- There are NO QUOTES inside the parentheses. |
+| `allow_save_device_30days`        | boolean       | false         | If true, there will be a checkbox in the the TOTP code prompting page. By ticking it, there will be no 2FA prompt for 30 days.                                                                                                                                                                                                                                                                                   | 
+| `twofactor_formfield_as_password` | boolean       | false         | If true, the entered TOTP code will appear as password in the webpage when prompting it. Otherwise, it'll shown as text.                                                                                                                                                                                                                                                                                         |
+| `users_allowed_2FA`               | array         | N/A           | Users allowed to use plugin (IMPORTANT: other users DON'T have plugin activated). Regex is supported. <br /><br /> _NOTE:_ plugin must be base32 valid characters ([A-Z][2-7]), see [PHPGansta Library](https://github.com/alexandregz/twofactor_gauthenticator/blob/master/PHPGangsta/GoogleAuthenticator.php#L18), from [Issues 139](https://github.com/alexandregz/twofactor_gauthenticator/issues/139).      |
+| `enable_fail_logs`                | boolean       | false         | If true, 2FA failure will be logged in file log_errors_2FA.txt under HOME_RC/logs/log_errors_2FA.txt. <br /><br /> Suggested by @pngd [issue 131](https://github.com/alexandregz/twofactor_gauthenticator/issues/131).                                                                                                                                                                                           |                                                                                                                                                                                                                                                                                                                                                                                                      
+
+The tickbox allows users to skip 2FA for 30 days:
+
+<img src="screenshots/003-skip_30_days.png" alt="Login" width="400" />
+
+Variables that only existed in **Samefield branch**:
+
+| Variable                    | Variable Type | Default Value | Description                                                                                                                                                                                                                                                                    |
+|-----------------------------|---------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `2step_codes_on_login_form` | boolean       | false         | If config value _2step_codes_on_login_form_ is true, 2-step codes (and recovery) must be sended with password value, append to this, from the login screen: "Normal" codes just following password (passswordCODE), recovery codes after two pipes (passsword\|\|RECOVERYCODE) |
+
+<br /><br />
 
 ## Usage
 
-The first time you open the app you see the default settings:
+Go to Roundcube Settings > 2-Factor Authentication:
 
-![Default Settings](https://github.com/user-attachments/assets/deb6718d-e2e0-4615-bf54-77f1207698d1)
+<img src="screenshots/004-default_settings.png" alt="Login" width="800" />
 
-The most easy way to configure the app is by clicking "Fill all fields". The plugin automatically creates the secret for you:
+The most easy way to configure it is by clicking "Fill all fields". The plugin automatically creates the secret as
+well as the recovery codes for you:
 
-![Untitled](https://github.com/user-attachments/assets/e8f0582a-66f7-435b-a2d2-bac94cfd5acd)
+<img src="screenshots/005-generated_setting.png" alt="Login" width="800" />
 
-Now scan the QR code with any authenticator app, generate a code, enter your new code in the bottom field and press "Check code". If your code is a match, you can press "Save" to save the configuration.
+You can store/create TOTP codes with any authenticator app by either scanning the QR code or entering the secret
+manually.
 
-Alternatively, you can configure the app manually by checking the checkbox and pressing "Save". A secret will be automatically generated:
+Manually entering the secret as well as recovery codes is also possible.
+Note that the recovery codes are optional, so you can leave them blank.
 
-![Settings OK](https://github.com/user-attachments/assets/12acfd8d-b018-4739-ae01-b77940ca631d)
+After setting up the authenticator, enter the code and press "Check code". If the code is correct, you can press "Save"
+to save the configuration and enable 2-step verification.
 
-Now you can press "Show QR code" or use the generated secret to connect to any authenticator app.
+<img src="screenshots/006-settings_ok.png" alt="Login" width="800" />
 
-Also, you can add "Recovery codes" for use one time (they are deleted when used). Recovery codes are OPTIONAL, so they can be left blank.
+<br /><br />
 
-![Recovery codes](https://github.com/user-attachments/assets/dedba088-50c6-423d-8ed8-a1137c37d41d)
+## Docker Compose
 
-## Enrollment Users
+You can use `docker-compose` file to modify and test plugin:
 
-If config value _force_enrollment_users_ is true, **ALL** users needs to login with 2-step method. They receive alert message about that, and they can't skip without save configuration
+- Replace `mail.EXAMPLE.com` for your IMAP and SMTP server.
+- `docker-compose up`
+- You can use `adminer` to check DB and reset secrets, for example.
 
-## Samefield
+<br /><br />
 
-If config value _2step_codes_on_login_form_ is true, 2-step codes (and recovery) must be sended with password value, append to this, from the login screen: "Normal" codes just following password (passswordCODE), recovery codes after two pipes (passsword||RECOVERYCODE)
+## Development
 
-Actually only into samefield branch
-
-## Codes
-
-Codes have a 2\*30 seconds clock tolerance, like by default with Google app (Maybe editable in future versions)
-
-## Code formatting
+### Code formatting
 
 Install PHP-CS-Fixer (requires `composer` to be installed):
 
@@ -99,108 +163,122 @@ Run the coding standards fixer (in current working directory):
 ./tools/php-cs-fixer/vendor/bin/php-cs-fixer fix .
 ```
 
-## License
+<br /><br />
 
-MIT, see License
+## Additional Information
 
-## Notes
-
-Tested with RoundCube 0.9.5 and Google app. Also with Roundcube 1.0.4 and 1.6.9 with OpenAuthenticator.
-
-Remember, sync time it's essential for TOTP: "For this to work, the clocks of the user's device and the server need to be roughly synchronized (the server will typically accept one-time passwords generated from timestamps that differ by ±1 from the client's timestamp)" (from http://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm)
-
-## Author
+### Author
 
 Alexandre Espinosa Menor <aemenor@gmail.com>
 
-## Issues
+### Issues
 
-Open issues using github, don't send me emails about that, please -usually Gmail marks messages like SPAM
+Just open issues using GitHub issues instead of sending me emails, please.
+Gmail usually marks messages like this as SPAMs.
 
-## Testing
+### TOTP Codes
+
+TOTP codes have a 2\*30 seconds clock tolerance. (May be editable in future versions)
+
+### License
+
+MIT, see License
+
+### Notes
+
+Tested with RoundCube 0.9.5 and Google app. Also with Roundcube 1.0.4 and 1.6.9 with OpenAuthenticator.
+
+Remember, time synchronization it's essential to TOTP: "For this to work, the clocks of the user's device and the server
+need to
+be roughly synchronized (the server will typically accept one-time passwords generated from timestamps that differ by ±1
+from the client's timestamp)" (
+from [Wikipedia: Time-based one-time password](https://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm)).
+
+### Testing
 
 - Vagrant: https://github.com/alexandregz/vagrant-twofactor_gauthenticator
 - Docker: https://hub.docker.com/r/alexandregz/twofactor_gauthenticator/
 
-## Using with Kolab
+### Using with Kolab
 
 Add a symlink into the public_html/assets directory
 
-Show explained https://github.com/alexandregz/twofactor_gauthenticator/issues/29#issuecomment-156838186 by https://github.com/d7415
+[Show explained](https://github.com/alexandregz/twofactor_gauthenticator/issues/29#issuecomment-156838186)
+by [Martin Stone](https://github.com/d7415)
 
-## Client implementations
+### Client implementations
 
-You can use various [OTP clients](https://en.wikipedia.org/wiki/HMAC-based_One-time_Password_Algorithm#Applications) -link by https://github.com/helmo
+You can use various [OTP clients](https://en.wikipedia.org/wiki/HMAC-based_One-time_Password_Algorithm#Applications)
+, by [helmo](https://github.com/helmo).
 
-## Logs
-
-Suggested by simon@magrin.com
-
-To log errors with bad codes, change the $\_enable_logs variable to true.
-
-The logs are stored to the file HOME_RC/logs/log_errors_2FA.txt -directory must be created
-
-## Whitelist
-
-You can define whitelist IPs into config file (see config.inc.php.dist) to automatic login -the plugin don't ask you for code
+<br /><br />
 
 ## Uninstall
 
-To deactivate the plugin, you can use two methods:
+To deactivate the plugin, there are two methods:
 
-- To only one user: restore the user prefs from DB to null (rouncubeDB.users.preferences) -the user plugin options stored there.
+- For one only: Restore the user prefs from DB to null (rouncubeDB.users.preferences) which the user plugin options
+  stored.
 
-- To all: remove the plugin from config.inc.php/remove the plugin itself
+- To all: Remove the plugin from config.inc.php thus remove the plugin itself.
 
-## Activate only for specific users
+<br /><br />
 
-- Use config.inc.php file (see config.inc.php.dist example file)
-
-- Modify array **users_allowed_2FA** with users that you want to use plugin. NOTE: you can use regular expressions
-
-## Use with 1.3.x version
+## For version 1.3.x
 
 Use _1.3.9-version_ branch
 
 `$ git checkout 1.3.9-version`
 
-If you download 1.4.x RC version (with _elastic skin_), use _master_ version normally (thx to [tborgans](https://github.com/tborgans))
+If you are using other versions other than 1.3.9, use _master_ version normally (thanks
+to [tborgans](https://github.com/tborgans))
 
-![Elastic Skin start](https://raw.githubusercontent.com/alexandregz/twofactor_gauthenticator/master/screenshots/009-elastic_skin_start.png)
+<img src="/screenshots/007-elastic_skin_start.png" alt="Login" width="400" />
+<br /><br />
+<img src="/screenshots/008-elastic_skin_config.png" alt="Login" width="800" />
 
-![Elastic Skin config](https://raw.githubusercontent.com/alexandregz/twofactor_gauthenticator/master/screenshots/010-elastic_skin_config.png)
+<br /><br />
 
-## Security incident 2022-04-02
+## Security incidents
+
+### 2022-04-02
 
 Reported by kototilt@haiiro.dev (thx for the report and the PoC script)
 
-I made a little modification on script to not allow to save config without param session generated from a rendered page, to force user to introduce previously 2FA code and navigate across site.
+I made a little modification to the script to disallow user to save config without param session generated from a
+rendered page to force user to introduce previously 2FA code and navigate across site.
 
-NOTE: Also I check if user have 2FA activated because with only first condition -check SESSION- app kick out me before to activate 2FA.
+_NOTE:_ I also checked if the user has 2FA activated because with only first condition -check SESSION- app kick me out
+before activating 2FA.
 
-#### `twofactor_gauthenticator_save()`
+<br />
+
+**Function `twofactor_gauthenticator_save()`**
 
 On function `twofactor_gauthenticator_save()` I added this code:
 
 ```php
-    // save config
-    function twofactor_gauthenticator_save()
-    {
-        $rcmail = rcmail::get_instance();
+// save config
+function twofactor_gauthenticator_save()
+{
+    $rcmail = rcmail::get_instance();
 
-		// 2022-04-03: Corrected security incidente reported by kototilt@haiiro.dev
-		//					"2FA in twofactor_gauthenticator can be bypassed allowing an attacker to disable 2FA or change the TOTP secret."
-		//
-		// Solution: if user don't have session created by any rendered page, we kick out
-		$config_2FA = self::__get2FAconfig();
-		if(!$_SESSION['twofactor_gauthenticator_2FA_login'] && $config_2FA['activate']) {
-			$this->__exitSession();
-		}
+    // 2022-04-03: Corrected security incidente reported by kototilt@haiiro.dev
+    //					"2FA in twofactor_gauthenticator can be bypassed allowing an attacker to disable 2FA or change the TOTP secret."
+    //
+    // Solution: if user don't have session created by any rendered page, we kick out
+    $config_2FA = self::__get2FAconfig();
+    if(!$_SESSION['twofactor_gauthenticator_2FA_login'] && $config_2FA['activate']) {
+        $this->__exitSession();
+    }
 ```
 
-The idea is to create a session variable from a rendered page, redirected from `__goingRoundcubeTask` function (redirector to `roundcube tasks`)
+The idea is to create a session variable from a rendered page, redirected from `__goingRoundcubeTask` function (
+redirector to `roundcube tasks`)
 
-#### tests with PoC python script
+<br />
+
+**Tests with PoC Python Script**
 
 Previously, with security compromised:
 
@@ -216,7 +294,8 @@ Password:xxxxxxxx
 2FA disabled!
 ```
 
-Modified code and tested again, not allowed to deactivated/modified without going to a RC task (with 2FA authentication):
+Modified code and tested again, not allowed to deactivated/modified without going to a RC task (with 2FA
+authentication):
 
 ```bash
 alex@vosjod:~/Desktop/report$ ./poc.py
@@ -229,11 +308,3 @@ Password:xxxxxxxxx
   POST returned task "login"
 Expected "settings" task, something went wrong
 ```
-
-## docker-compose
-
-You can use `docker-compose` file to modify and test plugin:
-
-- Replace `mail.EXAMPLE.com` for your IMAP and SMTP server.
-- `docker-compose up`
-- You can use `adminer` to check DB and reset secrets, for example.
