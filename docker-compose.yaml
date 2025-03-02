@@ -32,7 +32,9 @@ services:
             - ROUNDCUBEMAIL_DB_PASSWORD=roundcube-mysql-pw
             - ROUNDCUBEMAIL_SKIN=elastic
             - ROUNDCUBEMAIL_DEFAULT_HOST=mail.EXAMPLE.com
+            - ROUNDCUBEMAIL_DEFAULT_PORT=143
             - ROUNDCUBEMAIL_SMTP_SERVER=mail.EXAMPLE.com
+            - ROUNDCUBEMAIL_SMTP_PORT=587
             - ROUNDCUBEMAIL_PLUGINS=twofactor_gauthenticator
 
     adminer:
