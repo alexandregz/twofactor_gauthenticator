@@ -12,6 +12,7 @@ Some code by:
 - [GoogleAuthenticator class](https://github.com/PHPGangsta/GoogleAuthenticator/) by Michael Kliewe (to _see_ secrets)
 - [qrcode.js](https://github.com/davidshimjs/qrcodejs) by ShimSangmin
 - Also thanks to [Victor R. Rodriguez Dominguez](https://github.com/vrdominguez) for some ideas and support
+- Stephen K. Gielda
 
 <br /><br />
 
