@@ -27,6 +27,33 @@ class twofactor_gauthenticator extends rcube_plugin
     {
         $rcmail = rcmail::get_instance();
 
+        // Completely block AJAX requests for unauthenticated users (by Stephen K. Gielda <security@codamail.com>)
+        if (!$rcmail->user->ID && !isset($_SESSION['twofactor_gauthenticator_login']) && isset($_REQUEST['_remote'])) {
+
+            // Direct JSON response to prevent leakage
+            header('Content-Type: application/json');
+            echo json_encode(array(
+                'error' => 'Session expired or invalid',
+                'redirect' => '?_task=login&_err=session'
+            ));
+            exit;
+        }
+
+        // Block data access via AJAX for partially authenticated users (by Stephen K. Gielda <security@codamail.com>)
+        if (isset($_SESSION['twofactor_gauthenticator_login']) 
+             && (!isset($_SESSION['twofactor_gauthenticator_2FA_login']) || $_SESSION['twofactor_gauthenticator_2FA_login'] < $_SESSION['twofactor_gauthenticator_login'])
+             && isset($_REQUEST['_remote']) && $rcmail->action !== 'plugin.twofactor_gauthenticator-checkcode' && $rcmail->task !== 'login') {
+        
+                 // Direct JSON response to prevent leakage
+                 header('Content-Type: application/json');
+                 echo json_encode(array(
+                     'error' => '2FA authentication required',
+                     'redirect' => '?_task=login&_err=session'
+                 ));
+                 exit;
+        }
+
+
         // hooks
         $this->add_hook('login_after', array($this, 'login_after'));
         $this->add_hook('send_page', array($this, 'check_2FAlogin'));
@@ -230,6 +257,12 @@ class twofactor_gauthenticator extends rcube_plugin
     public function twofactor_gauthenticator_save()
     {
         $rcmail = rcmail::get_instance();
+
+        // Verify user is authenticated before allowing changes (by Stephen K. Gielda <security@codamail.com>)
+        if (!$rcmail->user->ID) {
+            header('Location: ?_task=login');
+            exit;
+        }
 
         // 2022-04-03: Corrected security incidente reported by kototilt@haiiro.dev
         //					"2FA in twofactor_gauthenticator can be bypassed allowing an attacker to disable 2FA or change the TOTP secret."
