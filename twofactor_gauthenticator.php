@@ -40,26 +40,28 @@ class twofactor_gauthenticator extends rcube_plugin
         }
 
         // Block data access via AJAX for partially authenticated users who have 2FA enabled (by Stephen K. Gielda <security@codamail.com>)
-        if (isset($_SESSION['twofactor_gauthenticator_login']) 
-          && (!isset($_SESSION['twofactor_gauthenticator_2FA_login']) || $_SESSION['twofactor_gauthenticator_2FA_login'] < $_SESSION['twofactor_gauthenticator_login']) 
-          && isset($_REQUEST['_remote']) && $rcmail->action !== 'plugin.twofactor_gauthenticator-checkcode' && $rcmail->task !== 'login') {
-            
-            // Get user's 2FA config
-            $user_prefs = $rcmail->user->get_prefs();
-            $tfa_config = isset($user_prefs['twofactor_gauthenticator']) ? $user_prefs['twofactor_gauthenticator'] : null;
-            
-            // Only block if 2FA is enabled for this user
-            if ($tfa_config && isset($tfa_config['activate']) && $tfa_config['activate']) {
-                // Direct JSON response to prevent leakage
-                header('Content-Type: application/json');
-                echo json_encode(array(
-                    'error' => '2FA authentication required',
-                    'redirect' => '?_task=login&_err=session'
-                ));
-                exit;
-            }
-        }
-
+	if (isset($_SESSION['twofactor_gauthenticator_login']) && 
+	    (!isset($_SESSION['twofactor_gauthenticator_2FA_login']) || 
+	     $_SESSION['twofactor_gauthenticator_2FA_login'] < $_SESSION['twofactor_gauthenticator_login']) && 
+	    isset($_REQUEST['_remote']) &&
+	    $rcmail->action !== 'plugin.twofactor_gauthenticator-checkcode' &&
+	    $rcmail->task !== 'login') {
+	    
+	    // Get user's 2FA config
+	    $user_prefs = $rcmail->user->get_prefs();
+	    $tfa_config = isset($user_prefs['twofactor_gauthenticator']) ? $user_prefs['twofactor_gauthenticator'] : null;
+	    
+	    // Only block if 2FA is enabled for this user
+	    if ($tfa_config && isset($tfa_config['activate']) && $tfa_config['activate']) {
+		// Direct JSON response to prevent leakage
+		header('Content-Type: application/json');
+		echo json_encode(array(
+		    'error' => '2FA authentication required',
+		    'redirect' => '?_task=login&_err=session'
+		));
+		exit;
+	    }
+	}
 
         // hooks
         $this->add_hook('login_after', array($this, 'login_after'));
