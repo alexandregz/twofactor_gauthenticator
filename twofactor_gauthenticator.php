@@ -326,16 +326,16 @@ class twofactor_gauthenticator extends rcube_plugin
         $field_id = '2FA_activate';
         $checkbox_activate = new html_checkbox(array('name' => $field_id, 'id' => $field_id, 'type' => 'checkbox'));
         $table->add('title', html::label($field_id, rcube::Q($this->gettext('activate'))));
-        $checked = $data['activate'] ? null : 1; // :-?
+        $checked = (isset($data['activate']) && $data['activate']) ? null : 1; // :-?
         $table->add(null, $checkbox_activate->show($checked));
 
 
         // secret
         $field_id = '2FA_secret';
-        $input_descsecret = new html_inputfield(array('name' => $field_id, 'id' => $field_id, 'size' => 60, 'type' => 'password', 'value' => $data['secret'], 'autocomplete' => 'new-password'));
+        $input_descsecret = new html_inputfield(array('name' => $field_id, 'id' => $field_id, 'size' => 60, 'type' => 'password', 'value' => $data['secret'] ?? '', 'autocomplete' => 'new-password'));
         $table->add('title', html::label($field_id, rcube::Q($this->gettext('secret'))));
         $html_secret = $input_descsecret->show();
-        if ($data['secret']) {
+        if ($data['secret'] ?? '') {
             $html_secret .= ' &nbsp; <input type="button" class="button mainaction" id="2FA_change_secret" value="'.$this->gettext('show_secret').'">';
         } else {
             $html_secret .= ' &nbsp; <input type="button" class="button mainaction" id="2FA_create_secret" disabled="disabled" value="'.$this->gettext('create_secret').'">';
@@ -352,7 +352,7 @@ class twofactor_gauthenticator extends rcube_plugin
             $value = isset($data['recovery_codes'][$i]) ? $data['recovery_codes'][$i] : '';
             $html_recovery_codes .= ' <input type="password" name="2FA_recovery_codes[]" value="'.$value.'" maxlength="10"> &nbsp; ';
         }
-        if ($data['secret']) {
+        if ($data['secret'] ?? '') {
             $html_recovery_codes .= '<input type="button" class="button mainaction" id="2FA_show_recovery_codes" value="'.$this->gettext('show_recovery_codes').'">';
         } else {
             $html_recovery_codes .= '<input type="button" class="button mainaction" id="2FA_show_recovery_codes" disabled="disabled" value="'.$this->gettext('show_recovery_codes').'">';
@@ -361,7 +361,7 @@ class twofactor_gauthenticator extends rcube_plugin
 
 
         // qr-code
-        if ($data['secret']) {
+        if ($data['secret'] ?? '') {
             $table->add('title', $this->gettext('qr_code'));
             $table->add(null, '<input type="button" class="button mainaction" id="2FA_change_qr_code" value="'.$this->gettext('show_qr_code').'"> 
         						<div id="2FA_qr_code" style="display: none; margin-top: 10px;"></div>');
@@ -375,7 +375,7 @@ class twofactor_gauthenticator extends rcube_plugin
 
         // button to setup all fields if doesn't exists secret
         $html_setup_all_fields = '';
-        if (!$data['secret']) {
+        if (empty($data['secret'])) {
             $html_setup_all_fields = '<input type="button" class="button mainaction" id="2FA_setup_fields" value="'.$this->gettext('setup_all_fields').'">';
         }
 
