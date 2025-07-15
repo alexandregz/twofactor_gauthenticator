@@ -467,7 +467,19 @@ class twofactor_gauthenticator extends rcube_plugin
         $user = $rcmail->user;
 
         $arr_prefs = $user->get_prefs();
-        return $arr_prefs['twofactor_gauthenticator'] ?? null;
+        $data = $arr_prefs['twofactor_gauthenticator'] ?? array();
+        //decrypt
+        if (!is_array($data) && $rcmail->config->get('twofactor_pref_encrypt'))
+        {
+            $cdata = json_decode($rcmail->decrypt($data));
+            if ($cdata == null)
+            {
+                rcube::write_log('twofactor_gauthenticator',"WARN: Broken 2FA!, clearing...");
+                $cdata = array();
+            }
+            $data = (array)$cdata;
+        }
+        return $data;
     }
 
     // we can set array to NULL to remove
@@ -477,8 +489,14 @@ class twofactor_gauthenticator extends rcube_plugin
         $user = $rcmail->user;
 
         $arr_prefs = $user->get_prefs();
+        //encrypt
+        if ($data && $rcmail->config->get('twofactor_pref_encrypt'))
+        {
+            $edata = $rcmail->encrypt(json_encode($data));
+            $data = $edata != null ? $edata: $data;
+        }
         $arr_prefs['twofactor_gauthenticator'] = $data;
-
+        rcube::write_log('twofactor_gauthenticator',"WARN: 2FA may have changed!");
         return $user->save_prefs($arr_prefs);
     }
 
