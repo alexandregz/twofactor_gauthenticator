@@ -14,6 +14,7 @@ Some code by:
 - Also thanks to [Victor R. Rodriguez Dominguez](https://github.com/vrdominguez) for some ideas and support
 - Stephen K. Gielda
 - [Manuel Delgado](https://github.com/valarauco/)
+- kototilt@haiiro.dev
 
 <br /><br />
 
