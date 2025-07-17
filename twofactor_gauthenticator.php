@@ -467,7 +467,19 @@ class twofactor_gauthenticator extends rcube_plugin
         $user = $rcmail->user;
 
         $arr_prefs = $user->get_prefs();
-        return $arr_prefs['twofactor_gauthenticator'] ?? null;
+        $data = $arr_prefs['twofactor_gauthenticator'] ?? array();
+        //decrypt
+        if (!is_array($data) && $rcmail->config->get('twofactor_pref_encrypt'))
+        {
+            $cdata = json_decode($rcmail->decrypt($data));
+            if ($cdata == null)
+            {
+                rcube::write_log('twofactor_gauthenticator',"WARN: Broken 2FA!, clearing...");
+                $cdata = array();
+            }
+            $data = (array)$cdata;
+        }
+        return $data;
     }
 
     // we can set array to NULL to remove
@@ -477,8 +489,14 @@ class twofactor_gauthenticator extends rcube_plugin
         $user = $rcmail->user;
 
         $arr_prefs = $user->get_prefs();
+        //encrypt
+        if ($data && $rcmail->config->get('twofactor_pref_encrypt'))
+        {
+            $edata = $rcmail->encrypt(json_encode($data));
+            $data = $edata != null ? $edata: $data;
+        }
         $arr_prefs['twofactor_gauthenticator'] = $data;
-
+        rcube::write_log('twofactor_gauthenticator',"WARN: 2FA may have changed!");
         return $user->save_prefs($arr_prefs);
     }
 
@@ -583,8 +601,6 @@ class twofactor_gauthenticator extends rcube_plugin
     // log error into $_logs_file directory
     private function __logError()
     {
-        $rcmail = rcmail::get_instance();
-        $_log_dir = $rcmail->config->get('log_dir');
-        file_put_contents($_log_dir.'/'.$this->_logs_file, date("Y-m-d H:i:s")."|".$_SERVER['HTTP_X_FORWARDED_FOR']."|".$_SERVER['REMOTE_ADDR']."\n", FILE_APPEND);
+        rcube::write_log('twofactor_gauthenticator', "ERROR: 2FA fail - rip:". $_SERVER['HTTP_X_FORWARDED_FOR']." lip:".$_SERVER['REMOTE_ADDR']);
     }
 }

@@ -23,3 +23,6 @@ $rcmail_config['users_allowed_2FA'] = array('ale.*@tereborace.com', 'administrat
 // Suggested by @pngd (issue 131)
 // Default: There will be no logs (false)
 $rcmail_config['enable_fail_logs'] = false;
+
+// If true, twofactor user preferences (secret and codes) will be encrypted with Roundcube's DES key.
+$rcmail_config['twofactor_pref_encrypt'] = false;
