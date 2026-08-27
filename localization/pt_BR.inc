@@ -34,6 +34,18 @@ $labels['code_ok'] = 'QR Code Válido';
 $labels['code_ko'] = 'QR Code Incorreto';
 
 $labels['dont_ask_me_30days'] = 'Não perguntar por 30 dias';
+$labels['managed_secret_enabled'] = 'Usar segredo TOTP gerenciado externamente';
+$labels['managed_secret_provider'] = 'Provedor do segredo';
+$labels['managed_secret_reference'] = 'Referência do segredo';
+$labels['managed_secret_status'] = 'Estado do segredo';
+$labels['managed_secret_available'] = 'Disponível e válido';
+$labels['managed_secret_unavailable'] = 'Indisponível ou inválido (autenticação bloqueada por segurança)';
+$labels['managed_remember_device'] = 'Lembrar este dispositivo por 30 dias';
+$labels['managed_rate_limit'] = 'Limite de tentativas da aplicação';
+$labels['managed_rate_limit_value'] = '%d tentativas em %d segundos; bloqueio por %d segundos';
+$labels['managed_secret_notice'] = 'Esta configuração é gerenciada pelo servidor. O segredo, o QR code, os códigos de recuperação e os controles para salvar ficam indisponíveis de propósito.';
+$labels['yes'] = 'Sim';
+$labels['no'] = 'Não';
 
 $labels['check_code_to_activate'] = 'Para salvar, escaneie o QR code e introduza o código da Verificação em Duas Etapas [2FA] abaixo.';
 

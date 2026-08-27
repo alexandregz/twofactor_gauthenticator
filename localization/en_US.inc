@@ -34,6 +34,18 @@ $labels['code_ok'] = 'Code OK';
 $labels['code_ko'] = 'Incorrect code';
 
 $labels['dont_ask_me_30days'] = 'Don&#39;t ask me codes again on this computer for 30 days';
+$labels['managed_secret_enabled'] = 'Use externally managed TOTP secret';
+$labels['managed_secret_provider'] = 'Secret provider';
+$labels['managed_secret_reference'] = 'Secret reference';
+$labels['managed_secret_status'] = 'Secret status';
+$labels['managed_secret_available'] = 'Available and valid';
+$labels['managed_secret_unavailable'] = 'Unavailable or invalid (authentication fails closed)';
+$labels['managed_remember_device'] = 'Remember this device for 30 days';
+$labels['managed_rate_limit'] = 'Application rate limit';
+$labels['managed_rate_limit_value'] = '%d attempts in %d seconds; %d-second lockout';
+$labels['managed_secret_notice'] = 'This configuration is managed by the server. The secret, QR code, recovery codes, and save controls are intentionally unavailable.';
+$labels['yes'] = 'Yes';
+$labels['no'] = 'No';
 
 $labels['check_code_to_activate'] = 'To save, please scan the QR Code and enter the current 2-Factor code below.';
 

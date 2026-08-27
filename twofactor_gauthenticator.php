@@ -23,9 +23,19 @@ class twofactor_gauthenticator extends rcube_plugin
     // relative to $config['log_dir']
     private $_logs_file = 'log_errors_2FA.txt';
 
+    // This flag deliberately lives only for the current PHP request. A failed
+    // primary-password attempt must require a fresh OTP on the next request.
+    private $preAuthPassed = false;
+
     public function init()
     {
         $rcmail = rcmail::get_instance();
+
+        $this->load_config();
+        if ($this->__bypassActive()) {
+            $_SESSION['twofactor_gauthenticator_2FA_login'] = time();
+            unset($_SESSION['twofactor_gauthenticator_login']);
+        }
 
         // Completely block AJAX requests for unauthenticated users (by Stephen K. Gielda <security@codamail.com>)
         if (!$rcmail->user->ID && !isset($_SESSION['twofactor_gauthenticator_login']) && isset($_REQUEST['_remote'])) {
@@ -47,28 +57,22 @@ class twofactor_gauthenticator extends rcube_plugin
 	    $rcmail->action !== 'plugin.twofactor_gauthenticator-checkcode' &&
 	    $rcmail->task !== 'login') {
 	    
-	    // Get user's 2FA config
-	    $user_prefs = $rcmail->user->get_prefs();
-	    $tfa_config = isset($user_prefs['twofactor_gauthenticator']) ? $user_prefs['twofactor_gauthenticator'] : null;
-	    
-	    // Only block if 2FA is enabled for this user
-	    if ($tfa_config && isset($tfa_config['activate']) && $tfa_config['activate']) {
-		// Direct JSON response to prevent leakage
-		header('Content-Type: application/json');
-		echo json_encode(array(
-		    'error' => '2FA authentication required',
-		    'redirect' => '?_task=login&_err=session'
-		));
-		exit;
-	    }
+	    // The pending-login marker is only created for users who must complete
+	    // 2FA, including users with centrally managed secrets.
+	    header('Content-Type: application/json');
+	    echo json_encode(array(
+		'error' => '2FA authentication required',
+		'redirect' => '?_task=login&_err=session'
+	    ));
+	    exit;
 	}
 
         // hooks
+        $this->add_hook('authenticate', array($this, 'authenticate'));
         $this->add_hook('login_after', array($this, 'login_after'));
         $this->add_hook('send_page', array($this, 'check_2FAlogin'));
         $this->add_hook('render_page', array($this, 'popup_msg_enrollment'));
-
-        $this->load_config();
+        $this->add_hook('loginform_content', array($this, 'loginform_content'));
 
         $allowedPlugin = $this->__pluginAllowedByConfig();
 
@@ -79,14 +83,20 @@ class twofactor_gauthenticator extends rcube_plugin
 
         $this->add_texts('localization/', true);
 
-        // check code with ajax
-        $this->register_action('plugin.twofactor_gauthenticator-checkcode', array($this, 'checkCode'));
-
-        // config
+        // The settings page remains available in managed mode, but is read-only.
         $this->register_action('twofactor_gauthenticator', array($this, 'twofactor_gauthenticator_init'));
-        $this->register_action('plugin.twofactor_gauthenticator-save', array($this, 'twofactor_gauthenticator_save'));
-        $this->include_script('twofactor_gauthenticator.js');
-        $this->include_script('qrcode.min.js');
+
+        if (!$this->__managedMode()) {
+            // check code with ajax
+            $this->register_action('plugin.twofactor_gauthenticator-checkcode', array($this, 'checkCode'));
+
+            // self-service config
+            $this->register_action('plugin.twofactor_gauthenticator-save', array($this, 'twofactor_gauthenticator_save'));
+            $this->include_script('twofactor_gauthenticator.js');
+            $this->include_script('qrcode.min.js');
+        } else {
+            $this->include_script('twofactor_gauthenticator_managed.js');
+        }
 
         // settings we will export to the form javascript
         //$this_output = $this->api->output;
@@ -129,7 +139,15 @@ class twofactor_gauthenticator extends rcube_plugin
     // Use the form login, but removing inputs with jquery and action (see twofactor_gauthenticator_form.js)
     public function login_after($args)
     {
-        $_SESSION['twofactor_gauthenticator_login'] = time();
+        if ($this->__bypassActive()) {
+            return $args;
+        }
+
+        if ($this->__preAuthenticateEnabled() && $this->preAuthPassed) {
+            $_SESSION['twofactor_gauthenticator_2FA_login'] = time();
+            unset($_SESSION['twofactor_gauthenticator_login']);
+            return $args;
+        }
 
         $rcmail = rcmail::get_instance();
 
@@ -142,7 +160,10 @@ class twofactor_gauthenticator extends rcube_plugin
             return;
         }
 
-        if ($this->__cookie($set = false) || !$this->__pluginAllowedByConfig()) {
+        $_SESSION['twofactor_gauthenticator_login'] = time();
+
+        if (($rcmail->config->get('allow_save_device_30days', true) && $this->__cookie($set = false))
+            || !$this->__pluginAllowedByConfig()) {
             $_SESSION['twofactor_gauthenticator_login'] -= 1; // so that we may use ge to check for valid session
             $this->__goingRoundcubeTask('mail');
             return;
@@ -154,15 +175,124 @@ class twofactor_gauthenticator extends rcube_plugin
         $rcmail->output->set_env('twofactor_formfield_as_password', $rcmail->config->get('twofactor_formfield_as_password', false));
 
         $this->add_texts('localization', true);
-        $this->include_script('twofactor_gauthenticator_form.js');
+        // Roundcube renews the session and CSRF token after the password step.
+        // Render the OTP form on the server and submit it to the task selected
+        // by its hidden fields instead of reusing the stale login URL.
+        $rcmail->comm_path = './';
 
         $rcmail->output->send('login');
+    }
+
+    public function loginform_content($form_content)
+    {
+        if ($this->__preAuthenticateEnabled() && !$this->__bypassActive()
+            && !$this->__secondFactorPending()) {
+            $rcmail = rcmail::get_instance();
+            $fieldType = $rcmail->config->get('twofactor_formfield_as_password', false)
+                ? 'password' : 'text';
+            $input = new html_inputfield(array(
+                'name' => '_code_2FA',
+                'id' => '2FA_code',
+                'type' => $fieldType,
+                'required' => 'required',
+                'maxlength' => 10,
+                'inputmode' => 'numeric',
+                'autocomplete' => 'one-time-code',
+                'autocapitalize' => 'off',
+                'class' => 'form-control',
+            ));
+            $form_content['inputs']['twofactor'] = array(
+                'title' => html::label('2FA_code', html::quote($this->gettext('two_step_verification_form'))),
+                'content' => $input->show(),
+            );
+            return $form_content;
+        }
+
+        if (!$this->__secondFactorPending()) {
+            return $form_content;
+        }
+
+        $rcmail = rcmail::get_instance();
+        $fieldType = $rcmail->config->get('twofactor_formfield_as_password', false)
+            ? 'password' : 'text';
+        $input = new html_inputfield(array(
+            'name' => '_code_2FA',
+            'id' => '2FA_code',
+            'type' => $fieldType,
+            'required' => 'required',
+            'maxlength' => 10,
+            'inputmode' => 'numeric',
+            'autocomplete' => 'one-time-code',
+            'autocapitalize' => 'off',
+            'class' => 'form-control',
+        ));
+        $task = new html_hiddenfield(array('name' => '_task', 'value' => 'mail'));
+        $action = new html_hiddenfield(array('name' => '_action', 'value' => ''));
+
+        $form_content['hidden'] = array(
+            'task' => $task->show(),
+            'action' => $action->show(),
+        );
+        $form_content['inputs'] = array(
+            'twofactor' => array(
+                'title' => html::label('2FA_code', html::quote($this->gettext('two_step_verification_form'))),
+                'content' => $input->show(),
+            ),
+        );
+
+        return $form_content;
+    }
+
+    /**
+     * Validate a directory-managed TOTP before Roundcube attempts the primary
+     * password. All user-visible failures intentionally use the same message.
+     */
+    public function authenticate($args)
+    {
+        if (!$this->__preAuthenticateEnabled() || $this->__bypassActive()) {
+            return $args;
+        }
+
+        $user = trim((string) ($args['user'] ?? ''));
+        $code = trim((string) ($_POST['_code_2FA'] ?? ''));
+        $state = $this->__rateState(false, $user);
+        $reason = 'invalid';
+
+        if (!$state['blocked'] && preg_match('/^[0-9]{6,10}$/', $code)) {
+            $secret = $this->__ldapManagedSecret($user);
+            if ($secret && $this->__checkCode($code, $secret)) {
+                $this->__clearFailures($user);
+                $this->preAuthPassed = true;
+                $this->__logEvent('success', 'valid', array('attempts' => 0, 'blocked' => false), $user);
+                return $args;
+            }
+            $reason = $secret ? 'invalid' : 'unavailable';
+        } elseif ($state['blocked']) {
+            $reason = 'blocked';
+        }
+
+        if ($reason === 'invalid') {
+            $state = $this->__rateState(true, $user);
+        }
+        $this->__logEvent('failure', $reason, $state, $user);
+        $args['abort'] = true;
+        $args['error'] = 'loginfailed';
+        return $args;
     }
 
     // capture webpage if someone try to use ?_task=mail|addressbook|settings|... and check auth code
     public function check_2FAlogin($p)
     {
         $rcmail = rcmail::get_instance();
+        if ($this->__bypassActive()) {
+            return $p;
+        }
+        // In pre-authentication mode the authenticate hook has already handled
+        // this request's OTP. Do not feed the same form back into the legacy
+        // post-password challenge after a primary-authentication failure.
+        if ($this->__preAuthenticateEnabled()) {
+            return $p;
+        }
         $config_2FA = self::__get2FAconfig();
 
         if ($config_2FA['activate'] ?? false) {
@@ -194,25 +324,34 @@ class twofactor_gauthenticator extends rcube_plugin
             $remember = rcube_utils::get_input_value('_remember_2FA', rcube_utils::INPUT_POST);
 
             if ($code) {
+                if (!$this->__requestTokenValid()) {
+                    $this->__recordFailure('csrf');
+                    $this->__exitSession();
+                }
+                if ($this->__rateLimited()) {
+                    $this->__recordFailure('locked');
+                    $this->__exitSession();
+                }
                 if (self::__checkCode($code) || self::__isRecoveryCode($code)) {
                     if (self::__isRecoveryCode($code)) {
                         self::__consumeRecoveryCode($code);
                     }
 
-                    if (rcube_utils::get_input_value('_remember_2FA', rcube_utils::INPUT_POST) === 'yes') {
+                    if ($rcmail->config->get('allow_save_device_30days', true)
+                        && rcube_utils::get_input_value('_remember_2FA', rcube_utils::INPUT_POST) === 'yes') {
                         $this->__cookie($set = true);
                     }
 
+                    $this->__clearFailures();
                     $this->__goingRoundcubeTask('mail');
                 } else {
-                    if ($rcmail->config->get('enable_fail_logs')) {
-                        $this->__logError();
-                    }
+                    $this->__recordFailure('invalid');
                     $this->__exitSession();
                 }
             }
             // we're into some task but marked with login...
-            elseif ($rcmail->task !== 'login' && ! $_SESSION['twofactor_gauthenticator_2FA_login'] >= $_SESSION['twofactor_gauthenticator_login']) {
+            elseif ($rcmail->task !== 'login'
+                && $this->__secondFactorPending()) {
                 $this->__exitSession();
             }
 
@@ -265,6 +404,11 @@ class twofactor_gauthenticator extends rcube_plugin
     // save config
     public function twofactor_gauthenticator_save()
     {
+        if ($this->__managedMode()) {
+            rcube::raise_error('Managed 2FA settings cannot be changed by users.', true, false);
+            $this->__exitSession();
+        }
+
         $rcmail = rcmail::get_instance();
 
         // Verify user is authenticated before allowing changes (by Stephen K. Gielda <security@codamail.com>)
@@ -316,6 +460,10 @@ class twofactor_gauthenticator extends rcube_plugin
 
         $this->add_texts('localization/', true);
         $rcmail->output->set_env('product_name', $rcmail->config->get('product_name'));
+
+        if ($this->__managedMode()) {
+            return $this->__managedStatusForm();
+        }
 
         $data = self::__get2FAconfig();
 
@@ -425,6 +573,44 @@ class twofactor_gauthenticator extends rcube_plugin
         return $out;
     }
 
+    private function __managedStatusForm()
+    {
+        $rcmail = rcmail::get_instance();
+        $managed = $this->__managedSecret();
+        $provider = trim((string) $rcmail->config->get('twofactor_managed_secret_provider', 'External secret provider'));
+        $reference = trim((string) $rcmail->config->get('twofactor_managed_secret_reference', ''));
+
+        $table = new html_table(array('cols' => 2));
+        $checkbox = new html_checkbox(array('id' => '2FA_managed', 'disabled' => 'disabled'));
+        $table->add('title', rcube::Q($this->gettext('managed_secret_enabled')));
+        $table->add(null, $checkbox->show(1));
+        $table->add('title', rcube::Q($this->gettext('managed_secret_provider')));
+        $table->add(null, rcube::Q($provider));
+
+        if ($reference !== '') {
+            $table->add('title', rcube::Q($this->gettext('managed_secret_reference')));
+            $table->add(null, rcube::Q($reference));
+        }
+
+        $table->add('title', rcube::Q($this->gettext('managed_secret_status')));
+        $table->add(null, rcube::Q($this->gettext($managed ? 'managed_secret_available' : 'managed_secret_unavailable')));
+        $table->add('title', rcube::Q($this->gettext('managed_remember_device')));
+        $table->add(null, rcube::Q($rcmail->config->get('allow_save_device_30days', true) ? $this->gettext('yes') : $this->gettext('no')));
+        $table->add('title', rcube::Q($this->gettext('managed_rate_limit')));
+        $table->add(null, rcube::Q(sprintf(
+            $this->gettext('managed_rate_limit_value'),
+            (int) $rcmail->config->get('twofactor_rate_limit_attempts', 5),
+            (int) $rcmail->config->get('twofactor_rate_limit_window', 600),
+            (int) $rcmail->config->get('twofactor_rate_limit_lockout', 900)
+        )));
+
+        return html::div(
+            array('class' => 'settingsbox'),
+            html::tag('h3', array('id' => 'prefs-title'), $this->gettext('twofactor_gauthenticator')) .
+            html::div(array('class' => 'boxcontent'), $table->show() . html::p(null, rcube::Q($this->gettext('managed_secret_notice'))))
+        );
+    }
+
     // used with ajax
     public function checkCode()
     {
@@ -464,6 +650,10 @@ class twofactor_gauthenticator extends rcube_plugin
     private function __get2FAconfig()
     {
         $rcmail = rcmail::get_instance();
+        $managed = $this->__managedSecret();
+        if ($this->__managedMode()) {
+            return array('activate' => true, 'secret' => $managed, 'recovery_codes' => array());
+        }
         $user = $rcmail->user;
 
         $arr_prefs = $user->get_prefs();
@@ -485,6 +675,10 @@ class twofactor_gauthenticator extends rcube_plugin
     // we can set array to NULL to remove
     private function __set2FAconfig($data)
     {
+        if ($this->__managedMode()) {
+            return false;
+        }
+
         $rcmail = rcmail::get_instance();
         $user = $rcmail->user;
 
@@ -507,7 +701,8 @@ class twofactor_gauthenticator extends rcube_plugin
     private function __isRecoveryCode($code)
     {
         $prefs = self::__get2FAconfig();
-        return in_array($code, $prefs['recovery_codes']);
+        return isset($prefs['recovery_codes']) && is_array($prefs['recovery_codes'])
+            && in_array($code, $prefs['recovery_codes'], true);
     }
 
     private function __consumeRecoveryCode($code)
@@ -531,7 +726,7 @@ class twofactor_gauthenticator extends rcube_plugin
     private function __getSecret()
     {
         $prefs = self::__get2FAconfig();
-        return $prefs['secret'];
+        return $prefs['secret'] ?? null;
     }
 
     // Commented. If you have problems with qr-code.js, you can uncomment and use this
@@ -602,9 +797,246 @@ class twofactor_gauthenticator extends rcube_plugin
     // END remember
 
 
-    // log error into $_logs_file directory
-    private function __logError()
+    private function __bypassActive()
     {
-        rcube::write_log('twofactor_gauthenticator', "ERROR: 2FA fail - rip:". $_SERVER['HTTP_X_FORWARDED_FOR']." lip:".$_SERVER['REMOTE_ADDR']);
+        $rcmail = rcmail::get_instance();
+        $variables = $rcmail->config->get('twofactor_bypass_env', array());
+        if (!is_array($variables) || !$variables) {
+            return false;
+        }
+        foreach ($variables as $variable) {
+            if (!is_string($variable) || !preg_match('/^[A-Z][A-Z0-9_]*$/', $variable)
+                || empty($_SERVER[$variable])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private function __requestTokenValid()
+    {
+        $rcmail = rcmail::get_instance();
+        if (method_exists($rcmail, 'check_request')) {
+            return $rcmail->check_request(rcube_utils::INPUT_POST);
+        }
+        if (method_exists('rcube_utils', 'check_request_token')) {
+            return rcube_utils::check_request_token();
+        }
+        return false;
+    }
+
+    private function __secondFactorPending()
+    {
+        return isset($_SESSION['twofactor_gauthenticator_login'])
+            && (!isset($_SESSION['twofactor_gauthenticator_2FA_login'])
+                || $_SESSION['twofactor_gauthenticator_2FA_login'] < $_SESSION['twofactor_gauthenticator_login']);
+    }
+
+    private function __managedSecret($username = null)
+    {
+        $rcmail = rcmail::get_instance();
+        $path = $rcmail->config->get('twofactor_managed_secret_file');
+        if (!$this->__managedMode()) {
+            return null;
+        }
+        if ($this->__ldapManagedMode()) {
+            $username = $username ?: $rcmail->get_user_name();
+            return $this->__ldapManagedSecret($username);
+        }
+        $stat = @lstat($path);
+        if ($stat === false || (($stat['mode'] & 0170000) !== 0100000)
+            || (($stat['mode'] & 0022) !== 0)) {
+            rcube::raise_error('Managed 2FA secret file is missing or has unsafe permissions.', true, false);
+            return null;
+        }
+        $secret = strtoupper(trim((string) @file_get_contents($path)));
+        if (!preg_match('/^[A-Z2-7]{16,128}$/', $secret)) {
+            rcube::raise_error('Managed 2FA secret is not valid Base32.', true, false);
+            return null;
+        }
+        return $secret;
+    }
+
+    private function __managedMode()
+    {
+        $path = rcmail::get_instance()->config->get('twofactor_managed_secret_file');
+        return (is_string($path) && $path !== '') || $this->__ldapManagedMode();
+    }
+
+    private function __preAuthenticateEnabled()
+    {
+        return (bool) rcmail::get_instance()->config->get('twofactor_pre_authenticate', false);
+    }
+
+    private function __ldapManagedMode()
+    {
+        $config = rcmail::get_instance()->config;
+        return is_string($config->get('twofactor_ldap_uri'))
+            && $config->get('twofactor_ldap_uri') !== '';
+    }
+
+    private function __ldapManagedSecret($username)
+    {
+        $rcmail = rcmail::get_instance();
+        $uri = (string) $rcmail->config->get('twofactor_ldap_uri', '');
+        $bindDn = (string) $rcmail->config->get('twofactor_ldap_bind_dn', '');
+        $passwordFile = (string) $rcmail->config->get('twofactor_ldap_bind_password_file', '');
+        $baseDn = (string) $rcmail->config->get('twofactor_ldap_base_dn', '');
+        $filterTemplate = (string) $rcmail->config->get('twofactor_ldap_user_filter', '(sAMAccountName={user})');
+        $attribute = (string) $rcmail->config->get('twofactor_ldap_secret_attribute', 'customOTPSecret');
+        if (!function_exists('ldap_connect') || !preg_match('/^ldaps:\/\//i', $uri)
+            || $bindDn === '' || $baseDn === '' || trim((string) $username) === ''
+            || !preg_match('/^[A-Za-z][A-Za-z0-9-]*$/', $attribute)) {
+            rcube::raise_error('Managed 2FA LDAP configuration is incomplete or unsafe.', true, false);
+            return null;
+        }
+        $stat = @lstat($passwordFile);
+        if ($stat === false || (($stat['mode'] & 0170000) !== 0100000)
+            || (($stat['mode'] & 0022) !== 0)) {
+            rcube::raise_error('Managed 2FA LDAP password file is missing or has unsafe permissions.', true, false);
+            return null;
+        }
+        $password = rtrim((string) @file_get_contents($passwordFile), "\r\n");
+        if ($password === '') {
+            rcube::raise_error('Managed 2FA LDAP password file is empty.', true, false);
+            return null;
+        }
+        $escapedUser = function_exists('ldap_escape')
+            ? ldap_escape((string) $username, '', LDAP_ESCAPE_FILTER)
+            : preg_replace_callback('/[\\x00()\\\\*]/', static function ($match) {
+                return sprintf('\\%02x', ord($match[0]));
+            }, (string) $username);
+        if (strpos($filterTemplate, '{user}') === false) {
+            rcube::raise_error('Managed 2FA LDAP user filter has no user placeholder.', true, false);
+            return null;
+        }
+        $filter = str_replace('{user}', $escapedUser, $filterTemplate);
+
+        $connection = @ldap_connect($uri);
+        if (!$connection) {
+            rcube::raise_error('Managed 2FA LDAP connection failed.', true, false);
+            return null;
+        }
+        @ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3);
+        @ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
+        @ldap_set_option($connection, LDAP_OPT_NETWORK_TIMEOUT, 5);
+        if (!@ldap_bind($connection, $bindDn, $password)) {
+            rcube::raise_error('Managed 2FA LDAP bind failed.', true, false);
+            @ldap_unbind($connection);
+            return null;
+        }
+        $search = @ldap_search($connection, $baseDn, $filter, array($attribute), 0, 1, 5);
+        $entries = $search ? @ldap_get_entries($connection, $search) : false;
+        @ldap_unbind($connection);
+        if (!is_array($entries) || ($entries['count'] ?? 0) !== 1) {
+            return null;
+        }
+        $key = strtolower($attribute);
+        $secret = strtoupper(trim((string) ($entries[0][$key][0] ?? '')));
+        return preg_match('/^[A-Z2-7]{16,128}$/', $secret) ? $secret : null;
+    }
+
+    private function __clientAddress()
+    {
+        $address = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        return filter_var($address, FILTER_VALIDATE_IP) ? $address : 'unknown';
+    }
+
+    private function __rateFile($username = null)
+    {
+        $rcmail = rcmail::get_instance();
+        $directory = $rcmail->config->get('twofactor_rate_limit_dir');
+        if (!is_string($directory) || $directory === '') {
+            return null;
+        }
+        if (!is_dir($directory) || !is_writable($directory)) {
+            return false;
+        }
+        $user = $username ?: ($rcmail->get_user_name() ?: 'unknown');
+        $key = hash_hmac('sha256', $user . "\0" . $this->__clientAddress(), $rcmail->config->get('des_key'));
+        return rtrim($directory, '/') . '/' . $key . '.json';
+    }
+
+    private function __rateState($recordFailure = false, $username = null)
+    {
+        $path = $this->__rateFile($username);
+        if ($path === null) {
+            return array('blocked' => false, 'attempts' => 0);
+        }
+        if ($path === false) {
+            rcube::raise_error('The configured 2FA rate-limit directory is unavailable.', true, false);
+            return array('blocked' => true, 'attempts' => 0);
+        }
+        $handle = @fopen($path, 'c+');
+        if ($handle === false || !flock($handle, LOCK_EX)) {
+            rcube::raise_error('Unable to lock the 2FA rate-limit state.', true, false);
+            return array('blocked' => true, 'attempts' => 0);
+        }
+        $raw = stream_get_contents($handle);
+        $state = json_decode($raw ?: '{}', true);
+        $state = is_array($state) ? $state : array();
+        $now = time();
+        $rcmail = rcmail::get_instance();
+        $window = max(60, (int) $rcmail->config->get('twofactor_rate_limit_window', 600));
+        $limit = max(1, (int) $rcmail->config->get('twofactor_rate_limit_attempts', 5));
+        $lockout = max(60, (int) $rcmail->config->get('twofactor_rate_limit_lockout', 900));
+        $failures = array_values(array_filter($state['failures'] ?? array(), static function ($timestamp) use ($now, $window) {
+            return is_int($timestamp) && $timestamp > $now - $window;
+        }));
+        $blockedUntil = (int) ($state['blocked_until'] ?? 0);
+        if ($recordFailure) {
+            $failures[] = $now;
+            if (count($failures) >= $limit) {
+                $blockedUntil = max($blockedUntil, $now + $lockout);
+            }
+        }
+        $state = array('failures' => $failures, 'blocked_until' => $blockedUntil);
+        ftruncate($handle, 0);
+        rewind($handle);
+        fwrite($handle, json_encode($state));
+        fflush($handle);
+        flock($handle, LOCK_UN);
+        fclose($handle);
+        @chmod($path, 0600);
+        return array('blocked' => $blockedUntil > $now, 'attempts' => count($failures));
+    }
+
+    private function __rateLimited($username = null)
+    {
+        return $this->__rateState(false, $username)['blocked'];
+    }
+
+    private function __clearFailures($username = null)
+    {
+        $path = $this->__rateFile($username);
+        if (is_string($path)) {
+            @unlink($path);
+        }
+    }
+
+    private function __recordFailure($reason, $username = null)
+    {
+        $state = $reason === 'invalid' ? $this->__rateState(true, $username) : $this->__rateState(false, $username);
+        $this->__logEvent('failure', $reason, $state, $username);
+    }
+
+    private function __logEvent($event, $reason, $state, $username = null)
+    {
+        $rcmail = rcmail::get_instance();
+        if (!$rcmail->config->get('enable_fail_logs', false)) {
+            return;
+        }
+        $user = preg_replace('/[^A-Za-z0-9@._+\-]/', '_', (string) ($username ?: ($rcmail->get_user_name() ?: 'unknown')));
+        $event = preg_replace('/[^a-z]/', '', (string) $event);
+        $reason = preg_replace('/[^a-z]/', '', (string) $reason);
+        rcube::write_log('twofactor_gauthenticator', sprintf(
+            'TOTP event=%s reason=%s user=%s rip=%s attempts=%d blocked=%s',
+            $event,
+            $reason,
+            $user,
+            $this->__clientAddress(),
+            $state['attempts'],
+            $state['blocked'] ? 'yes' : 'no'
+        ));
     }
 }

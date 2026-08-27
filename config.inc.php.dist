@@ -26,3 +26,36 @@ $rcmail_config['enable_fail_logs'] = false;
 
 // If true, twofactor user preferences (secret and codes) will be encrypted with Roundcube's DES key.
 $rcmail_config['twofactor_pref_encrypt'] = false;
+
+// Optional path to a centrally managed Base32 TOTP secret. When configured,
+// users cannot view, replace, disable, or enroll the secret in Roundcube.
+// The file should be readable by the PHP-FPM user and not writable by it.
+$rcmail_config['twofactor_managed_secret_file'] = null;
+
+// Safe, display-only metadata for the read-only managed-secret settings page.
+// Never put tokens, AppRole credentials, secret values, or sensitive file paths here.
+$rcmail_config['twofactor_managed_secret_provider'] = 'External secret provider';
+$rcmail_config['twofactor_managed_secret_reference'] = '';
+
+// Optional pre-primary-authentication mode. It adds the OTP field to the
+// normal login form and validates a per-user LDAP attribute before Roundcube
+// attempts the IMAP password. Use LDAPS and a least-privilege bind account.
+$rcmail_config['twofactor_pre_authenticate'] = false;
+$rcmail_config['twofactor_ldap_uri'] = null;
+$rcmail_config['twofactor_ldap_bind_dn'] = null;
+$rcmail_config['twofactor_ldap_bind_password_file'] = null;
+$rcmail_config['twofactor_ldap_base_dn'] = null;
+$rcmail_config['twofactor_ldap_user_filter'] = '(sAMAccountName={user})';
+$rcmail_config['twofactor_ldap_secret_attribute'] = 'customOTPSecret';
+
+// Skip the second factor when every named server environment variable is
+// present and non-empty. This supports trusted upstream authentication such as
+// Kerberos/SPNEGO without hard-coding a specific web server integration.
+$rcmail_config['twofactor_bypass_env'] = array();
+
+// Server-side rate limiting is independent from web-server or firewall bans.
+// Set the state directory to a private runtime directory owned by PHP-FPM.
+$rcmail_config['twofactor_rate_limit_attempts'] = 5;
+$rcmail_config['twofactor_rate_limit_window'] = 600;
+$rcmail_config['twofactor_rate_limit_lockout'] = 900;
+$rcmail_config['twofactor_rate_limit_dir'] = null;

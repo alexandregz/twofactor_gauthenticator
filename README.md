@@ -103,6 +103,83 @@ Variables inside `config.inc.php`:
 | `users_allowed_2FA`               | array         | N/A           | Users allowed to use plugin (IMPORTANT: other users DON'T have plugin activated). Regex is supported. <br /><br /> _NOTE:_ plugin must be base32 valid characters ([A-Z][2-7]), see [PHPGansta Library](https://github.com/alexandregz/twofactor_gauthenticator/blob/master/PHPGangsta/GoogleAuthenticator.php#L18), from [Issues 139](https://github.com/alexandregz/twofactor_gauthenticator/issues/139).      |
 | `enable_fail_logs`                | boolean       | false         | If true, 2FA failure will be logged in file twofactor_gauthenticator.log under HOME_RC/logs/. <br /><br /> Suggested by @pngd [issue 131](https://github.com/alexandregz/twofactor_gauthenticator/issues/131). <br /><br />Code by [@valarauco](https://github.com/valarauco) [#227](https://github.com/alexandregz/twofactor_gauthenticator/pull/227) |
 | `twofactor_pref_encrypt`                | boolean       | false         | If true, twofactor user preferences (secret and codes) will be encrypted with Roundcube's DES key <br /><br />Code by [@valarauco](https://github.com/valarauco) [#225](https://github.com/alexandregz/twofactor_gauthenticator/pull/225) <br /><br />NOTE: when prefs are encrypted and you set this variable to `false`, you enter without twofactor authentication. Encryption it's not reversible.   |                                                                                                                                                                                                                                                                                                                                                                                     
+| `twofactor_managed_secret_file` | string/null | null | Read one Base32 TOTP secret from a server-managed regular file. The plugin fails closed if the file is missing, invalid, or group/world-writable, and disables user enrollment and recovery codes. |
+| `twofactor_managed_secret_provider` | string | External secret provider | Safe, display-only provider name for the read-only managed settings page. |
+| `twofactor_managed_secret_reference` | string | empty | Optional safe, display-only logical reference. Never use credentials or the secret itself. |
+| `twofactor_pre_authenticate` | boolean | false | Add OTP to the normal login form and verify it before Roundcube attempts the primary password. Requires the LDAP settings below. |
+| `twofactor_ldap_uri` | string/null | null | LDAPS URI used to read a per-user managed secret. Plain LDAP is rejected. |
+| `twofactor_ldap_bind_dn` | string/null | null | DN of a least-privilege service account that can read only the managed OTP attribute. |
+| `twofactor_ldap_bind_password_file` | string/null | null | Regular file containing only the bind password. Group/world-writable files are rejected. |
+| `twofactor_ldap_base_dn` | string/null | null | Search base for login users. |
+| `twofactor_ldap_user_filter` | string | `(sAMAccountName={user})` | LDAP filter template. The escaped login replaces the required `{user}` placeholder. |
+| `twofactor_ldap_secret_attribute` | string | `customOTPSecret` | Per-user LDAP attribute containing a Base32 TOTP secret. |
+| `twofactor_bypass_env` | array | empty | Skip the TOTP prompt only when every named server variable is non-empty. Use this for trusted upstream authentication and do not pass these values from client-controlled headers. |
+| `twofactor_rate_limit_attempts` | integer | 5 | Failed TOTP attempts allowed inside the configured window before lockout. |
+| `twofactor_rate_limit_window` | integer | 600 | Failed-attempt window in seconds. |
+| `twofactor_rate_limit_lockout` | integer | 900 | Lockout duration in seconds. |
+| `twofactor_rate_limit_dir` | string/null | null | Private server-side directory for rate-limit state. If configured but unavailable, authentication fails closed. |
+
+#### Centrally managed secrets and upstream authentication
+
+The managed-secret mode is intended for deployments where enrollment and secret
+rotation happen outside Roundcube. The secret file must contain only an RFC 4648
+Base32 value, be readable by PHP-FPM, and not be writable by the PHP-FPM user.
+For example:
+
+```php
+$rcmail_config['twofactor_managed_secret_file'] = '/run/secrets/roundcube-totp';
+$rcmail_config['twofactor_managed_secret_provider'] = 'OpenBao Agent';
+$rcmail_config['twofactor_managed_secret_reference'] = 'secret/infra/mail';
+$rcmail_config['twofactor_bypass_env'] = array('REMOTE_USER', 'KRB5CCNAME');
+$rcmail_config['twofactor_rate_limit_dir'] = '/run/roundcube/twofactor-rate-limit';
+$rcmail_config['enable_fail_logs'] = true;
+$rcmail_config['allow_save_device_30days'] = false;
+$rcmail_config['whitelist'] = array();
+```
+
+For a single login form that checks OTP before the password backend, use a
+directory-managed per-user secret. The bind-password file should be rendered by
+a secret agent into a volatile filesystem and readable by PHP-FPM, but not
+writable by it:
+
+```php
+$rcmail_config['twofactor_pre_authenticate'] = true;
+$rcmail_config['twofactor_ldap_uri'] = 'ldaps://directory.example.test:636';
+$rcmail_config['twofactor_ldap_bind_dn'] = 'CN=roundcube-otp,OU=Services,DC=example,DC=test';
+$rcmail_config['twofactor_ldap_bind_password_file'] = '/run/secrets/roundcube-ldap-password';
+$rcmail_config['twofactor_ldap_base_dn'] = 'OU=People,DC=example,DC=test';
+$rcmail_config['twofactor_ldap_user_filter'] = '(|(uid={user})(mail={user}))';
+$rcmail_config['twofactor_ldap_secret_attribute'] = 'customOTPSecret';
+$rcmail_config['twofactor_managed_secret_provider'] = 'Active Directory (LDAPS)/OpenBao';
+$rcmail_config['twofactor_managed_secret_reference'] = 'customOTPSecret';
+```
+
+In this hybrid example, Active Directory is the actual TOTP-secret provider:
+each user secret is stored in `customOTPSecret` and read over LDAPS. OpenBao is
+only the source of the LDAP service-account bind password rendered into the
+local runtime file. The provider and reference strings are display-only, so
+deployments may name any LDAP directory and secret agent without changing the
+plugin.
+
+The OTP result is never stored as a reusable session bypass. If the primary
+password fails, the next login request must provide and validate a new OTP.
+Missing users, missing secrets, invalid OTPs, and directory failures all return
+Roundcube's generic `loginfailed` message; detailed reasons are server-side logs
+only. Keep an independent reverse-proxy or Fail2ban limit as defense in depth.
+
+`REMOTE_USER` and `KRB5CCNAME` are examples, not required names. The web serve
+must set bypass variables itself after successful upstream authentication; neve
+map an untrusted request header directly to them. Failure log entries use a stable
+key/value format suitable for Fail2ban or a SIEM and use `REMOTE_ADDR` rather than
+client-supplied forwarding headers.
+
+In managed mode the settings entry remains visible but read-only. It reports
+secret availability, safe provider/reference metadata, the remember-device
+policy, and rate-limit values. It never renders the secret, QR code, recovery
+codes, or save controls. The plugin deliberately does not contact OpenBao or
+another secret manager: a local agent should render the file with restrictive
+permissions and handle renewal. Never configure tokens, AppRole credentials,
+secret values, or sensitive filesystem paths as display metadata.
 
 The tickbox allows users to skip 2FA for 30 days:
 
