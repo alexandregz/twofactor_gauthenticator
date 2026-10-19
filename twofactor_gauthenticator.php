@@ -135,10 +135,20 @@ class twofactor_gauthenticator extends rcube_plugin
 
         $config_2FA = self::__get2FAconfig();
         if (!($config_2FA['activate'] ?? false)) {
+            // Allow mandatory password changes before forced 2FA enrollment.
+            // Fix by Nikola Vasic <nikola.vasic01@gmail.com>
+            $must_change_password = $rcmail->config->get('password_force_new_user')
+                && $rcmail->config->get('newuserpassword');
+
+            if ($must_change_password) {
+                return $args;
+            }
+
             if ($rcmail->config->get('force_enrollment_users')) {
                 $this->__goingRoundcubeTask('settings', 'plugin.twofactor_gauthenticator');
             }
-            return;
+
+            return $args;
         }
 
         if ($this->__cookie($set = false) || !$this->__pluginAllowedByConfig()) {
@@ -215,7 +225,16 @@ class twofactor_gauthenticator extends rcube_plugin
             }
 
         } elseif ($rcmail->config->get('force_enrollment_users') && ($rcmail->task !== 'settings' || $rcmail->action !== 'plugin.twofactor_gauthenticator')) {
-            if ($rcmail->task !== 'login') {	// resolve some redirection loop with logout
+            // Allow mandatory password changes before forced 2FA enrollment.
+            // Fix by Nikola Vasic <nikola.vasic01@gmail.com>
+            $must_change_password = $rcmail->config->get('password_force_new_user')
+                && $rcmail->config->get('newuserpassword');
+
+            if ($must_change_password) {
+                return $p;
+            }
+
+            if ($rcmail->task !== 'login') {
                 $this->__goingRoundcubeTask('settings', 'plugin.twofactor_gauthenticator');
             }
         }
