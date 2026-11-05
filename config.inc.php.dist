@@ -3,6 +3,11 @@
 // Default: Setting up 2FA is not necessary for enabled users (false)
 $rcmail_config['force_enrollment_users'] = false;
 
+// Force 2FA enrollment only for these users (exact usernames, case-insensitive).
+// Only used when 'force_enrollment_users' is false; ignored if it is true.
+// Default: empty (nobody is forced)
+$rcmail_config['force_enrollment_users_list'] = array();
+
 // A Whitelist of IPs which are allowed to bypass the 2FA, CIDR format available.
 // NOTE: We need to use .0 IP to define LAN because the class CIDR have a issue about that (we can't use 129.168.1.2/24, for example)
 // NOTE2: To create a empty whitelist, make sure it looks like this: `$rcmail_config['whitelist'] = array();` <- There are NO QUOTES inside the parentheses.

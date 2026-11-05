@@ -125,6 +125,31 @@ class twofactor_gauthenticator extends rcube_plugin
         return true;
     }
 
+    // 2FA enrollment is forced if 'force_enrollment_users' is true (all users), or, only when that is not
+    // set, if the current user is listed in 'force_enrollment_users_list' (exact match, case-insensitive).
+    private function __isEnrollmentForced()
+    {
+        $rcmail = rcmail::get_instance();
+
+        if ($rcmail->config->get('force_enrollment_users')) {
+            return true;
+        }
+
+        $list = $rcmail->config->get('force_enrollment_users_list');
+        $username = $rcmail->user->data['username'] ?? '';
+        if (!is_array($list) || $username === '') {
+            return false;
+        }
+
+        foreach ($list as $u) {
+            if (is_string($u) && strcasecmp(trim($u), $username) === 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // Use the form login, but removing inputs with jquery and action (see twofactor_gauthenticator_form.js)
     public function login_after($args)
     {
@@ -135,7 +160,7 @@ class twofactor_gauthenticator extends rcube_plugin
 
         $config_2FA = self::__get2FAconfig();
         if (!($config_2FA['activate'] ?? false)) {
-            if ($rcmail->config->get('force_enrollment_users')) {
+            if ($this->__isEnrollmentForced()) {
                 $this->__goingRoundcubeTask('settings', 'plugin.twofactor_gauthenticator');
             }
             return;
@@ -214,7 +239,7 @@ class twofactor_gauthenticator extends rcube_plugin
                 $this->__exitSession();
             }
 
-        } elseif ($rcmail->config->get('force_enrollment_users') && ($rcmail->task !== 'settings' || $rcmail->action !== 'plugin.twofactor_gauthenticator')) {
+        } elseif ($this->__isEnrollmentForced() && ($rcmail->task !== 'settings' || $rcmail->action !== 'plugin.twofactor_gauthenticator')) {
             if ($rcmail->task !== 'login') {	// resolve some redirection loop with logout
                 $this->__goingRoundcubeTask('settings', 'plugin.twofactor_gauthenticator');
             }
@@ -230,7 +255,7 @@ class twofactor_gauthenticator extends rcube_plugin
         $config_2FA = self::__get2FAconfig();
 
         if (!($config_2FA['activate'] ?? false)
-            && $rcmail->config->get('force_enrollment_users') && $rcmail->task == 'settings' && $rcmail->action == 'plugin.twofactor_gauthenticator') {
+		&& $this->__isEnrollmentForced() && $rcmail->task == 'settings' && $rcmail->action == 'plugin.twofactor_gauthenticator') {
             // add overlay input box to html page
             $rcmail->output->add_footer(html::tag(
                 'form',
