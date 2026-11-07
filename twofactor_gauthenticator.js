@@ -131,8 +131,8 @@ if (window.rcmail) {
 
 		// ajax
 		$('#2FA_check_code').click(function(){
-			url = "./?_action=plugin.twofactor_gauthenticator-checkcode&code=" +$('#2FA_code_to_check').val() + '&secret='+$('#2FA_secret').val();
-			$.post(url, function(data){
+			url = "./?_action=plugin.twofactor_gauthenticator-checkcode";   // code and secret go in the POST body
+			$.post(url, {_token: rcmail.env.request_token, code: $('#2FA_code_to_check').val(), secret: $('#2FA_secret').val()}, function(data){
 					alert(data);
 					if(data == rcmail.gettext('code_ok', 'twofactor_gauthenticator'))
 						$('#2FA_setup_fields').prev().removeAttr('disabled');

@@ -317,6 +317,24 @@ class twofactor_gauthenticator extends rcube_plugin
         // remove recovery codes without value
         $recovery_codes = array_values(array_diff($recovery_codes, array('')));
 
+        // Activation must prove the device. The Save button is only disabled by JavaScript, so a form posted
+        // with any other secret (typed in, filled by password autofill, never shown to the user) would lock
+        // the user out. Activating a secret other than the active one needs a base32 secret and a correct
+        // current code for it, posted with the form; otherwise nothing is stored.
+        if ($activate) {
+            $same_secret = ($config_2FA['activate'] ?? false) && is_string($secret) && $secret !== ''
+                && hash_equals((string) ($config_2FA['secret'] ?? ''), $secret);
+            $code_to_check = rcube_utils::get_input_value('2FA_code_to_check', rcube_utils::INPUT_POST);
+            $proven = is_string($secret) && preg_match('/^[A-Z2-7]{16,}$/', $secret)
+                && is_string($code_to_check) && $code_to_check !== '' && $this->__checkCode($code_to_check, $secret);
+            if (!$same_secret && !$proven) {
+                $rcmail->output->show_message($this->gettext('check_code_to_activate'), 'error');
+                $rcmail->overwrite_action('plugin.twofactor_gauthenticator');
+                $rcmail->output->send('plugin');
+                return;
+            }
+        }
+
         $data = self::__get2FAconfig();
         $data['secret'] = $secret;
         $data['activate'] = $activate ? true : false;
@@ -355,7 +373,7 @@ class twofactor_gauthenticator extends rcube_plugin
 
         // secret
         $field_id = '2FA_secret';
-        $input_descsecret = new html_inputfield(array('name' => $field_id, 'id' => $field_id, 'size' => 60, 'type' => 'password', 'value' => $data['secret'] ?? '', 'autocomplete' => 'new-password'));
+        $input_descsecret = new html_inputfield(array('name' => $field_id, 'id' => $field_id, 'size' => 60, 'type' => 'password', 'value' => $data['secret'] ?? '', 'autocomplete' => 'new-password', 'readonly' => 'readonly'));   // filled by "Create secret" only
         $table->add('title', html::label($field_id, rcube::Q($this->gettext('secret'))));
         $html_secret = $input_descsecret->show();
         if ($data['secret'] ?? '') {
@@ -402,7 +420,7 @@ class twofactor_gauthenticator extends rcube_plugin
             $html_setup_all_fields = '<input type="button" class="button mainaction" id="2FA_setup_fields" value="'.$this->gettext('setup_all_fields').'">';
         }
 
-        $html_check_code = '<br /><br /><input type="button" class="button mainaction" id="2FA_check_code" value="'.$this->gettext('check_code').'"> &nbsp;&nbsp; <input type="text" id="2FA_code_to_check" maxlength="10">';
+        $html_check_code = '<br /><br /><input type="button" class="button mainaction" id="2FA_check_code" value="'.$this->gettext('check_code').'"> &nbsp;&nbsp; <input type="text" id="2FA_code_to_check" name="2FA_code_to_check" maxlength="10" autocomplete="one-time-code">';
 
         $html_help_code = '<br /><br /> &#9432; '.$this->gettext('msg_help');
 
@@ -451,8 +469,9 @@ class twofactor_gauthenticator extends rcube_plugin
     // used with ajax
     public function checkCode()
     {
-        $code   = rcube_utils::get_input_value('code', rcube_utils::INPUT_GET);
-        $secret = rcube_utils::get_input_value('secret', rcube_utils::INPUT_GET);
+        // POST body only: in the query string the secret ends up in every access log
+        $code   = rcube_utils::get_input_value('code', rcube_utils::INPUT_POST);
+        $secret = rcube_utils::get_input_value('secret', rcube_utils::INPUT_POST);
 
         // EMENDA 4: an explicit secret is required. Never verify against the real stored
         // secret (that would turn this endpoint into a verification oracle for tests).
