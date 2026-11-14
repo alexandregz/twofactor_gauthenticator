@@ -71,8 +71,8 @@ if (window.rcmail) {
 							padding: '4px'
 			});
 
-			// disable save button. It needs check code to enabled again
-			$('#2FA_setup_fields').prev().attr('disabled','disabled').attr('title', rcmail.gettext('check_code_to_activate', 'twofactor_gauthenticator'));
+			// Saving verifies this exact candidate on the server; AJAX is advisory.
+            $('#2FA_code_to_check').val('');
       alert(rcmail.gettext('check_code_to_activate', 'twofactor_gauthenticator'));
 		}
 
@@ -124,18 +124,19 @@ if (window.rcmail) {
 	  }
 	  $('#2FA_change_qr_code').click(click2FA_change_qr_code);
 
+        $('#2FA_secret').on('input', function() { $('#2FA_code_to_check').val(''); });
 	  // create secret
 	  $('#2FA_create_secret').click(function(){
+          $('#2FA_code_to_check').val('');
 		  $('#2FA_secret').get(0).value = createSecret();
 	  });
 
 		// ajax
 		$('#2FA_check_code').click(function(){
-			url = "./?_action=plugin.twofactor_gauthenticator-checkcode&code=" +$('#2FA_code_to_check').val() + '&secret='+$('#2FA_secret').val();
-			$.post(url, function(data){
+			url = "./?_task=settings&_action=plugin.twofactor_gauthenticator-checkcode";
+			$.post(url, {code: $('#2FA_code_to_check').val(), secret: $('#2FA_secret').val(), _token: rcmail.env.request_token}, function(data){
 					alert(data);
-					if(data == rcmail.gettext('code_ok', 'twofactor_gauthenticator'))
-						$('#2FA_setup_fields').prev().removeAttr('disabled');
+                    // An autotest result never authorizes saving a candidate.
 						
 				});
 		});
