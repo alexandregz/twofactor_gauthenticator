@@ -76,6 +76,46 @@ class twofactor_gauthenticator extends rcube_plugin
             return false;
         }
 
+        // Gate every request, not only rendered pages. check_2FAlogin() runs in the send_page hook, which
+        // actions that print raw output and exit (viewsource, get, zipdownload, ...) and JSON responses never
+        // reach, so a session that only knows the password could still read mail through them. Allow-list,
+        // because any plugin can register such an action. Under the login task only the login page and the
+        // login POST pass: an action registered without a task scope is otherwise reachable as
+        // ?_task=login&_action=plugin.x.
+        $gate_login = $rcmail->task === 'login' && in_array($rcmail->action ?: 'index', array('index', 'login'), true);
+        if (!empty($rcmail->user->ID) && $rcmail->task !== 'logout' && !$gate_login) {
+            $gate_cfg    = self::__get2FAconfig();   // decrypts, unlike a raw get_prefs() lookup
+            $gate_action = $rcmail->action ?: 'index';
+            if ($gate_cfg['activate'] ?? false) {
+                $gate_ok = $this->__is2FAFresh();
+                foreach ((array) $rcmail->config->get('whitelist') as $gate_ip) {   // same bypass as check_2FAlogin()
+                    if (isset($_SESSION['twofactor_gauthenticator_login']) && CIDR::match($this->__getClientIP(), $gate_ip)) {
+                        $gate_ok = true;
+                    }
+                }
+                // the code itself arrives as a POST to the mail index and is verified while that page renders
+                $gate_code = $rcmail->task === 'mail' && $gate_action === 'index' && empty($_REQUEST['_remote'])
+                    && rcube_utils::get_input_value('_code_2FA', rcube_utils::INPUT_POST);
+                if (!$gate_ok && !$gate_code) {
+                    $this->__exitSession();
+                }
+            } elseif ($rcmail->config->get('force_enrollment_users')) {
+                $gate_enroll = in_array($gate_action, array('plugin.twofactor_gauthenticator',
+                        'plugin.twofactor_gauthenticator-save', 'plugin.twofactor_gauthenticator-checkcode',
+                        'keep-alive'), true)
+                    || ($rcmail->task === 'settings' && $gate_action === 'refresh');
+                if (!$gate_enroll) {
+                    if (!empty($_REQUEST['_remote'])) {
+                        header('Content-Type: application/json');
+                        echo json_encode(array('error' => '2FA enrollment required'));
+                        exit;
+                    }
+                    header('Location: ?_task=settings&_action=plugin.twofactor_gauthenticator');
+                    exit;
+                }
+            }
+        }
+
         $this->add_texts('localization/', true);
 
         // check code with ajax
